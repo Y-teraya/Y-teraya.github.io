@@ -113,6 +113,7 @@
         const gravity = -0.01;
         const bounce = 0.3;
         let bookDropped = false;
+        let bookOnBalloon = false; // 本が風船の上にいるかどうか
 
         function init() {
             // シーンの設定
@@ -311,10 +312,15 @@
                 const predictedBalloonY = balloonBaseY - (weightRatio * 0.5);
                 balloon.position.y = balloonBaseY; // 実際はまだ変化しない
                 
-                // 本は風船の上に浮いている
+                // 本は風船の上に浮いている（振動あり）
                 book.position.y = bookY + Math.sin(Date.now() * 0.003) * 0.02; // 軽い浮遊感
                 
                 return;
+            }
+
+            // 本が風船の上で安定している場合は振動させない
+            if (bookOnBalloon && !balloonBurst) {
+                return; // 物理計算を停止
             }
 
             // 本が落とされた場合の物理計算
@@ -334,6 +340,7 @@
                         // 風船が支える
                         bookY = balloonTop + 0.05;
                         velocityY = 0;
+                        bookOnBalloon = true; // 本が風船の上で安定
                         
                         // 風船の変形
                         const weightRatio = bookWeight / maxWeight;
@@ -433,6 +440,7 @@
                 // リセット処理
                 balloonBurst = false;
                 bookDropped = false;
+                bookOnBalloon = false; // 安定状態もリセット
                 balloonScale = 1;
                 balloonY = balloonBaseY;
                 bookY = 1;
