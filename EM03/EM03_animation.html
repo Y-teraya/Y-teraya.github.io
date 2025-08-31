@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>風船と本の物理実験</title>
+    <title>風船の上に本を乗せる実験</title>
     <style>
         body {
             margin: 0;
@@ -78,7 +78,7 @@
     <div id="container">
         <div id="controls">
             <div class="control-group">
-                <label for="bookWeight">本の重さ: <span id="weightValue">100</span>g</label>
+                <label for="bookWeight">本の重さ: <span id="weightValue">100</span> g</label>
                 <input type="range" id="bookWeight" min="50" max="300" value="100" step="10">
             </div>
             <div class="control-group">
@@ -350,7 +350,7 @@
                         
                         // 成功のフィードバック
                         const status = document.getElementById('status');
-                        status.textContent = `成功！風船が${bookWeight}gの本を支えています．`;
+                        status.textContent = `成功！風船が${bookWeight} gの本を支えています．`;
                         status.className = 'safe';
                     }
                 }
@@ -377,7 +377,7 @@
             
             // UI更新
             const status = document.getElementById('status');
-            status.textContent = `風船が割れました！${bookWeight}gは重すぎました．`;
+            status.textContent = `風船が割れました！${bookWeight} gは重すぎました．`;
             status.className = 'warning';
         }
 
@@ -429,13 +429,13 @@
                 
                 // ステータス更新
                 if (bookWeight >= maxWeight) {
-                    status.textContent = `${bookWeight}g - 落とすと風船が割れます！`;
+                    status.textContent = `${bookWeight} g - 落とすと風船が割れます！`;
                     status.className = 'warning';
                 } else if (bookWeight >= maxWeight * 0.8) {
-                    status.textContent = `${bookWeight}g - 風船は支えられるかも？`;
+                    status.textContent = `${bookWeight} g - 風船は支えられるかも？`;
                     status.className = 'warning';
                 } else {
-                    status.textContent = `${bookWeight}g - 風船は安全に支えられます．`;
+                    status.textContent = `${bookWeight} g - 風船は安全に支えられます．`;
                     status.className = 'safe';
                 }
             });
