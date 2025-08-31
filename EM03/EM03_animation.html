@@ -86,7 +86,7 @@
                 <button id="dropBtn">落とす</button>
             </div>
             <div id="status" class="safe">
-                風船は安全です
+                風船は安全です．
             </div>
         </div>
     </div>
@@ -166,9 +166,9 @@
         }
 
         function createBalloon() {
-            // 風船のジオメトリ（楕円形）
+            // 風船のジオメトリ（少し縦長の形）
             const balloonGeometry = new THREE.SphereGeometry(1, 32, 32);
-            balloonGeometry.scale(1, 1.3, 1); // 縦に少し伸ばす
+            balloonGeometry.scale(1, 1.1, 1); // 軽く縦に伸ばす
             
             const balloonMaterial = new THREE.MeshPhongMaterial({
                 color: 0xff6b6b,
@@ -184,10 +184,10 @@
             scene.add(balloon);
 
             // 風船の紐
-            const stringGeometry = new THREE.CylinderGeometry(0.02, 0.02, 2, 8);
+            const stringGeometry = new THREE.CylinderGeometry(0.02, 0.02, 3, 8);
             const stringMaterial = new THREE.MeshBasicMaterial({ color: 0x333333 });
             balloonString = new THREE.Mesh(stringGeometry, stringMaterial);
-            balloonString.position.set(0, -2.5, 0); // 紐の位置も下に調整
+            balloonString.position.set(0, -3.0, 0); // 紐をより下に、風船の底から伸びるように
             scene.add(balloonString);
         }
 
@@ -303,14 +303,9 @@
 
             // 本が落とされていない場合は浮いている状態
             if (!bookDropped && !balloonBurst) {
-                // 重さによる風船の変形（視覚的な予測）
-                const weightRatio = bookWeight / maxWeight;
-                balloonScale = 1 - (weightRatio * 0.3);
-                balloon.scale.set(1, balloonScale, 1);
-                
-                // 風船の予想位置（まだ実際には支えていない）
-                const predictedBalloonY = balloonBaseY - (weightRatio * 0.5);
-                balloon.position.y = balloonBaseY; // 実際はまだ変化しない
+                // 風船は常に元の形を保つ
+                balloon.scale.set(1, 1, 1);
+                balloon.position.y = balloonBaseY;
                 
                 // 本は風船の上に浮いている（振動あり）
                 book.position.y = bookY + Math.sin(Date.now() * 0.003) * 0.02; // 軽い浮遊感
@@ -329,29 +324,33 @@
                 velocityY += gravity * 2; // 少し早めに落下
                 bookY += velocityY;
                 
-                // 風船との衝突判定
-                const balloonTop = balloonY + balloonScale + 0.1;
-                if (bookY <= balloonTop && velocityY < 0) {
+                // 風船との衝突判定（より正確に）
+                const balloonBottom = balloonY - balloonScale * 1.1; // 風船の底
+                const balloonTop = balloonY + balloonScale * 1.1; // 風船の上
+                const bookBottom = bookY - 0.1; // 本の底
+                
+                // 本の底が風船の範囲内に入った場合
+                if (bookBottom <= balloonTop && bookBottom >= balloonBottom && velocityY < 0) {
                     // 風船に衝突！重さで割れるかどうか判定
                     if (bookWeight >= maxWeight) {
                         // 重すぎて割れる
                         burstBalloon();
                     } else {
                         // 風船が支える
-                        bookY = balloonTop + 0.05;
+                        bookY = balloonTop + 0.1; // 風船の上に本を配置
                         velocityY = 0;
                         bookOnBalloon = true; // 本が風船の上で安定
                         
                         // 風船の変形
                         const weightRatio = bookWeight / maxWeight;
                         balloonScale = 1 - (weightRatio * 0.3);
-                        balloon.scale.set(1, balloonScale, 1);
-                        balloonY = balloonBaseY - (weightRatio * 0.5);
+                        balloon.scale.set(1, balloonScale * 1.1, 1); // 縦のスケールも調整
+                        balloonY = balloonBaseY - (weightRatio * 0.3);
                         balloon.position.y = balloonY;
                         
                         // 成功のフィードバック
                         const status = document.getElementById('status');
-                        status.textContent = `成功！風船が${bookWeight}gの本を支えています`;
+                        status.textContent = `成功！風船が${bookWeight}gの本を支えています．`;
                         status.className = 'safe';
                     }
                 }
@@ -375,6 +374,11 @@
             // 本を落下させる
             velocityY = 0;
             dropBook();
+            
+            // UI更新
+            const status = document.getElementById('status');
+            status.textContent = `風船が割れました！${bookWeight}gは重すぎました．`;
+            status.className = 'warning';
         }
 
         function dropBook() {
@@ -431,7 +435,7 @@
                     status.textContent = `${bookWeight}g - 風船は支えられるかも？`;
                     status.className = 'warning';
                 } else {
-                    status.textContent = `${bookWeight}g - 風船は安全に支えられます`;
+                    status.textContent = `${bookWeight}g - 風船は安全に支えられます．`;
                     status.className = 'safe';
                 }
             });
@@ -468,7 +472,7 @@
                 
                 // UI更新
                 dropBtn.disabled = false;
-                status.textContent = '風船は安全です';
+                status.textContent = '風船は安全です．';
                 status.className = 'safe';
             });
 
