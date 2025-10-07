@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投射アニメーション</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+        
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        #controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            color: white;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            font-size: 12px;
+            width: 200px;
+        }
+        
+        .control-group {
+            margin-bottom: 10px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 3px;
+            font-size: 11px;
+        }
+        
+        input[type="range"] {
+            width: 150px;
+            margin-bottom: 3px;
+        }
+        
+        .value-display {
+            font-size: 10px;
+            color: #ccc;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 11px;
+            margin: 2px;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: scale(1.05);
+        }
+        
+        button.active {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+        }
+        
+        .toggle-group {
+            display: flex;
+            gap: 5px;
+            margin: 8px 0;
+        }
+        
+        .small-button {
+            padding: 4px 8px;
+            font-size: 10px;
+        }
+        
+        #info {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            color: white;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            max-width: 200px;
+            font-size: 12px;
+        }
+        
+        .info-item {
+            margin-bottom: 8px;
+            font-size: 11px;
+        }
+        
+        #viewModeControls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            color: white;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .view-button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            margin: 2px;
+        }
+        
+        .view-button.active {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+        }
+        
+        .strobe-control {
+            border-top: 1px solid #333;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="controls">
+            <h4>投射設定</h4>
+            <div class="control-group">
+                <label>初期速度 (m/s)</label>
+                <input type="range" id="velocity" min="10" max="50" value="25">
+                <div class="value-display"><span id="velocityValue">25</span> m/s</div>
+            </div>
+            <div class="control-group" id="angleControl">
+                <label>発射角度 (度)</label>
+                <input type="range" id="angle" min="-30" max="80" value="45">
+                <div class="value-display"><span id="angleValue">45</span>°</div>
+            </div>
+            <div class="control-group">
+                <label>高さ (m)</label>
+                <input type="range" id="height" min="0" max="100" value="20">
+                <div class="value-display"><span id="heightValue">20</span> m</div>
+            </div>
+            <div class="control-group">
+                <label>重力 (m/s²)</label>
+                <input type="range" id="gravity" min="5" max="15" value="9.8" step="0.1">
+                <div class="value-display"><span id="gravityValue">9.8</span> m/s²</div>
+            </div>
+            <div class="control-group">
+                <label>ズーム</label>
+                <input type="range" id="zoom" min="20" max="100" value="50">
+                <div class="value-display"><span id="zoomValue">50</span></div>
+            </div>
+            
+            <div class="toggle-group">
+                <button onclick="startAnimation()">発射!</button>
+                <button onclick="resetAnimation()">リセット</button>
+            </div>
+            <div class="toggle-group">
+                <button onclick="toggleTrajectory()" id="trajectoryBtn" class="small-button active">軌道表示</button>
+            </div>
+            
+            <div class="strobe-control">
+                <h5 style="margin: 0 0 8px 0;">ストロボ機能</h5>
+                <div class="toggle-group">
+                    <button onclick="toggleStrobe()" id="strobeBtn" class="small-button">ストロボON</button>
+                    <button onclick="clearStrobe()" class="small-button">クリア</button>
+                </div>
+                <div class="control-group">
+                    <label>間隔 (秒)</label>
+                    <input type="range" id="strobeInterval" min="0.1" max="1" value="0.2" step="0.1">
+                    <div class="value-display"><span id="strobeIntervalValue">0.2</span>s</div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="info">
+            <h4>物理情報</h4>
+            <div class="info-item">時間: <span id="timeDisplay">0.00</span>s</div>
+            <div class="info-item">高度: <span id="heightDisplay">0.00</span>m</div>
+            <div class="info-item">水平距離: <span id="distanceDisplay">0.00</span>m</div>
+            <div class="info-item">速度: <span id="speedDisplay">0.00</span>m/s</div>
+            <div class="info-item">最高到達点: <span id="maxHeightDisplay">0.00</span>m</div>
+            <div class="info-item">飛距離: <span id="rangeDisplay">0.00</span>m</div>
+        </div>
+        
+        <div id="viewModeControls">
+            <h4>視点切替</h4>
+            <div class="toggle-group">
+                <button onclick="setViewMode('3d')" id="view3d" class="view-button active">3D視点</button>
+                <button onclick="setViewMode('xz')" id="viewXZ" class="view-button">XZ平面</button>
+                <button onclick="setViewMode('xy')" id="viewXY" class="view-button">XY平面</button>
+                <button onclick="setViewMode('yz')" id="viewYZ" class="view-button">YZ平面</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="./three.min.js"></script>
+    <script>
+        let scene, camera, renderer, projectile, ground, building;
+        let animationId;
+        let isAnimating = false;
+        let trajectoryPoints = [];
+        let trajectoryLine;
+        let showTrajectory = true;
+        let showAngleControl = true;
+        let viewMode = '3d';
+        let projectionLines = [];
+        let horizontalProjection, verticalProjection;
+        
+        // ストロボ関連変数
+        let strobeEnabled = false;
+        let strobeInterval = 0.2;
+        let lastStrobeTime = 0;
+        let strobeSpheres = [];
+        
+        // 物理パラメータ
+        let initialVelocity = 25;
+        let launchAngle = 45;
+        let gravity = 9.8;
+        let scale = 2;
+        let zoomLevel = 50;
+        let baseDistance = 80;
+        let buildingHeight = 20;
+        
+        // アニメーション変数
+        let startTime = 0;
+        let currentTime = 0;
+        let maxHeight = 0;
+        let range = 0;
+        
+        function init() {
+            // シーン作成
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x87CEEB);
+            
+            // カメラ設定
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            updateCameraPosition();
+            
+            // レンダラー設定
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.getElementById('container').appendChild(renderer.domElement);
+            
+            // 照明設定
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(50, 50, 0);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            scene.add(directionalLight);
+            
+            // 地面作成（拡大）
+            const groundGeometry = new THREE.PlaneGeometry(400, 200);
+            const groundMaterial = new THREE.MeshLambertMaterial({ 
+                color: 0x90EE90,
+                transparent: true,
+                opacity: 0.8
+            });
+            ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+            
+            // グリッド表示（拡大）
+            const gridHelper = new THREE.GridHelper(400, 40, 0x000000, 0x000000);
+            gridHelper.material.opacity = 0.2;
+            gridHelper.material.transparent = true;
+            scene.add(gridHelper);
+            
+            // ビル作成
+            createBuilding();
+            
+            // 投射体作成（より詳細な球体に変更）
+            const projectileGeometry = new THREE.SphereGeometry(1, 32, 32); // セグメント数を増加
+            const projectileMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xff4444,
+                shininess: 100,
+                specular: 0x111111
+            });
+            projectile = new THREE.Mesh(projectileGeometry, projectileMaterial);
+            projectile.castShadow = true;
+            resetProjectilePosition();
+            scene.add(projectile);
+            
+            // 軌道線初期化
+            createTrajectoryLine();
+            
+            // イベントリスナー設定
+            setupEventListeners();
+            
+            // 初期計算
+            calculateTrajectory();
+            
+            // レンダリングループ開始
+            animate();
+        }
+        
+        function createBuilding() {
+            const buildingGeometry = new THREE.BoxGeometry(8, buildingHeight * scale, 8);
+            const buildingMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0x666666,
+                transparent: true,
+                opacity: 0.8
+            });
+            building = new THREE.Mesh(buildingGeometry, buildingMaterial);
+            building.position.set(-50, (buildingHeight * scale) / 2, 0);
+            building.castShadow = true;
+            building.name = 'building';
+            scene.add(building);
+            
+
+        }
+        
+        function updateBuilding() {
+            // 既存のビルとその関連オブジェクトを完全に削除
+            const existingBuilding = scene.getObjectByName('building');
+            if (existingBuilding) {
+                scene.remove(existingBuilding);
+                existingBuilding.geometry.dispose();
+                existingBuilding.material.dispose();
+            }
+            
+            const existingRooftop = scene.getObjectByName('rooftop');
+            if (existingRooftop) {
+                scene.remove(existingRooftop);
+                existingRooftop.geometry.dispose();
+                existingRooftop.material.dispose();
+            }
+            
+            // 新しいビルを作成
+            createBuilding();
+        }
+        
+        function resetProjectilePosition() {
+            // ボールの位置をビル屋上に即座に移動
+            projectile.position.set(-50, buildingHeight * scale, 0);
+            
+            // 表示情報もリセット
+            updateDisplay(0, buildingHeight, 0, initialVelocity);
+        }
+        
+        function setViewMode(mode) {
+            viewMode = mode;
+            
+            // ボタンの状態更新
+            document.querySelectorAll('.view-button').forEach(btn => btn.classList.remove('active'));
+            
+            // IDを正確に指定
+            let targetBtn;
+            switch(mode) {
+                case '3d':
+                    targetBtn = document.getElementById('view3d');
+                    break;
+                case 'yz':
+                    targetBtn = document.getElementById('viewYZ');
+                    break;
+                case 'xy':
+                    targetBtn = document.getElementById('viewXY');
+                    break;
+                case 'xz':
+                    targetBtn = document.getElementById('viewXZ');
+                    break;
+            }
+            
+            if (targetBtn) {
+                targetBtn.classList.add('active');
+            }
+            
+            updateCameraPosition();
+        }
+        
+        function updateCameraPosition() {
+            const distance = baseDistance * (zoomLevel / 50);
+            
+            switch(viewMode) {
+                case 'yz':
+                    // YZ平面から見る（横から見た軌道）
+                    camera.position.set(distance, buildingHeight * scale / 2, 0);
+                    camera.lookAt(0, buildingHeight * scale / 2, 0);
+                    // YZ平面用の射影線を作成
+                    createProjectionLines();
+                    break;
+                case 'xy':
+                    // XY平面から見る（上から見た軌道）
+                    camera.position.set(0, distance + buildingHeight * scale + 20, 0);
+                    camera.lookAt(0, buildingHeight * scale, 0);
+                    removeProjectionLines();
+                    break;
+                case 'xz':
+                    // XZ平面から見る（真横から見た軌道、完全に平面的に）
+                    camera.position.set(0, 0, distance);
+                    camera.lookAt(0, 0, 0);
+                    removeProjectionLines();
+                    break;
+                default: // 3d
+                    camera.position.set(0, 40, distance);
+                    camera.lookAt(0, 20, 0);
+                    removeProjectionLines();
+            }
+        }
+        
+        function createProjectionLines() {
+            removeProjectionLines();
+            
+            if (viewMode !== 'yz') return;
+            
+            // 水平方向の等速直線運動を表示
+            const horizontalGeometry = new THREE.BufferGeometry();
+            const horizontalMaterial = new THREE.LineBasicMaterial({ 
+                color: 0x00ff00,
+                linewidth: 3,
+                transparent: true,
+                opacity: 0.8
+            });
+            horizontalProjection = new THREE.Line(horizontalGeometry, horizontalMaterial);
+            scene.add(horizontalProjection);
+            
+            // 垂直方向の運動を表示
+            const verticalGeometry = new THREE.BufferGeometry();
+            const verticalMaterial = new THREE.LineBasicMaterial({ 
+                color: 0x0000ff,
+                linewidth: 3,
+                transparent: true,
+                opacity: 0.8
+            });
+            verticalProjection = new THREE.Line(verticalGeometry, verticalMaterial);
+            scene.add(verticalProjection);
+            
+            updateProjectionLines();
+        }
+        
+        function updateProjectionLines() {
+            if (viewMode !== 'yz' || !showTrajectory) return;
+            
+            const radianAngle = (launchAngle * Math.PI) / 180;
+            const vx = initialVelocity * Math.cos(radianAngle);
+            const vy = initialVelocity * Math.sin(radianAngle);
+            
+            // 飛行時間計算
+            const discriminant = vy * vy + 2 * gravity * buildingHeight;
+            const timeOfFlight = (vy + Math.sqrt(discriminant)) / gravity;
+            
+            // 水平方向の等速直線運動（緑線）- X軸に沿った線
+            const horizontalPoints = [
+                new THREE.Vector3(-50, buildingHeight * scale - 5, 0),
+                new THREE.Vector3(-50 + vx * timeOfFlight * scale, buildingHeight * scale - 5, 0)
+            ];
+            horizontalProjection.geometry.setFromPoints(horizontalPoints);
+            
+            // 垂直方向の運動軌跡（青線）- Y軸に沿った線
+            const verticalPoints = [];
+            const numPoints = 50;
+            for (let i = 0; i <= numPoints; i++) {
+                const t = (timeOfFlight * i) / numPoints;
+                const y = (buildingHeight + vy * t - 0.5 * gravity * t * t) * scale;
+                
+                if (y >= 0) {
+                    verticalPoints.push(new THREE.Vector3(-45, y, 0));
+                } else {
+                    verticalPoints.push(new THREE.Vector3(-45, 0, 0));
+                    break;
+                }
+            }
+            verticalProjection.geometry.setFromPoints(verticalPoints);
+        }
+        
+        function removeProjectionLines() {
+            if (horizontalProjection) {
+                scene.remove(horizontalProjection);
+                horizontalProjection.geometry.dispose();
+                horizontalProjection = null;
+            }
+            if (verticalProjection) {
+                scene.remove(verticalProjection);
+                verticalProjection.geometry.dispose();
+                verticalProjection = null;
+            }
+        }
+        
+        function createTrajectoryLine() {
+            const lineGeometry = new THREE.BufferGeometry();
+            const lineMaterial = new THREE.LineBasicMaterial({ 
+                color: 0xffff00,
+                linewidth: 2,
+                transparent: true,
+                opacity: 0.6
+            });
+            trajectoryLine = new THREE.Line(lineGeometry, lineMaterial);
+            scene.add(trajectoryLine);
+        }
+        
+        // ストロボ機能
+        function toggleStrobe() {
+            strobeEnabled = !strobeEnabled;
+            const btn = document.getElementById('strobeBtn');
+            
+            if (strobeEnabled) {
+                btn.classList.add('active');
+                btn.textContent = 'ストロボOFF';
+            } else {
+                btn.classList.remove('active');
+                btn.textContent = 'ストロボON';
+            }
+        }
+        
+        function clearStrobe() {
+            // 既存のストロボ球体をすべて削除
+            strobeSpheres.forEach(sphere => {
+                scene.remove(sphere);
+                sphere.geometry.dispose();
+                sphere.material.dispose();
+            });
+            strobeSpheres = [];
+        }
+        
+        function createStrobeSphere(x, y, z) {
+            const sphereGeometry = new THREE.SphereGeometry(0.8, 16, 16);
+            const sphereMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xff4444,
+                transparent: true,
+                opacity: 0.4
+            });
+            const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+            sphere.position.set(x, y, z);
+            scene.add(sphere);
+            strobeSpheres.push(sphere);
+        }
+        
+        function calculateTrajectory() {
+            const radianAngle = (launchAngle * Math.PI) / 180;
+            const vx = initialVelocity * Math.cos(radianAngle);
+            const vy = initialVelocity * Math.sin(radianAngle);
+            
+            // 高さを考慮した飛行時間計算
+            const discriminant = vy * vy + 2 * gravity * buildingHeight;
+            const timeOfFlight = (vy + Math.sqrt(discriminant)) / gravity;
+            
+            // 理論値計算
+            maxHeight = buildingHeight + (vy * vy) / (2 * gravity);
+            range = vx * timeOfFlight;
+            
+            // 軌道点計算
+            trajectoryPoints = [];
+            const numPoints = 100;
+            for (let i = 0; i <= numPoints; i++) {
+                const t = (timeOfFlight * i) / numPoints;
+                const x = -50 + vx * t * scale;
+                const y = (buildingHeight + vy * t - 0.5 * gravity * t * t) * scale;
+                const z = 0;
+                
+                if (y >= 0) {
+                    trajectoryPoints.push(new THREE.Vector3(x, y, z));
+                } else {
+                    // 地面に到達した点を追加して終了
+                    const groundTime = (vy + Math.sqrt(vy * vy + 2 * gravity * buildingHeight)) / gravity;
+                    const groundX = -50 + vx * groundTime * scale;
+                    trajectoryPoints.push(new THREE.Vector3(groundX, 0, 0));
+                    break;
+                }
+            }
+            
+            // 軌道線更新
+            updateTrajectoryLine();
+            
+            // XY平面の場合は射影線も更新
+            if (viewMode === 'yz') {
+                updateProjectionLines();
+            }
+            
+            // 情報表示更新
+            document.getElementById('maxHeightDisplay').textContent = maxHeight.toFixed(2);
+            document.getElementById('rangeDisplay').textContent = range.toFixed(2);
+        }
+        
+        function updateTrajectoryLine() {
+            if (showTrajectory && trajectoryPoints.length > 0) {
+                trajectoryLine.geometry.setFromPoints(trajectoryPoints);
+                trajectoryLine.visible = true;
+            } else {
+                trajectoryLine.visible = false;
+            }
+            
+            // YZ平面での射影線表示制御
+            if (viewMode === 'yz') {
+                if (horizontalProjection) horizontalProjection.visible = showTrajectory;
+                if (verticalProjection) verticalProjection.visible = showTrajectory;
+            }
+        }
+        
+        function startAnimation() {
+            if (isAnimating) return;
+            
+            // ストロボ球体をクリア
+            clearStrobe();
+            
+            isAnimating = true;
+            startTime = Date.now();
+            currentTime = 0;
+            lastStrobeTime = 0;
+            
+            // 投射体を初期位置に
+            projectile.position.set(-50, buildingHeight * scale, 0);
+            
+            animateProjectile();
+        }
+        
+        function animateProjectile() {
+            if (!isAnimating) return;
+            
+            const now = Date.now();
+            currentTime = (now - startTime) / 1000; // 秒単位
+            
+            const radianAngle = (launchAngle * Math.PI) / 180;
+            const vx = initialVelocity * Math.cos(radianAngle);
+            const vy = initialVelocity * Math.sin(radianAngle);
+            
+            // 位置計算
+            const x = -50 + vx * currentTime * scale;
+            const y = (buildingHeight + vy * currentTime - 0.5 * gravity * currentTime * currentTime) * scale;
+            
+            // ストロボ機能
+            if (strobeEnabled && currentTime - lastStrobeTime >= strobeInterval) {
+                createStrobeSphere(x, Math.max(y, 0), 0);
+                lastStrobeTime = currentTime;
+            }
+            
+            // 地面に着地したかチェック
+            if (y <= 0 && currentTime > 0.1) {
+                projectile.position.set(x, 0, 0);
+                isAnimating = false;
+                
+                // 最終情報表示
+                updateDisplay(currentTime, 0, (x + 50) / scale, 0);
+                return;
+            }
+            
+            // 投射体位置更新
+            projectile.position.set(x, Math.max(y, 0), 0);
+            
+            // 現在速度計算
+            const currentVy = vy - gravity * currentTime;
+            const currentSpeed = Math.sqrt(vx * vx + currentVy * currentVy);
+            
+            // 表示更新
+            updateDisplay(currentTime, (y / scale) - buildingHeight, (x + 50) / scale, currentSpeed);
+            
+            // 次フレーム
+            requestAnimationFrame(animateProjectile);
+        }
+        
+        function updateDisplay(time, height, distance, speed) {
+            document.getElementById('timeDisplay').textContent = time.toFixed(2);
+            document.getElementById('heightDisplay').textContent = Math.max(height + buildingHeight, buildingHeight).toFixed(2);
+            document.getElementById('distanceDisplay').textContent = Math.max(distance, 0).toFixed(2);
+            document.getElementById('speedDisplay').textContent = speed.toFixed(2);
+        }
+        
+        function resetAnimation() {
+            isAnimating = false;
+            currentTime = 0;
+            clearStrobe();
+            resetProjectilePosition();
+        }
+        
+        function toggleTrajectory() {
+            showTrajectory = !showTrajectory;
+            const btn = document.getElementById('trajectoryBtn');
+            if (showTrajectory) {
+                btn.classList.add('active');
+                btn.textContent = '軌道表示';
+            } else {
+                btn.classList.remove('active');
+                btn.textContent = '軌道非表示';
+            }
+            updateTrajectoryLine();
+        }
+        
+        function toggleAngleControl() {
+            showAngleControl = !showAngleControl;
+            const btn = document.getElementById('angleBtn');
+            const angleControl = document.getElementById('angleControl');
+            
+            if (showAngleControl) {
+                btn.classList.add('active');
+                btn.textContent = '角度設定';
+                angleControl.style.display = 'block';
+            } else {
+                btn.classList.remove('active');
+                btn.textContent = '水平投射';
+                angleControl.style.display = 'none';
+                launchAngle = 0;
+                calculateTrajectory();
+                if (!isAnimating) resetAnimation();
+            }
+        }
+        
+        function setupEventListeners() {
+            // スライダーイベント
+            document.getElementById('velocity').addEventListener('input', function(e) {
+                initialVelocity = parseFloat(e.target.value);
+                document.getElementById('velocityValue').textContent = initialVelocity;
+                calculateTrajectory();
+                if (!isAnimating) resetAnimation();
+            });
+            
+            document.getElementById('angle').addEventListener('input', function(e) {
+                launchAngle = parseFloat(e.target.value);
+                document.getElementById('angleValue').textContent = launchAngle;
+                calculateTrajectory();
+                if (!isAnimating) resetAnimation();
+            });
+            
+            document.getElementById('height').addEventListener('input', function(e) {
+                // アニメーションを強制停止
+                isAnimating = false;
+                
+                buildingHeight = parseFloat(e.target.value);
+                document.getElementById('heightValue').textContent = buildingHeight;
+                
+                updateBuilding();
+                calculateTrajectory();
+                
+                // ボールの位置をリセット（アニメーション停止はしない）
+                resetProjectilePosition();
+            });
+            
+            document.getElementById('gravity').addEventListener('input', function(e) {
+                gravity = parseFloat(e.target.value);
+                document.getElementById('gravityValue').textContent = gravity;
+                calculateTrajectory();
+                if (!isAnimating) resetAnimation();
+            });
+            
+            document.getElementById('zoom').addEventListener('input', function(e) {
+                zoomLevel = parseFloat(e.target.value);
+                document.getElementById('zoomValue').textContent = zoomLevel;
+                updateCameraPosition();
+            });
+            
+            // ストロボ間隔スライダー
+            document.getElementById('strobeInterval').addEventListener('input', function(e) {
+                strobeInterval = parseFloat(e.target.value);
+                document.getElementById('strobeIntervalValue').textContent = strobeInterval;
+            });
+            
+            // ウィンドウリサイズ
+            window.addEventListener('resize', function() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+            
+            // マウス操作でカメラ回転（簡易版）
+            let mouseDown = false;
+            let mouseX = 0, mouseY = 0;
+            
+            document.addEventListener('mousedown', function(e) {
+                // コントロールパネルや情報パネル内でのクリックは無視
+                if (e.target.closest('#controls') || e.target.closest('#info') || e.target.closest('#viewModeControls')) {
+                    return;
+                }
+                
+                mouseDown = true;
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (!mouseDown) return;
+                
+                // コントロールパネルや情報パネル上でのマウス移動は無視
+                if (e.target.closest('#controls') || e.target.closest('#info') || e.target.closest('#viewModeControls')) {
+                    return;
+                }
+                
+                if (viewMode === '3d') {
+                    const deltaX = e.clientX - mouseX;
+                    const deltaY = e.clientY - mouseY;
+                    
+                    camera.position.x += deltaX * 0.1;
+                    camera.position.y -= deltaY * 0.1;
+                    camera.lookAt(0, 10, 0);
+                    
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                }
+            });
+            
+            document.addEventListener('mouseup', function() {
+                mouseDown = false;
+            });
+            
+            // ホイールズーム機能
+            document.addEventListener('wheel', function(e) {
+                // コントロールパネルや情報パネル上でのホイール操作は無視
+                if (e.target.closest('#controls') || e.target.closest('#info') || e.target.closest('#viewModeControls')) {
+                    return;
+                }
+                
+                e.preventDefault();
+                
+                const zoomDelta = e.deltaY > 0 ? 5 : -5;
+                zoomLevel = Math.max(20, Math.min(100, zoomLevel + zoomDelta));
+                
+                document.getElementById('zoom').value = zoomLevel;
+                document.getElementById('zoomValue').textContent = zoomLevel;
+                updateCameraPosition();
+            });
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        
+        // 初期化実行
+        init();
+    </script>
+</body>
+</html>

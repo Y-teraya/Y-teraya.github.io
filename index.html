@@ -3,317 +3,129 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="author" content="Y-teraya">
-    <meta name="description" content="理科教育法Ⅲの模擬授業で使う，資料公開サイトです．">
-    <meta name="keywords" content="模擬授業, 思考実験, 作用-反作用の法則, 自然科学を体感する">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>理科教育法 13班</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #f4f4f4 0%, #e8e8e8 100%);
-            color: #333;
-            margin: 0;
-            padding: 20px;
-            line-height: 1.6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            min-height: 100vh;
-            overflow: hidden;
-            transform: scale(0.9);
-        }
-
-        .container {
-            text-align: center;
-            max-width: 600px;
-            width: 100%;
-            background-color: #fff;
-            padding: 50px 40px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        h1 {
-            font-size: 2.8rem;
-            color: #007ACC;
-            text-align: center;
-            margin: 0 0 40px 0;
-            position: relative;
-            font-weight: 700;
-        }
-
-        h1::after {
-            content: '';
-            position: absolute;
-            bottom: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
-            background: linear-gradient(90deg, #007ACC, #005B99);
-            border-radius: 2px;
-        }
-
-        h1::before {
-            content: '📚';
-            margin-right: 15px;
-            font-size: 2.2rem;
-            vertical-align: middle;
-        }
-
-        .document-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            margin-top: 40px;
-        }
-
-        .document-card {
-            background: linear-gradient(135deg, #007ACC 0%, #005B99 100%);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 122, 204, 0.3);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            transform-style: preserve-3d;
-        }
-
-        .document-card.animation-card {
-            background: linear-gradient(135deg, #FF6B35 0%, #E55100 100%);
-            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
-        }
-
-        .document-card:hover {
-            transform: translateY(-8px) rotateX(3deg);
-            box-shadow: 0 20px 40px rgba(0, 122, 204, 0.4);
-        }
-
-        .document-card.animation-card:hover {
-            box-shadow: 0 20px 40px rgba(255, 107, 53, 0.4);
-        }
-
-        .document-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.6s ease;
-            z-index: 1;
-        }
-
-        .document-card:hover::before {
-            left: 100%;
-        }
-
-        .document-card a {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: white;
-            padding: 25px 30px;
-            position: relative;
-            z-index: 2;
-            transition: all 0.3s ease;
-        }
-
-        .document-icon {
-            font-size: 2.5rem;
-            margin-right: 20px;
-            opacity: 0.9;
-            transition: all 0.3s ease;
-        }
-
-        .document-card:hover .document-icon {
-            transform: rotate(5deg) scale(1.1);
-            opacity: 1;
-        }
-
-        .document-info {
-            text-align: left;
-            flex: 1;
-        }
-
-        .document-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin: 0 0 8px 0;
-            line-height: 1.3;
-        }
-
-        .document-type {
-            font-size: 0.9rem;
-            opacity: 0.8;
-            font-weight: 300;
-            letter-spacing: 0.5px;
-        }
-
-        .download-arrow {
-            font-size: 1.5rem;
-            opacity: 0.7;
-            transition: all 0.3s ease;
-        }
-
-        .document-card:hover .download-arrow {
-            opacity: 1;
-            transform: translateX(5px);
-        }
-
-        /* 各カードに異なるアイコンを設定 */
-        .document-card:nth-child(1) .document-icon::before {
-            content: '📄';
-        }
-
-        .document-card:nth-child(2) .document-icon::before {
-            content: '📋';
-        }
-
-        .document-card:nth-child(3) .document-icon::before {
-            content: '🎬';
-        }
-
-        /* フェードインアニメーション */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .document-card:nth-child(1) {
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        .document-card:nth-child(2) {
-            animation: fadeInUp 0.8s ease-out;
-        }
-
-        .document-card:nth-child(3) {
-            animation: fadeInUp 1.0s ease-out;
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 30px 25px;
-                margin: 10px;
-            }
-
-            h1 {
-                font-size: 2.2rem;
-            }
-
-            h1::before {
-                font-size: 1.8rem;
-                margin-right: 10px;
-            }
-
-            .document-card a {
-                padding: 20px 25px;
-            }
-
-            .document-icon {
-                font-size: 2rem;
-                margin-right: 15px;
-            }
-
-            .document-title {
-                font-size: 1.2rem;
-            }
-
-            .document-type {
-                font-size: 0.8rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .document-card:hover {
-                transform: translateY(-5px);
-            }
-
-            .document-card a {
-                padding: 18px 20px;
-            }
-
-            .document-icon {
-                font-size: 1.8rem;
-                margin-right: 12px;
-            }
-
-            .document-title {
-                font-size: 1.1rem;
-            }
-        }
-
-        p {
-            margin-top: 30px;
-            font-size: 0.9rem;
-            color: #666;
-            text-align: center;
-        }
-
-        p a {
-            color: #007ACC;
-            text-decoration: none;
-        }
-
-        p a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <title>ほうじ茶の資料茶屋</title>
+    <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
-<div class="container">
-    <h1>Lecture Data</h1>
+    <div class="container">
+    <h1>Presentation notes</h1>
 
-    <div class="document-grid">
-        <div class="document-card">
-            <a href="./">
-                <div class="document-icon"></div>
-                <div class="document-info">
-                    <div class="document-title">配布資料</div>
-                    <div class="document-type">Student Handout • PDF</div>
-                </div>
-                <div class="download-arrow">→</div>
-            </a>
+        <div class="notice-box">
+            <div class="notice-icon">⚠️</div>
+            <div class="notice-text">
+                <ol>
+                    <li>現在公開している資料のうち，ほとんどが<strong>作成中です</strong>．作成が終わりし次第，タイトルの下に内容の簡単な説明を入れますので，しばしお待ちください．</li>
+                    <li>重複スライドがありますが大抵，余談として追加してあります．必要に応じて削除してください．</li>
+                    <li>本資料の著作権は，<strong>CC BY-NC-SA 4.0</strong>を適応します．</li>
+                    <li>すなわち基本的には，<strong>改変のみ自由</strong>です．ただし，法律に抵触するものは禁止です．</li>
+                    <li>本資料で不利益を被った場合でも，<strong>一切責任は負いません</strong>．ご自身で解決してください．</li>
+                    <li>模擬授業での利用は，<strong>一切許容いたしません</strong>．</li>
+                    <li>資料のミス等を見つけた場合は，私のXアカウントである<a href="https://x.com/hojicya_study">@hojicya_study</a>のDMまで報告してくださると幸いです．</li>
+                </ol>
+            </div>
         </div>
+        
+    <section class="grade-section">
+        <h2>中学物理 1年</h2>
+ 
+        <div class="lesson-grid">
+            <div class="lesson-card">
+                <a href="./JPF/JPF01_slide_thinking.pptx">
+                    <div class="lesson-icon">💭</div>
+                    <div class="lesson-number">Lesson 01</div>
+                    <div class="lesson-title">思考実験</div>
+                    <div class="lesson-description">「考える」ということを身につける．</div>
+                </a>
+            </div>
+            <div class="lesson-card">
+                <a href="./JPF/JPF02_slide_balance.pptx">
+                    <div class="lesson-icon">⚖️</div>
+                    <div class="lesson-number">Lesson 02</div>
+                    <div class="lesson-title">力のつり合い</div>
+                </a>
+            </div>
+            <div class="lesson-card">
+                <a href="./JPF/JPF03_slide_inertia.pptx">
+                    <div class="lesson-icon">🛹</div>
+                    <div class="lesson-number">Lesson 03</div>
+                    <div class="lesson-title">慣性の法則</div>
+                </a>
+            </div>
+            <div class="lesson-card">
+                <a href="./JPF/JPF04_slide_action.pptx">
+                    <div class="lesson-icon">💥</div>
+                    <div class="lesson-number">Lesson 04</div>
+                    <div class="lesson-title">作用・反作用の法則</div>
+                </a>
+            </div>
+        </div>
+    </section>
 
-        <div class="document-card">
-            <a href="./">
-                <div class="document-icon"></div>
-                <div class="document-info">
-                    <div class="document-title">学習指導案</div>
-                    <div class="document-type">Lesson Plan • PDF</div>
-                </div>
-                <div class="download-arrow">→</div>
-            </a>
+    <section class="grade-section">
+        <h2>中学物理 3年</h2>
+            
+        <div class="lesson-grid">
+            <div class="lesson-card">
+                <a href="./JPL/JPL01_slide_drawing.pptx">
+                    <div class="lesson-icon">📐</div>
+                    <div class="lesson-number">Lesson 1</div>
+                    <div class="lesson-title">力の作図</div>
+                </a>
+            </div>
+            <div class="lesson-card">
+                <a href="./JPL/JPL02_slide_ULM.pptx">
+                    <div class="lesson-icon">🏃</div>
+                    <div class="lesson-number">Lesson 2</div>
+                    <div class="lesson-title">等速直線運動</div>
+                </a>
+            </div>
+            <div class="lesson-card">
+                <a href="./JPL/JPL03_slide_energy.pptx">
+                    <div class="lesson-icon">🔋</div>
+                    <div class="lesson-number">Lesson 3</div>
+                    <div class="lesson-title">エネルギー</div>
+                </a>
+            </div>
         </div>
+    </section>
 
-        <div class="document-card animation-card">
-            <a href="./">
-                <div class="document-icon"></div>
-                <div class="document-info">
-                    <div class="document-title">アニメーション</div>
-                    <div class="document-type">Interactive Animation • HTML</div>
-                </div>
-                <div class="download-arrow">→</div>
-            </a>
+    <section class="grade-section">
+        <h2>高校物理 力学</h2>
+            
+        <div class="lesson-grid">
+            <div class="lesson-card">
+                <a href="./HPM/HPM01_slide_statics.pptx">
+                    <div class="lesson-icon">🧱</div>
+                    <div class="lesson-number">Lesson 1</div>
+                    <div class="lesson-title">静力学</div>
+                </a>
+            </div>
+            <div class="lesson-card">
+                <a href="./preparation.html">
+                    <div class="lesson-icon">?</div>
+                    <div class="lesson-number">Lesson 2</div>
+                    <div class="lesson-title">運動方程式</div>
+                </a>
+            </div>
         </div>
+    </section>
     </div>
-</div>
 
-<footer>
-    Copyright © 2025 by Y-teraya is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 
-</footer>
+    <!--h2>Physics</h2>
+    <ul>
+        <li><a href="./Physics/reveal-js/Phys01.html">物理基礎01 科学史，数学史<br>（＊まだ完成しておりません．）</a></li>
+        <li><a href="https://note.com/hojicya/n/n9a9799d86f82">物理基礎02 構想記事</a></li>
+    </ul-->
+    <!--h1>Documentation notes</h1-->
+
+    <p>
+        Copyright © 2024 by 
+        <a href="https://x.com/hojicya_study">ほうじ茶</a>
+         is licensed under 
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a> 
+    </p>
 
 </body>
 
