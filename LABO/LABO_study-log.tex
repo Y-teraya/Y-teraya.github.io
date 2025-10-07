@@ -1,0 +1,45 @@
+\documentclass[a4paper,11pt,onecolumn]{ltjsarticle}
+\usepackage{amsmath, mathtools, mathbbol, amssymb, bm, fancyhdr, anyfontsize, subcaption, multirow, wrapfig, graphicx, hyperref, url, enumitem, ascmac, tikz, tikz-3dplot, makeidx}
+\usetikzlibrary{arrows, angles, quotes}
+\captionsetup{compatibility=false}
+
+\hypersetup{
+ pdfencoding=auto,
+ setpagesize=false,
+ bookmarksnumbered=true,
+ bookmarksopen=true,
+ colorlinks=true,
+ linkcolor=blue,
+ citecolor=black,
+ urlcolor=blue,
+}
+
+\makeindex
+\usepackage[numbers]{natbib}
+\usetikzlibrary{arrows, angles, quotes}
+\renewcommand{\cite}[1]{\textsuperscript{\citep{#1}}}
+
+\title{Template}
+\author{}
+\date{\today}
+
+\begin{document}
+
+\pagestyle{fancy}
+\lhead{試しに}
+\rhead{\thepage}
+\cfoot{}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\section{はじめに}
+
+試しに\index{abd}とは
+
+
+\clearpage
+
+% \bibliographystyle{plainyr}
+% \bibliography{ref.bib}
+\printindex
+
+\end{document}
