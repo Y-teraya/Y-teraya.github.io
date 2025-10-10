@@ -18,23 +18,25 @@
 \usepackage[numbers]{natbib}
 \usetikzlibrary{arrows, angles, quotes}
 \renewcommand{\cite}[1]{\textsuperscript{\citep{#1}}}
+\newcommand{\idxitem}[2]{\item[#1\index{#1}] #2}
 
-\title{Template}
-\author{}
+\title{自主ゼミ\ 内容まとめ}
+\author{Y-teraya}
 \date{\today}
 
 \begin{document}
 
 \pagestyle{fancy}
-\lhead{試しに}
-\rhead{\thepage}
+\lhead{251014\ 第1回}
+\rhead{\textbf{\thepage}}
 \cfoot{}
 \renewcommand{\footrulewidth}{0.4pt}
 
-\section{はじめに}
+\section{農業基礎}
 
-試しに\index{abd}とは
-
+\begin{description}
+    \idxitem{Word}{Content}
+\end{description}
 
 \clearpage
 
