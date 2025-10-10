@@ -1,4 +1,4 @@
-\documentclass[a4paper,11pt,onecolumn]{ltjsarticle}
+\documentclass[a4paper,11pt]{ltjsarticle}
 \usepackage{amsmath, mathtools, mathbbol, amssymb, bm, fancyhdr, anyfontsize, subcaption, multirow, wrapfig, graphicx, hyperref, url, enumitem, ascmac, tikz, tikz-3dplot, makeidx}
 \usetikzlibrary{arrows, angles, quotes}
 \captionsetup{compatibility=false}
@@ -10,7 +10,7 @@
  bookmarksopen=true,
  colorlinks=true,
  linkcolor=blue,
- citecolor=black,
+ citecolor=blue,
  urlcolor=blue,
 }
 
@@ -32,7 +32,15 @@
 \cfoot{}
 \renewcommand{\footrulewidth}{0.4pt}
 
-\section{農業基礎}
+\maketitle
+
+\section[農業基礎]{農業基礎\cite{Agriculture:538}}
+
+\begin{description}
+    \idxitem{Word}{Content}
+\end{description}
+
+\section[作物]{作物\cite{Crops:503}}
 
 \begin{description}
     \idxitem{Word}{Content}
@@ -40,8 +48,8 @@
 
 \clearpage
 
-% \bibliographystyle{plainyr}
-% \bibliography{ref.bib}
+\bibliographystyle{plain}
+\bibliography{ref.bib}
 \printindex
 
 \end{document}
