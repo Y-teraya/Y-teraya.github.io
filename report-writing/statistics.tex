@@ -15,7 +15,7 @@
 }
 
 \makeindex
-\numberwithin{equation}{part}
+\numberwithin{equation}{section}
 \usepackage[numbers]{natbib}
 \usetikzlibrary{arrows, angles, quotes}
 \renewcommand{\cite}[1]{\textsuperscript{\citep{#1}}}
@@ -44,7 +44,7 @@
   実験計画法を主として扱い，実務で直結する内容（Excel函数など）を備忘録として記しておく．
   ほか，線形代数や微分積分も取り扱う．
 
-  また，総和$\displaystyle{\sum}$の記号に慣れてない方が多いので，理解してほしい重要な式のみ$\displaystyle{\sum}$なしも併記する．
+  また，総和$\sum$の記号に苦手意識を持っている人も多いので，理解して欲しい重要な式のみ$\sum$無しで表現した式も併記する．
 \end{abstract}
 
 \tableofcontents
@@ -76,14 +76,14 @@
 データ全体を分布中心のデータ1つで表したものを代表値という．
 主に3つの値のことを指し，平均値Mean，中央値Median，最頻値Modeである．
 ただし，これらの値がデータの代表ではない可能性もあるため，
-扱うときには必ずデータの代表として機能しているのか確認する必要がある．
+扱うときには必ずデータの代表として機能しているのか確認する必要がある\cite{ave-1, ave-2}．
 
 \subsection{平均値Mean}
 \label{sec: mean}
 
 主に算術平均のことを指す．全データを合計し，データの数で割ることで求められる．
 平均値を $\bar{x}$，データ数を$n$，各データを$x_j$とすると，以下である
-\footnote{$\displaystyle{\sum}$の計算は，$1 \leq j \leq n\ (j \in \bm{Z})$の\textbf{総和}を示す記号である．$\displaystyle{\sum}$の下に書いてある数字から，上に書いてある数字までを\textbf{カウントアップして足したもの}である．}．
+\footnote{$\sum$の計算は，基本的に$1 \leq j \leq n\ (j \in \bm{Z})$の範囲内での\textbf{総和}を示す記号である．$\sum$の下に書いてある数字から，上に書いてある数字までを\textbf{カウントアップして足したもの}である．}．
 
 \begin{subequations}
 
@@ -91,7 +91,7 @@
     \bar{x} = \frac{1}{n} \sum_{j=1}^n x_j
   \end{equation}
 
-$\displaystyle{\sum}$なしに記述すると，以下である．
+$\sum$無しに記述すると，以下である．
 
   \begin{equation}
     \bar{x} = \frac{x_1 + x_2 + \cdots + x_j}{j}
@@ -99,8 +99,10 @@ $\displaystyle{\sum}$なしに記述すると，以下である．
 
 \end{subequations}
 
+\hspace{0pt}
+
 \begin{description}
-  \item[メリット] 全てのデータを考慮できる．
+  \item[メリット\cite{ave-3}] 全てのデータを考慮できる．
   \item[デメリット] 外れ値（異常に大きい値・小さい値）に弱い．
 \end{description}
 
@@ -271,10 +273,6 @@ $\displaystyle{\sum}$なしに記述すると，以下である．
 \bibliographystyle{plain}
 \bibliography{ref.bib}
 \nocite{*}
-
-\vspace{5pt}
-
-必要に応じて追加します．
 
 \printindex
 
