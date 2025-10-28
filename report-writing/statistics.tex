@@ -55,8 +55,6 @@
   \textbf{\color{blue}青文字}をクリックすると，対応したページに遷移します．
 \end{center}
 
-\clearpage
-
 \section*{留意事項}
 
 \begin{enumerate}
@@ -81,30 +79,124 @@
 \subsection{平均値Mean}
 \label{sec: mean}
 
-主に算術平均のことを指す．全データを合計し，データの数で割ることで求められる．
-平均値を $\bar{x}$，データ数を$n$，各データを$x_j$とすると，以下である
-\footnote{$\sum$の計算は，基本的に$1 \leq j \leq n\ (j \in \bm{Z})$の範囲内での\textbf{総和}を示す記号である．$\sum$の下に書いてある数字から，上に書いてある数字までを\textbf{カウントアップして足したもの}である．}．
+主に\idx{算術平均}のことを指す．全データを合計し，データの数で割ることで求められる．
+平均値を $\bar{x}$\footnote{$\mu$と置くこともある．}，データ数を$n$，各データを$x_k$とすると，以下である
+\footnote{$\sum$の計算は，基本的に$1 \leq k \leq n\ (j \in \bm{Z})$の範囲内での\textbf{総和}を示す記号である．$\sum$の下に書いてある数字から，上に書いてある数字までを\textbf{カウントアップして足したもの}である．}．
 
 \begin{subequations}
 
   \begin{equation}
-    \bar{x} = \frac{1}{n} \sum_{j=1}^n x_j
+    \bar{x} = \frac{1}{n} \sum_{k=1}^n x_k
   \end{equation}
 
 $\sum$無しに記述すると，以下である．
 
   \begin{equation}
-    \bar{x} = \frac{x_1 + x_2 + \cdots + x_j}{j}
+    \bar{x} = \frac{x_1 + x_2 + \cdots + x_k}{k}
   \end{equation}
 
 \end{subequations}
 
-\hspace{0pt}
-
 \begin{description}
   \item[メリット\cite{ave-3}] 全てのデータを考慮できる．
-  \item[デメリット] 外れ値（異常に大きい値・小さい値）に弱い．
+  \item[デメリット] 外れ値に弱い．
 \end{description}
+
+\subsection{中央値Median}
+\label{sec: median}
+
+データを\textbf{大きさの順に}並べた際の，真ん中の値を指す．例えば，データの集合$A$を以下の通りに設定する．
+
+\begin{equation}
+  A = \{x_k|1 \leq k \leq 5\}\ (x_1 < x_2 < x_3 < x_4 < x_5)
+\end{equation}
+
+このとき，集合$A$の中央値は$x_3$である．
+
+\begin{description}
+  \item[メリット\cite{ave-3}] 外れ値に強い．
+  \item[デメリット] 全てのデータを十分に考慮に入れることができない．
+\end{description}
+
+\subsection{最頻値Mode}
+\label{sec: mode}
+
+データの集合内で，同じデータが存在する場合がある．その同じデータが最も出現する値を指す．例えば，データの集合$B$を以下の通りに設定する．
+
+\begin{equation}
+  B = \{x_k|1 \leq k \leq 5\}\ (x_1 < x_2 = x_3 = x_4 < x_5)
+\end{equation}
+
+このとき，集合$B$の最頻値は$x_2$，$x_3$，$x_4$である．
+
+\begin{description}
+  \item[メリット\cite{ave-3}] 外れ値に強い．
+  \item[デメリット] 1つに決まらないことがある．また，サンプルサイズが少ないと使えない．
+\end{description}
+
+\subsection{最大値Maximum・最小値Minimum}
+\label{sec: max-min}
+
+データの集合内で，一番大きい値を最大値，小さい値を最小値という．例えば，集合$A$，式(1.2)を基にして考える．
+このとき，最大値は$x_5$，最小値は$x_1$である．
+
+\section{散布度Dispersion}
+\label{sec: dispersion}
+
+\subsection{分散Variance・標準偏差Standard deviation}
+\label{sec: variance}
+
+各データと\textbf{平均との差}の平均である．一般にデータの\textbf{バラつき}を表す．分散を$\sigma^2$\footnote{$s^2$と置くこともある．}，データ数を$n$，各データを$x_k$とすると，以下である．
+
+\begin{subequations}
+
+  \begin{equation}
+    \sigma^2 = \frac{1}{n} \sum_{k=1}^n (x_k - \bar{x})^2
+  \end{equation}
+
+$\sum$無しに記述すると，以下である．
+
+  \begin{equation}
+    \sigma^2 = \dfrac{(x_1 - \bar{x})^2 + (x_2 - \bar{x})^2 + \cdots + (x_k - \bar{x})^2}{n}
+  \end{equation}
+
+\end{subequations}
+
+標準偏差はこの2乗を外したもののことである．すなわち，分散$\sigma^2$をルート$\sqrt{\quad}$に入れたものである．そのため，標準偏差を$\sigma$\footnote{$s$と置くこともある．}とすると以下である．
+
+\begin{equation}
+  \sigma = \sqrt{\frac{1}{n} \sum_{k=1}^n (x_k - \bar{x})^2}
+\end{equation}
+
+\begin{boxnote}
+
+  \underline{余談: なぜ2乗した誤差を考えるのか？\cite{var-1}}
+
+  \hspace{5pt}
+
+  　平均との差であれば，絶対値を用いれば良いと考えられる．絶対値で計算する平均偏差と呼ばれるものを紹介する．平均偏差は以下で求められる．
+
+  \begin{equation}
+    MAE = \frac{1}{n} \sum_{k=1}^n |x_k - \bar{x}|
+  \end{equation}
+
+  　ただし，これは数学的に扱いにくい．以下に3点挙げる．
+
+  \begin{enumerate}
+    \item 絶対値は函数として微分可能でなく，少々扱いづらい．
+    \item 場合分けが必要になることがある．
+    \item $\displaystyle{\bar{x} \ne \arg \min_{\bar{x}} \sum_{k=1}^n |x_k - \bar{x}|}$である．
+  \end{enumerate}
+
+  　特に3つ目が問題であるが，話が難しくなるので解説が気になる人は参考文献の記事を読んでほしい．
+
+\end{boxnote}
+
+\subsection{範囲Range}
+\label{sec: range}
+
+単に最大値と最小値の差である．例えば，集合$A$，式(1.2)を基にして考える．
+このとき，範囲は$x_5 - x_1$である．
 
 \clearpage
 
@@ -114,7 +206,7 @@ $\sum$無しに記述すると，以下である．
 \section{スカラーScalarとベクトルVector}
 \label{sec: sca-vec}
 
-\idx{スカラー}は\textbf{1つの数}であり，\idx{ベクトル}は\textbf{2つ以上の数を束ねたもの}である．
+スカラーは\textbf{1つの数}であり，ベクトルは\textbf{2つ以上の数を束ねたもの}である．
 そしてベクトルの表現として\textbf{文字の上に矢印$\vec{x}$を描いて}ベクトルを表現する．ただ，\textbf{非常に見づらく}なりやすいという欠点がある．
 そのため，大学以降ではスカラーはそのまま，ベクトルは\textbf{太字}$\bm{x}$または\textbf{2重文字}$\mathbb{x}$（文字に余計な線を1つ入れるだけ）で表現する．
 よく，スカラーは大きさ\textbf{だけ}持つ量で，ベクトルは大きさと\textbf{向きも}持つ量と理解している人も多い．\colorbox{yellow}{それは何故か？}
@@ -199,7 +291,7 @@ $\sum$無しに記述すると，以下である．
 
 \begin{figure}[htbp]
 \centering
-\begin{minipage}[b]{0.3\columnwidth}
+\begin{minipage}[b]{0.32\columnwidth}
   \centering
   \begin{tikzpicture}
     \draw [-latex,thick] (0,0)--(1,2);
@@ -210,7 +302,7 @@ $\sum$無しに記述すると，以下である．
   \caption{$\bm{a}$と$\bm{b}$}
   \label{fig: vec-a, b}
 \end{minipage}
-\begin{minipage}[b]{0.3\columnwidth}
+\begin{minipage}[b]{0.32\columnwidth}
   \centering
   \begin{tikzpicture}
     \draw [-latex,thick] (3,0)--(4,2);
@@ -223,7 +315,7 @@ $\sum$無しに記述すると，以下である．
   \caption{三角形を作る方法}
   \label{fig: triangle}
 \end{minipage}
-\begin{minipage}[b]{0.3\columnwidth}
+\begin{minipage}[b]{0.32\columnwidth}
   \centering
   \begin{tikzpicture}
     \draw [-latex,thick] (0,0)--(1,2);
