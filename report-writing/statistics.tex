@@ -15,6 +15,7 @@
 }
 
 \makeindex
+\numberwithin{equation}{part}
 \usepackage[numbers]{natbib}
 \usetikzlibrary{arrows, angles, quotes}
 \renewcommand{\cite}[1]{\textsuperscript{\citep{#1}}}
@@ -43,7 +44,7 @@
   実験計画法を主として扱い，実務で直結する内容（Excel函数など）を備忘録として記しておく．
   ほか，線形代数や微分積分も取り扱う．
 
-  また，総和$\displaystyle{\sum}$の記号に慣れてない方が多いので，理解してほしい重要な式のみ$\displaystyle{\sum}$なしに記述する．
+  また，総和$\displaystyle{\sum}$の記号に慣れてない方が多いので，理解してほしい重要な式のみ$\displaystyle{\sum}$なしも併記する．
 \end{abstract}
 
 \tableofcontents
@@ -59,9 +60,9 @@
 \section*{留意事項}
 
 \begin{enumerate}
-  \item 色付き文字やハイライトは重要事項または強調箇所です．
-  \item 自身の好み（独断と偏見）で作成しているので，旧字体や座標を行列で記載している箇所があります．
-  \item 本資料の著作権は，\href{https://creativecommons.org/licenses/by-nc-sa/4.0}{CC BY-NC-SA 4.0}を適応します．
+  \item 色付き文字やハイライトは重要事項または強調箇所である．
+  \item 自身の好み（独断と偏見）で作成しているため，旧字体や座標を行列で記載している箇所がある．
+  \item 本資料の著作権は，\href{https://creativecommons.org/licenses/by-nc-sa/4.0}{CC BY-NC-SA 4.0}を適応する．
 \end{enumerate}
 
 \clearpage
@@ -80,17 +81,27 @@
 \subsection{平均値Mean}
 \label{sec: mean}
 
-主に算術平均のことを指す．全データを合計し，データ数で割ることで求められる．
+主に算術平均のことを指す．全データを合計し，データの数で割ることで求められる．
 平均値を $\bar{x}$，データ数を$n$，各データを$x_j$とすると，以下である
 \footnote{$\displaystyle{\sum}$の計算は，$1 \leq j \leq n\ (j \in \bm{Z})$の\textbf{総和}を示す記号である．$\displaystyle{\sum}$の下に書いてある数字から，上に書いてある数字までを\textbf{カウントアップして足したもの}である．}．
 
-\begin{equation}
-  \bar{x} = \frac{1}{n} \sum_{j=1}^n x_j
-\end{equation}
+\begin{subequations}
+
+  \begin{equation}
+    \bar{x} = \frac{1}{n} \sum_{j=1}^n x_j
+  \end{equation}
+
+$\displaystyle{\sum}$なしに記述すると，以下である．
+
+  \begin{equation}
+    \bar{x} = \frac{x_1 + x_2 + \cdots + x_j}{j}
+  \end{equation}
+
+\end{subequations}
 
 \begin{description}
-  \item[メリット] あ
-  \item[デメリット] あ
+  \item[メリット] 全てのデータを考慮できる．
+  \item[デメリット] 外れ値（異常に大きい値・小さい値）に弱い．
 \end{description}
 
 \clearpage
