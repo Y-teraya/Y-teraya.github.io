@@ -1,5 +1,6 @@
 \documentclass[a4paper,11pt]{ltjsarticle}
-\usepackage{amsmath, mathtools, mathbbol, amssymb, bm, fancyhdr, anyfontsize, subcaption, multirow, wrapfig, graphicx, hyperref, url, enumitem, ascmac, tikz, tikz-3dplot, makeidx}
+\usepackage{amsmath, mathtools, mathbbol, amssymb, bm, fancyhdr, anyfontsize, subcaption, multirow, wrapfig, graphicx, url, enumitem, ascmac, tikz, tikz-3dplot, makeidx}
+\usepackage[luatex]{hyperref}
 \usetikzlibrary{arrows, angles, quotes}
 \captionsetup{compatibility=false}
 
@@ -37,6 +38,8 @@
 
 \begin{document}
 
+\pagenumbering{alph}
+
 \maketitle
 
 \begin{abstract}
@@ -65,23 +68,25 @@
 
 \clearpage
 
+\pagenumbering{arabic}
+
 \part{統計のデータ}
 \label{part: statistics}
 
-\section{代表値Average}
+\section{\idx{代表値}\idx{Average}}
 \label{sec: average}
 
-データ全体を分布中心のデータ1つで表したものを代表値という．
-主に3つの値のことを指し，平均値Mean，中央値Median，最頻値Modeである．
+データ全体を分布中心のデータ1つで表したものを\idx{代表値}という．
+主に3つの値のことを指し，\idx{平均値}\idx{Mean}，\idx{中央値}\idx{Median}，\idx{最頻値}\idx{Mode}である．
 ただし，これらの値がデータの代表ではない可能性もあるため，
 扱うときには必ずデータの代表として機能しているのか確認する必要がある\cite{ave-1, ave-2}．
 
-\subsection{平均値Mean}
+\subsection{\idx{平均値}\idx{Mean}}
 \label{sec: mean}
 
 主に\idx{算術平均}のことを指す．全データを合計し，データの数で割ることで求められる．
-平均値を $\bar{x}$\footnote{$\mu$と置くこともある．}，データ数を$n$，各データを$x_k$とすると，以下である
-\footnote{$\sum$の計算は，基本的に$1 \leq k \leq n\ (j \in \bm{Z})$の範囲内での\textbf{総和}を示す記号である．$\sum$の下に書いてある数字から，上に書いてある数字までを\textbf{カウントアップして足したもの}である．}．
+\idx{平均値}を $\bar{x}$\footnote{$\mu$と置くこともある．}，データ数を$n$，各データを$x_k$とすると，以下である
+\footnote{$\sum$の計算は，基本的に$1 \leq k \leq n\ (k \in \bm{Z})$の範囲内での\textbf{総和}を示す記号である．$\sum$の下に書いてある数字から，上に書いてある数字までを\textbf{カウントアップして足したもの}である．}．
 
 \begin{subequations}
 
@@ -99,10 +104,10 @@ $\sum$無しに記述すると，以下である．
 
 \begin{description}
   \item[メリット\cite{ave-3}] 全てのデータを考慮できる．
-  \item[デメリット] 外れ値に弱い．
+  \item[デメリット] \idx{外れ値}に弱い．
 \end{description}
 
-\subsection{中央値Median}
+\subsection{\idx{中央値}\idx{Median}}
 \label{sec: median}
 
 データを\textbf{大きさの順に}並べた際の，真ん中の値を指す．例えば，データの集合$A$を以下の通りに設定する．
@@ -111,14 +116,14 @@ $\sum$無しに記述すると，以下である．
   A = \{x_k|1 \leq k \leq 5\}\ (x_1 < x_2 < x_3 < x_4 < x_5)
 \end{equation}
 
-このとき，集合$A$の中央値は$x_3$である．
+このとき，集合$A$の\idx{中央値}は$x_3$である．
 
 \begin{description}
-  \item[メリット\cite{ave-3}] 外れ値に強い．
+  \item[メリット\cite{ave-3}] \idx{外れ値}に強い．
   \item[デメリット] 全てのデータを十分に考慮に入れることができない．
 \end{description}
 
-\subsection{最頻値Mode}
+\subsection{\idx{最頻値}\idx{Mode}}
 \label{sec: mode}
 
 データの集合内で，同じデータが存在する場合がある．その同じデータが最も出現する値を指す．例えば，データの集合$B$を以下の通りに設定する．
@@ -127,26 +132,26 @@ $\sum$無しに記述すると，以下である．
   B = \{x_k|1 \leq k \leq 5\}\ (x_1 < x_2 = x_3 = x_4 < x_5)
 \end{equation}
 
-このとき，集合$B$の最頻値は$x_2$，$x_3$，$x_4$である．
+このとき，集合$B$の\idx{最頻値}は$x_2$，$x_3$，$x_4$である．
 
 \begin{description}
-  \item[メリット\cite{ave-3}] 外れ値に強い．
+  \item[メリット\cite{ave-3}] \idx{外れ値}に強い．
   \item[デメリット] 1つに決まらないことがある．また，サンプルサイズが少ないと使えない．
 \end{description}
 
-\subsection{最大値Maximum・最小値Minimum}
+\subsection{\idx{最大値}\idx{Maximum}・\idx{最小値}\idx{Minimum}}
 \label{sec: max-min}
 
-データの集合内で，一番大きい値を最大値，小さい値を最小値という．例えば，集合$A$，式(1.2)を基にして考える．
-このとき，最大値は$x_5$，最小値は$x_1$である．
+データの集合内で，一番大きい値を\idx{最大値}，小さい値を\idx{最小値}という．例えば，集合$A$，式(1.2)を基にして考える．
+このとき，\idx{最大値}は$x_5$，\idx{最小値}は$x_1$である．
 
-\section{散布度Dispersion}
+\section{\idx{散布度}\idx{Dispersion}}
 \label{sec: dispersion}
 
-\subsection{分散Variance・標準偏差Standard deviation}
+\subsection{\idx{分散}\idx{Variance}・\idx{標準偏差}\idx{Standard deviation}}
 \label{sec: variance}
 
-各データと\textbf{平均との差}の平均である．一般にデータの\textbf{バラつき}を表す．分散を$\sigma^2$\footnote{$s^2$と置くこともある．}，データ数を$n$，各データを$x_k$とすると，以下である．
+各データと\textbf{平均との差}の平均である．一般にデータの\textbf{バラつき}を表す．\idx{分散}を$\sigma^2$\footnote{$s^2$と置くこともある．}，データ数を$n$，各データを$x_k$とすると，以下である．
 
 \begin{subequations}
 
@@ -162,7 +167,7 @@ $\sum$無しに記述すると，以下である．
 
 \end{subequations}
 
-標準偏差はこの2乗を外したもののことである．すなわち，分散$\sigma^2$をルート$\sqrt{\quad}$に入れたものである．そのため，標準偏差を$\sigma$\footnote{$s$と置くこともある．}とすると以下である．
+\idx{標準偏差}はこの2乗を外したもののことである．すなわち，\idx{分散}$\sigma^2$をルート$\sqrt{\quad}$に入れたものである．そのため，\idx{標準偏差}を$\sigma$\footnote{$s$と置くこともある．}とすると以下である．
 
 \begin{equation}
   \sigma = \sqrt{\frac{1}{n} \sum_{k=1}^n (x_k - \bar{x})^2}
@@ -170,7 +175,7 @@ $\sum$無しに記述すると，以下である．
 
 \begin{boxnote}
 
-  \underline{余談: なぜ2乗した誤差を考えるのか？\cite{var-1}}
+  \underline{\textbf{余談}: なぜ2乗した誤差を考えるのか？\cite{var-1}}
 
   \hspace{5pt}
 
@@ -188,15 +193,15 @@ $\sum$無しに記述すると，以下である．
     \item $\displaystyle{\bar{x} \ne \arg \min_{\bar{x}} \sum_{k=1}^n |x_k - \bar{x}|}$である．
   \end{enumerate}
 
-  　特に3つ目が問題であるが，話が難しくなるので解説が気になる人は参考文献の記事を読んでほしい．
+  　特に3つ目が問題であるが，話が難しくなるので詳しくは参考文献の記事を読んで欲しい．
 
 \end{boxnote}
 
-\subsection{範囲Range}
+\subsection{\idx{範囲}\idx{Range}}
 \label{sec: range}
 
-単に最大値と最小値の差である．例えば，集合$A$，式(1.2)を基にして考える．
-このとき，範囲は$x_5 - x_1$である．
+単に\idx{最大値}と\idx{最小値}の差である．例えば，集合$A$，式(1.2)を基にして考える．
+このとき，\idx{範囲}は$x_5 - x_1$である．
 
 \clearpage
 
@@ -358,10 +363,7 @@ $\sum$無しに記述すると，以下である．
 
 \clearpage
 
-\pagestyle{fancy}
 \lhead{}
-\rhead{\textbf{\thepage}}
-
 \bibliographystyle{plain}
 \bibliography{ref.bib}
 \nocite{*}
