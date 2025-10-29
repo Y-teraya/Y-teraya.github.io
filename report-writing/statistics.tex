@@ -70,6 +70,11 @@
 
 \pagenumbering{arabic}
 
+\part{初歩的な計算}
+\label{part: calculate}
+
+\clearpage
+
 \part{統計のデータ}
 \label{part: statistics}
 
@@ -88,24 +93,49 @@
 \idx{平均値}を $\bar{x}$\footnote{$\mu$と置くこともある．}，データ数を$n$，各データを$x_k$とすると，以下である
 \footnote{$\sum$の計算は，基本的に$1 \leq k \leq n\ (k \in \bm{Z})$の範囲内での\textbf{総和}を示す記号である．$\sum$の下に書いてある数字から，上に書いてある数字までを\textbf{カウントアップして足したもの}である．}．
 
-\begin{subequations}
-
-  \begin{equation}
-    \bar{x} = \frac{1}{n} \sum_{k=1}^n x_k
-  \end{equation}
-
-$\sum$無しに記述すると，以下である．
-
-  \begin{equation}
-    \bar{x} = \frac{x_1 + x_2 + \cdots + x_k}{k}
-  \end{equation}
-
-\end{subequations}
+\begin{equation}
+  \bar{x} = \frac{1}{n} \sum_{k=1}^n x_k = \frac{x_1 + x_2 + \cdots + x_n}{k}
+\end{equation}
 
 \begin{description}
   \item[メリット\cite{ave-3}] 全てのデータを考慮できる．
   \item[デメリット] \idx{外れ値}に弱い．
+  \item[エクセル] =AVERAGE(Cell\textsubscript{1}:\ Cell\textsubscript{2})
 \end{description}
+
+\begin{boxnote}
+
+  \underline{\textbf{余談}: 平均にもいろんな種類がある！}
+
+  \hspace{5pt}
+
+  　上記では，算術平均（相加平均）を取り扱った．一般に平均と言われればこの算術平均だと思えばよい．
+  ただ，他にも場合によっては使える平均があるので紹介する．
+
+  \subsubsection{幾何平均（相乗平均）}
+
+  　算術平均は足し算においての平均であったが，これは掛け算においての平均である．
+  \idx{平均値}を $G$，データ数を$n$，各データを$x_k$とすると，以下である
+  \footnote{$\prod$の計算は$\sum$の足し算を\textbf{掛け算に変えた}ものである，基本的に$1 \leq k \leq n\ (k \in \bm{Z})$の範囲内での\textbf{総積}を示す記号である．$\prod$の下に書いてある数字から，上に書いてある数字までを\textbf{カウントアップして掛けたもの}である．}．
+
+  \begin{equation}
+    G = \left(\prod_{k=1}^n x_k\right)^{\tfrac{1}{n}} = \sqrt[n]{x_1 \times x_2 \times \cdots \times x_n}
+  \end{equation}
+
+  　主に比率や成長率，増加率など\textbf{比率や割合で変化する数の平均}を算出したいときに用いる．
+
+  \subsubsection{調和平均}
+
+  　調和平均は，一度逆数にしたデータの算術平均のことである．
+  \idx{平均値}を $H$，データ数を$n$，各データを$x_k$とすると，以下である．
+
+  \begin{equation}
+    H^{-1} = \frac{1}{n} \left(\sum_{k=1}^n \frac{1}{x_k}\right) = \frac{\frac{1}{x_1} + \frac{1}{x_2} + \cdots + \frac{1}{x_n}}{n}
+  \end{equation}
+
+  　主に平均速度や並列接続時の抵抗，直列接続時のコンデンサなど\textbf{比率で表示される数の平均}を算出したいときに用いる．
+
+\end{boxnote}
 
 \subsection{\idx{中央値}\idx{Median}}
 \label{sec: median}
@@ -121,6 +151,7 @@ $\sum$無しに記述すると，以下である．
 \begin{description}
   \item[メリット\cite{ave-3}] \idx{外れ値}に強い．
   \item[デメリット] 全てのデータを十分に考慮に入れることができない．
+  \item[エクセル] =MEDIAN(Cell\textsubscript{1}:\ Cell\textsubscript{2})
 \end{description}
 
 \subsection{\idx{最頻値}\idx{Mode}}
@@ -129,14 +160,15 @@ $\sum$無しに記述すると，以下である．
 データの集合内で，同じデータが存在する場合がある．その同じデータが最も出現する値を指す．例えば，データの集合$B$を以下の通りに設定する．
 
 \begin{equation}
-  B = \{x_k|1 \leq k \leq 5\}\ (x_1 < x_2 = x_3 = x_4 < x_5)
+  B = \{x_k|1 \leq k \leq 5\}\ (x_1 < x_2 = x_3 < x_4 < x_5)
 \end{equation}
 
-このとき，集合$B$の\idx{最頻値}は$x_2$，$x_3$，$x_4$である．
+このとき，集合$B$の\idx{最頻値}は$x_2$，$x_3$である．
 
 \begin{description}
   \item[メリット\cite{ave-3}] \idx{外れ値}に強い．
   \item[デメリット] 1つに決まらないことがある．また，サンプルサイズが少ないと使えない．
+  \item[エクセル] =MODE.SNGL(Cell\textsubscript{1}:\ Cell\textsubscript{2})
 \end{description}
 
 \subsection{\idx{最大値}\idx{Maximum}・\idx{最小値}\idx{Minimum}}
@@ -144,6 +176,11 @@ $\sum$無しに記述すると，以下である．
 
 データの集合内で，一番大きい値を\idx{最大値}，小さい値を\idx{最小値}という．例えば，集合$A$，式(1.2)を基にして考える．
 このとき，\idx{最大値}は$x_5$，\idx{最小値}は$x_1$である．
+
+\begin{description}
+  \item[エクセル（最大値）] =MAX(Cell\textsubscript{1}:\ Cell\textsubscript{2})
+  \item[エクセル（最小値）] =MIN(Cell\textsubscript{1}:\ Cell\textsubscript{2})
+\end{description}
 
 \section{\idx{散布度}\idx{Dispersion}}
 \label{sec: dispersion}
@@ -153,19 +190,9 @@ $\sum$無しに記述すると，以下である．
 
 各データと\textbf{平均との差}の平均である．一般にデータの\textbf{バラつき}を表す．\idx{分散}を$\sigma^2$\footnote{$s^2$と置くこともある．}，データ数を$n$，各データを$x_k$とすると，以下である．
 
-\begin{subequations}
-
-  \begin{equation}
-    \sigma^2 = \frac{1}{n} \sum_{k=1}^n (x_k - \bar{x})^2
-  \end{equation}
-
-$\sum$無しに記述すると，以下である．
-
-  \begin{equation}
-    \sigma^2 = \dfrac{(x_1 - \bar{x})^2 + (x_2 - \bar{x})^2 + \cdots + (x_k - \bar{x})^2}{n}
-  \end{equation}
-
-\end{subequations}
+\begin{equation}
+  \sigma^2 = \frac{1}{n} \sum_{k=1}^n (x_k - \bar{x})^2= \dfrac{(x_1 - \bar{x})^2 + (x_2 - \bar{x})^2 + \cdots + (x_n - \bar{x})^2}{n}
+\end{equation}
 
 \idx{標準偏差}はこの2乗を外したもののことである．すなわち，\idx{分散}$\sigma^2$をルート$\sqrt{\quad}$に入れたものである．そのため，\idx{標準偏差}を$\sigma$\footnote{$s$と置くこともある．}とすると以下である．
 
@@ -188,7 +215,7 @@ $\sum$無しに記述すると，以下である．
   　ただし，これは数学的に扱いにくい．以下に3点挙げる．
 
   \begin{enumerate}
-    \item 絶対値は函数として微分可能でなく，少々扱いづらい．
+    \item 絶対値は函数として微分可能でなく扱いづらい．
     \item 場合分けが必要になることがある．
     \item $\displaystyle{\bar{x} \ne \arg \min_{\bar{x}} \sum_{k=1}^n |x_k - \bar{x}|}$である．
   \end{enumerate}
