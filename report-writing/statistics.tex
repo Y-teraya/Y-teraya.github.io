@@ -1,10 +1,7 @@
 \documentclass[a4paper,11pt]{ltjsarticle}
-\usepackage{amsmath, mathtools, mathbbol, amssymb, bm, fancyhdr, anyfontsize, subcaption, multirow, wrapfig, graphicx, url, enumitem, ascmac, tikz, tikz-3dplot, makeidx, footmisc}
+\usepackage{amsmath, mathtools, mathbbol, amssymb, bm, cancel, fancyhdr, anyfontsize, subcaption, multirow, wrapfig, graphicx, url, enumitem, ascmac, tikz, tikz-3dplot, makeidx, footmisc}
 \usepackage[luatex]{hyperref}
-\usepackage{tcolorbox, ascolorbox}
-
-\usetikzlibrary{arrows, angles, quotes}
-\captionsetup{compatibility=false}
+\usepackage{ascolorbox}
 
 \hypersetup{
  pdfencoding=auto,
@@ -19,15 +16,11 @@
 
 \makeindex
 \numberwithin{equation}{section}
+\captionsetup{compatibility=false}
 \usepackage[numbers]{natbib}
-\usetikzlibrary{arrows, angles, quotes}
+\usetikzlibrary{arrows, angles, quotes, cd}
 \renewcommand{\cite}[1]{\textsuperscript{\citep{#1}}}
 \newcommand{\idx}[1]{#1\index{#1}}
-
-\newcommand{\dlim}[2]{\displaystyle{\lim_{#1 \to #2}\:}}
-\newcommand{\dint}[2]{\displaystyle{\int_{#1}^{#2}}}
-\def\tick#1#2{\draw[thick] (#1)++(#2:0.12) --++ (#2-180:0.24)}
-\def\N{100} % number of samples
 
 \pagestyle{fancy}
 \rhead{\textbf{\thepage}}
@@ -81,32 +74,193 @@
 \subsection{累乗Repeat multiplication}
 \label{sec: repeat}
 
-ある数$a$を$n$回掛けたものを$a$の$n$乗といい$a^n$と書く．$a$を\textbf{底}，$n$を\textbf{指数}という．
+任意の\footnote{「すべての」，「どんな」，「どれを選んでも」と同じ意味である．}$a$を$n$回掛けたものを$a$の$n$乗といい$a^n$と書く．$a$を\textbf{底}，$n$を\textbf{指数}という．
 特に，指数が正の整数($n > 0$\footnote{\label{note: notation-ref}第Ⅱ部\ \textbf{\hyperref[part: notations]{数学の記法と用語}}で取り扱う．})のとき\textbf{累乗}といい，それ以外の場合は，\textbf{べき乗}Exponentという．
 
 指数法則Exponential lawsは，定義より自明ではあるものの法則\footnote{一般には，経験則から導かれた証明できない事象のことである．今回の場合は，累乗の定義から自明であり説明するまでもないだろう．}
-として紹介されていることが多いので，法則として扱う．底を$a\ (a \in \bm{Z}\footref{note: notation-ref})$，指数を$m, n\ (m, n \in \bm{R}\footref{note: notation-ref})$としたとき，以下の2法則が成立する．
+として紹介されていることが多いので，法則として扱う．底を$a$，指数を$m, n$としたとき，次の2法則が成立する．
 
 \begin{equation}
   a^m \times a^n = \underbrace{a \times a \times a \times \cdots \times a}_{\bm{m}\textbf{個}} \cdot \underbrace{a \times a \times \cdots \times a}_{\bm{n}\textbf{個}} = a^{m+n}
 \end{equation}
 
-これは単純．$a$を$m$回掛けたものと$a$を$n$回掛けたものを全て掛けたら，$a$を$m+n$回掛けたものと同じになる．
+これは単純．$a$を$m$回掛けたものと$a$を$n$回掛けたものを全て乗算したら，$a$を$m+n$回掛けたものと同じになる．
 
 \begin{equation}
   \big(a^m\big)^n = \underbrace{a^m \times a^m \times \cdots \times a^m}_{\bm{n}\textbf{個}} = a^{m \times n}
 \end{equation}
 
-少し捉えにくいかもしれない．$a$を$m$回掛けたものを\textbf{$\bm{n}$回掛けたら}，それは$a$を$m \times n$回掛けたものと同じになる．ただ，それだけの話．
+少し捉えにくいかもしれない．$a$を$m$回掛けたものを\textbf{$\bm{n}$回掛けたら}，それは$a$を$m \times n$回乗算したものと同じになる．ただ，それだけの話．
 
 式(1.1)，式(1.2)は特に暗記しなくても，\textbf{累乗がどういうものだったか？}を考えれば簡単に分かる．
 
 \subsection{0乗とマイナス乗}
 
+式(1.1)が正しいと仮定すると，0乗とマイナス乗を定義できる．まず，式(1.1)を$n=0$とすると次である．
+
+\begin{subequations}
+
+\begin{equation}
+  a^m \times a^0 = a^{m+0} = a^m
+\end{equation}
+
+$a^m$に$a^0$を乗算しても\textbf{変化しない}．その数は，{\color{cyan}\textbf{1}}なので次と定義される．
+
+\begin{equation}
+  a^0 = 1
+\end{equation}
+
+\end{subequations}
+
+式(1.4)が正しいと仮定し，式(1.1)を$n=-m$とすると次である．
+
+\begin{subequations}
+
+\begin{equation}
+  a^m \times a^{-m} = a^{m-m} = a^0 = 1
+\end{equation}
+
+$a^m$に$a^0$を乗算すると\textbf{1になる}．その数は，{\color{cyan}\textbf{逆数}}
+\footnote{任意の数に\textbf{乗算すると1になる数}のこと．}なので次と定義される．
+
+\begin{equation}
+  a^{-m} = \frac{1}{a^m}
+\end{equation}
+
+\end{subequations}
+
+\subsection{累乗根Power root}
+\label{sec: power}
+
+$n$乗すると任意の数$a$になる数のことを累乗根といい$\sqrt[n]{a}$と書く．$n$乗を強調して，\textbf{$\bm{n}$乗根}ともいう．
+また，$n=2$のとき，\textbf{平方根}といい$\sqrt{a}$と書き，ルートの左肩の2は省略できる．
+ただし，ルートで表記するのは見ずらくなるので指数で表現したい．指数方程式を解くことで累乗根を指数で定義できる．
+$a$を\textbf{底}，$n$を\textbf{指数}と次である．
+
+\begin{subequations}
+
+\begin{equation}
+  \sqrt[n]{a} = a^x
+\end{equation}
+
+辺々\footnote{両辺と同じ意味．左辺（左側の式）と右辺（右側の式）の両方の式という意味である．}$n$乗すると，次である．
+
+\begin{equation}
+  \big(\sqrt[n]{a}\big)^n = \big(a^x\big)^n
+\end{equation}
+
+左辺はルートが外れ，指数で表現される．また，分かりやすいように1乗として書くと次である．
+
+\begin{equation}
+  a^1 = a^{nx}
+\end{equation}
+
+底が同じ方程式\footnote{等号で結ばれた式のこと．}は，指数も同じである\footnote{これが指数方程式の基本的な考え方である．}．
+指数だけ取り出して等式にすると，次である．
+
+\begin{equation}
+  1 = nx
+\end{equation}
+
+よって，
+
+\begin{equation}
+  x = \frac{1}{n}
+\end{equation}
+
+である．そのため，$n$乗根を指数で表すと次で定義される．
+
+\begin{equation}
+  \sqrt[n]{a} = a^{\tfrac{1}{n}}
+\end{equation}
+
+\end{subequations}
+
 \clearpage
 
 \part{数学の記法と用語}
 \label{part: notations}
+
+\section{国際単位系International System of units}
+\label{sec: si}
+
+物理学Physicsに関わらず\textbf{科学Science}の世界では，この単位系を用いて\textbf{数値と単位の組}を\text{物理量}という．
+7つの\textbf{基本単位系}を組み合わせ\textbf{組立単位}にすることで，さまざまな単位を作ることができる．
+組立単位を知ることによって，求めたい単位に変える\textbf{単位換算}を行うことができるようになる．
+
+\subsection{基本単位系Basic units}
+\label{sec: basic units}
+
+基本単位は次の7つである．
+
+\begin{table}[hbtp]
+  \caption{基本単位系}
+  \label{tab: basic units}
+  \centering
+  \begin{tabular}{ccc}
+    \hline
+    データの種類 & 英語 & 単位 \\
+    \hline
+    時間 & $t$ime & [s] \\
+    距離 & $r$oute & [m] \\
+    電流 & $I$ntensity of current & [A] \\
+    質量 & $m$ass & [g] \\
+    絶対温度 & $T$emperture & [K] \\
+    物質量 & $n$umber & [mol] \\
+    光度 & Luminous $I$ntensity & [cd] \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\begin{ascolorbox4}[基本単位系の定義]{余談}
+\label{col: basic def}
+
+  \hspace{5pt}
+
+  　基本単位系には，\textbf{一義性}\footnote{ただ1つに定まること．}を持った基準が必要であり世界共通のものである．
+  その\textbf{厳密な定義}を紹介する．
+
+  \subsubsection{時間の定義}
+
+\end{ascolorbox4}
+
+\subsection{接頭辞Prefix}
+\label{sec: prefix}
+
+接頭辞とは，基本単位系よりも\textbf{大きい・小さいことを表す指標}のことである．
+Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われる$\times 10^{12}$までを紹介する．
+
+\begin{table}[htbp]
+  \caption{Si接頭辞}
+  \label{tab: prefix}
+  \centering
+  \begin{tabular}{cccccc}
+    \hline
+    ($+$)接頭辞 & 英語 & 指数乗 & ($-$)接頭辞 & 英語 & 指数乗 \\
+    \hline
+    T & $T$era & $\times 10^{12}$ & p & $p$ico & $\times 10^{-12}$ \\
+    G & $G$iga & $\times 10^{9}$ & n & $n$ano & $\times 10^{-9}$ \\
+    M & $M$ega & $\times 10^{6}$ & $\mu$ & $m$icro & $\times 10^{-6}$ \\
+    k & $k$ilo & $\times 10^{3}$ & m & milli & $\times 10^{-3}$ \\
+    h & $h$ecto & $\times 10^{2}$ & c & $c$enti & $\times 10^{-2}$ \\
+    da & $d$ec$a$ & $\times 10^{1}$ & d & $d$eci & $\times 10^{-1}$ \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\subsection{単位換算Unit conversion}
+\label{sec: convertion}
+
+単位は，\textbf{定義に基づいて}組み立てることで新しい単位ができる．
+基本的には，\textbf{同じ意味を持つもの同士を分母と分子に置き}，{\color{cyan}\textbf{約分する}}ことで求めたい単位へと変える．
+次式は，「\textbf{1日は何秒か？}」を求めたものである．恐らく，一度は計算したことがあるだろう．
+
+\begin{equation}
+  1\ [\mathrm{day}] = 1\ \cancel{[\mathrm{day}]} \times \frac{24\ \cancel{[\mathrm{hr}]}}{1\ \cancel{[\mathrm{day}]}} \times \frac{60\ \cancel{[\mathrm{min}]}}{1\ \cancel{[\mathrm{hr}]}} \times \frac{60\ [\mathrm{sec}]}{1\ \cancel{[\mathrm{min}]}} = 86,400\ [\mathrm{sec}]
+\end{equation}
+
+単位換算を行う上で押さえるポイントは，最初の単位と\textbf{求めたい単位に注目し}
+定義として\textbf{どの物理量同士が等しいか}考え約分する必要がある．
 
 \clearpage
 
@@ -125,20 +279,25 @@
 \label{sec: mean}
 
 主に\idx{算術平均}のことを指す．全データを合計し，データの数で割ることで求められる．
-\idx{平均値}を $\bar{x}$\footnote{$\mu$と置くこともある．}，データ数を$n$，各データを$x_k$とすると，以下である
+\idx{平均値}を $\bar{x}$\footnote{$\mu$と置くこともある．}，データ数を$n$，各データを$x_k$とすると，次である
 \footnote{$\sum$の計算は，基本的に$1 \leq k \leq n\ (k \in \bm{Z})$の範囲内での\textbf{総和}を示す記号である．$\sum$の下に書いてある数字から，上に書いてある数字までを\textbf{カウントアップして足したもの}である．}．
 
 \begin{equation}
   \bar{x} = \frac{1}{n} \sum_{k=1}^n x_k = \frac{x_1 + x_2 + \cdots + x_n}{k}
 \end{equation}
 
-\begin{description}
-  \item[メリット\cite{ave-3}] 全てのデータを考慮できる．
-  \item[デメリット] \idx{外れ値}に弱い．
-  \item[エクセル] =AVERAGE(Cell\textsubscript{1}:\ Cell\textsubscript{2})
-\end{description}
+\begin{ascolorbox10}{その他概要}
 
-\begin{ascolorbox4}{余談: 平均にもいろんな種類がある！\cite{ave-4}}
+  \begin{description}
+    \item[メリット\cite{ave-3}] 全てのデータを考慮できる．
+    \item[デメリット] \idx{外れ値}に弱い．
+    \item[エクセル] =AVERAGE(Cell\textsubscript{1}:\ Cell\textsubscript{2})
+  \end{description}
+
+\end{ascolorbox10}
+
+\begin{ascolorbox4}[平均にもいろんな種類がある！\cite{ave-4}]{余談}
+\label{col: average}
 
   \hspace{5pt}
 
@@ -148,7 +307,7 @@
   \subsubsection{幾何平均（相乗平均）}
 
   　算術平均は足し算においての平均であったが，これは掛け算においての平均である．
-  \idx{平均値}を $G$，データ数を$n$，各データを$x_k$とすると，以下である
+  \idx{平均値}を $G$，データ数を$n$，各データを$x_k$とすると，次である
   \footnote{$\prod$の計算は$\sum$の足し算を\textbf{掛け算に変えた}ものである，基本的に$1 \leq k \leq n\ (k \in \bm{Z})$の範囲内での\textbf{総積}を示す記号である．$\prod$の下に書いてある数字から，上に書いてある数字までを\textbf{カウントアップして掛けたもの}である．}．
 
   \begin{equation}
@@ -160,7 +319,7 @@
   \subsubsection{調和平均}
 
   　調和平均は，一度逆数にしたデータの算術平均のことである．
-  \idx{平均値}を $H$，データ数を$n$，各データを$x_k$とすると，以下である．
+  \idx{平均値}を $H$，データ数を$n$，各データを$x_k$とすると，次である．
 
   \begin{equation}
     H^{-1} = \frac{1}{n} \left(\sum_{k=1}^n \frac{1}{x_k}\right) = \frac{\frac{1}{x_1} + \frac{1}{x_2} + \cdots + \frac{1}{x_n}}{n}
@@ -173,24 +332,28 @@
 \subsection{\idx{中央値}\idx{Median}}
 \label{sec: median}
 
-データを\textbf{大きさの順に}並べた際の，真ん中の値を指す．例えば，データの集合$A$を以下の通りに設定する．
+データを\textbf{大きさの順に}並べた際の，真ん中の値を指す．例えば，データの集合$A$を次と設定する．
 
 \begin{equation}
   A = \{x_k|1 \leq k \leq 5\}
 \end{equation}
 
-数列$x_k$が降べきの順に並んでいるとすると，集合$A$の\idx{中央値}は$x_3$である．
+数列$x_k$が昇べきの順に並んでいるとすると，集合$A$の\idx{中央値}は$x_3$である．
 
-\begin{description}
-  \item[メリット\cite{ave-3}] \idx{外れ値}に強い．
-  \item[デメリット] 全てのデータを十分に考慮に入れることができない．
-  \item[エクセル] =MEDIAN(Cell\textsubscript{1}:\ Cell\textsubscript{2})
-\end{description}
+\begin{ascolorbox10}{その他概要}
+
+  \begin{description}
+    \item[メリット\cite{ave-3}] \idx{外れ値}に強い．
+    \item[デメリット] 全てのデータを十分に考慮に入れることができない．
+    \item[エクセル] =MEDIAN(Cell\textsubscript{1}:\ Cell\textsubscript{2})
+  \end{description}
+
+\end{ascolorbox10}
 
 \subsection{\idx{最頻値}\idx{Mode}}
 \label{sec: mode}
 
-データの集合内で，同じデータが存在する場合がある．その同じデータが最も出現する値を指す．例えば，集合$A$，式(1.2)に以下の条件を設定する．
+データの集合内で，同じデータが存在する場合がある．その同じデータが最も出現する値を指す．例えば，集合$A$，式(1.2)に次と設定する．
 
 \begin{equation}
   x_2 = x_3
@@ -198,11 +361,15 @@
 
 このとき，集合$A$の\idx{最頻値}は$x_2$，$x_3$である．
 
-\begin{description}
-  \item[メリット\cite{ave-3}] \idx{外れ値}に強い．
-  \item[デメリット] 1つに決まらないことがある．また，サンプルサイズが少ないと使えない．
-  \item[エクセル] =MODE.SNGL(Cell\textsubscript{1}:\ Cell\textsubscript{2})
-\end{description}
+\begin{ascolorbox10}{その他概要}
+
+  \begin{description}
+    \item[メリット\cite{ave-3}] \idx{外れ値}に強い．
+    \item[デメリット] 1つに決まらないことがある．また，サンプルサイズが少ないと使えない．
+    \item[エクセル] =MODE.SNGL(Cell\textsubscript{1}:\ Cell\textsubscript{2})
+  \end{description}
+
+\end{ascolorbox10}
 
 \subsection{\idx{最大値}\idx{Maximum}・\idx{最小値}\idx{Minimum}}
 \label{sec: max-min}
@@ -210,10 +377,14 @@
 データの集合内で，一番大きい値を\idx{最大値}，小さい値を\idx{最小値}という．例えば，集合$A$，式(1.2)を基にして考える．
 このとき，\idx{最大値}は$x_5$，\idx{最小値}は$x_1$である．
 
-\begin{description}
-  \item[エクセル（最大値）] =MAX(Cell\textsubscript{1}:\ Cell\textsubscript{2})
-  \item[エクセル（最小値）] =MIN(Cell\textsubscript{1}:\ Cell\textsubscript{2})
-\end{description}
+\begin{ascolorbox10}{その他概要}
+
+  \begin{description}
+    \item[エクセル（最大値）] =MAX(Cell\textsubscript{1}:\ Cell\textsubscript{2})
+    \item[エクセル（最小値）] =MIN(Cell\textsubscript{1}:\ Cell\textsubscript{2})
+  \end{description}
+
+\end{ascolorbox10}
 
 \section{\idx{散布度}\idx{Dispersion}}
 \label{sec: dispersion}
@@ -221,29 +392,30 @@
 \subsection{\idx{分散}\idx{Variance}・\idx{標準偏差}\idx{Standard deviation}}
 \label{sec: variance}
 
-各データと\textbf{平均との差}の平均である．一般にデータの\textbf{バラつき}を表す．\idx{分散}を$s^2$\footnote{$\sigma^2$と置くこともある．}，データ数を$n$，各データを$x_k$とすると，以下である．
+各データと\textbf{平均との差}の平均である．一般にデータの\textbf{バラつき}を表す．\idx{分散}を$s^2$\footnote{$\sigma^2$と置くこともある．}，データ数を$n$，各データを$x_k$とすると，次である．
 
 \begin{equation}
   s^2 = \frac{1}{n} \sum_{k=1}^n (x_k - \bar{x})^2= \dfrac{(x_1 - \bar{x})^2 + (x_2 - \bar{x})^2 + \cdots + (x_n - \bar{x})^2}{n}
 \end{equation}
 
-\idx{標準偏差}はこの2乗を外したもののことである．すなわち，\idx{分散}$s^2$をルート$\sqrt{\quad}$に入れたものである．そのため，\idx{標準偏差}を$s$\footnote{$\sigma$と置くこともある．}とすると以下である．
+\idx{標準偏差}はこの2乗を外したもののことである．すなわち，\idx{分散}$s^2$をルート$\sqrt{\quad}$に入れたものである．そのため，\idx{標準偏差}を$s$\footnote{$\sigma$と置くこともある．}とすると次である．
 
 \begin{equation}
   s = \sqrt{\frac{1}{n} \sum_{k=1}^n (x_k - \bar{x})^2}
 \end{equation}
 
-\begin{ascolorbox4}{余談: なぜ2乗した誤差を考えるのか？\cite{var-1}}
+\begin{ascolorbox4}[なぜ2乗した誤差を考えるのか？\cite{var-1}]{余談}
+\label{col: error}
 
   \hspace{5pt}
 
-  　平均との差であれば，絶対値を用いれば良いと考えられる．絶対値で計算する平均偏差と呼ばれるものを紹介する．平均偏差は以下で求められる．
+  　平均との差であれば，絶対値を用いれば良いと考えられる．絶対値で計算する平均偏差と呼ばれるものを紹介する．平均偏差は次で求められる．
 
   \begin{equation}
     MAE = \frac{1}{n} \sum_{k=1}^n |x_k - \bar{x}|
   \end{equation}
 
-  　ただし，これは数学的に扱いにくい．以下に3点挙げる．
+  　ただし，これは数学的に扱いにくい．次に3点挙げる．
 
   \begin{enumerate}
     \item 絶対値は函数として微分可能でなく扱いづらい．
@@ -251,7 +423,7 @@
     \item $\displaystyle{\bar{x} \ne \arg \min_{\bar{x}} \sum_{k=1}^n |x_k - \bar{x}|}$である．
   \end{enumerate}
 
-  　特に3つ目が問題であるが，話が難しくなるので詳しくは参考文献の記事を読んで欲しい．
+  　特に3つ目が問題であるが，説明は参考文献の記事に譲る．
 
 \end{ascolorbox4}
 
@@ -270,9 +442,9 @@
 \label{sec: sca-vec}
 
 スカラーは\textbf{1つの数}であり，ベクトルは\textbf{2つ以上の数を束ねたもの}である．
-そしてベクトルの表現として\textbf{文字の上に矢印$\vec{x}$を描いて}ベクトルを表現する．ただ，\textbf{非常に見づらく}なりやすいという欠点がある．
-そのため，大学以降ではスカラーはそのまま，ベクトルは\textbf{太字}$\bm{x}$または\textbf{2重文字}$\mathbb{x}$（文字に余計な線を1つ入れるだけ）で表現する．
-よく，スカラーは大きさ\textbf{だけ}持つ量で，ベクトルは大きさと\textbf{向きも}持つ量と理解している人も多い．\colorbox{yellow}{それは何故か？}
+スカラーはそのまま，ベクトルは\textbf{太字}$\bm{x}$または\textbf{2重文字}$\mathbb{x}$（文字に余計な線を1つ入れるだけ）で表現する
+\footnote{高校までは文字の上に矢印$\vec{x}$を描いてベクトルを表現した．ただし，\textbf{見づらく}なりやすいという欠点があるため，大学以降ではあまり使われない．}．
+よく，スカラーは大きさ\textbf{だけ}持つ量で，ベクトルは大きさと\textbf{向きも}持つ量と理解している人も多い．{\color{cyan}\textbf{それは何故か？}}
 
 \begin{figure}[htbp]
 \centering
@@ -334,10 +506,8 @@
 \end{minipage}
 \end{figure}
 
-簡単に説明すると，スカラーは\textbf{1つの}数であり，ベクトルは\textbf{数と数の組}\footnote{厳密には，\textbf{線形空間の元}であるが，話が難しくなるので本資料では触れないことにする．線形空間の元として考えると，多項式もベクトル，函数もベクトル，微分方程式の解もベクトルとして捉えられる．これらのように，この世界にはベクトルでありふれている！}である．
+簡単に説明すると，スカラーは\textbf{1つの}数であり，ベクトルは\textbf{数と数の組}\footnote{厳密には，\textbf{線形空間の元}である．線形空間の元として考えると，多項式もベクトル，函数もベクトル，微分方程式の解もベクトルとして捉えられる．これらのように，この世界にはベクトルでありふれている！}である．
 ベクトルは方向を表すことから，基本的に\textbf{矢印}で表現することが多い．そのとき大きさは，矢印の\textbf{長さ}で表す．
-
-また，それぞれの\textbf{量}のことを表現するとき，それぞれに名前を付けて\textbf{スカラー量}，\textbf{ベクトル量}という．
 
 \subsection{ベクトルの加減法}
 \label{sec: vec-cal}
@@ -345,10 +515,8 @@
 スカラーはそのまま加減乗除できるが，ベクトルはそう上手くいかない．ベクトルの乗法には\textbf{内積}と\textbf{外積}の2種類あり，除法はできない．
 分かりやすい加減法から説明する．
 
-言葉で説明するなら，矢印の終点ともう一方の矢印の始点を合わせ，1つの折れ線矢印と見なして始点と終点を線で結ぶ．減法の場合は，矢印を逆にしてから足す．
+言葉で説明すると，矢印の終点ともう一方の矢印の始点を合わせ，1つの折れ線矢印と見なして始点と終点を線で結ぶ．減法の場合は，矢印を逆にしてから足す．
 矢印が逆のベクトルを\textbf{逆ベクトル}という．
-
-ほかに始点同士を揃えて平行四辺形にする方法もあり，運動方程式を解く際の分力を求めるときに最適である．
 
 \hspace{0pt}
 
