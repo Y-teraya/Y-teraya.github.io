@@ -2,6 +2,7 @@
 \usepackage{amsmath, mathtools, mathbbol, amssymb, bm, cancel, fancyhdr, anyfontsize, subcaption, multirow, wrapfig, graphicx, url, enumitem, ascmac, tikz, tikz-3dplot, makeidx, footmisc}
 \usepackage[luatex]{hyperref}
 \usepackage{ascolorbox}
+\usepackage{stackengine}
 
 \hypersetup{
  pdfencoding=auto,
@@ -77,7 +78,7 @@
 任意の\footnote{「すべての」，「どんな」，「どれを選んでも」と同じ意味である．}$a$を$n$回掛けたものを$a$の$n$乗といい$a^n$\footnote{指数が複雑な場合，$a\exp(n)$と表記される場合もある．}と書く．$a$を\textbf{底}，$n$を\textbf{指数}という．
 特に，指数が正の整数($n > 0$\footnote{\label{note: notation-ref}第Ⅱ部\ \textbf{\hyperref[part: notations]{数学の記法と用語}}で取り扱う．})のとき\textbf{累乗}といい，それ以外の場合は，\textbf{べき乗}Exponentという．
 
-指数法則Exponential lawsは，定義より自明\footnote{一般に法則として紹介されていることが多いので，本資料では法則として扱う．また法則とは一般に，経験則から導かれた証明できない事象のことを指す．}である．
+指数法則Exponential lawsは，定義より自明\footnote{一般に法則として紹介されていることが多いので，本資料では法則として扱う．また一般に法則とは，経験則から導かれた証明できない事象のことを指す．}である．
 底を$a$，指数を$m, n$としたとき，次の2法則が成立する．
 
 \begin{equation}
@@ -86,11 +87,27 @@
 
 これは単純．$a$を$m$回掛けたものと$a$を$n$回掛けたものを全て乗算したら，$a$を$m+n$回掛けたものと同じになる．
 
+\def\tmp{%
+  \begin{matrix}
+  a & \times & a & \times & \cdots & \times & a \\
+  a & \times & a & \times & \cdots & \times & a \\
+  \vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+  a & \times & a & \times & \cdots & \times & a \\
+  \end{matrix}
+}%
 \begin{equation}
-  \big(a^m\big)^n = \underbrace{a^m \times a^m \times \cdots \times a^m}_{\bm{n}\textbf{個}} = a^{m \times n}
+  \big(a^m\big)^n = 
+\stackMath\def\stackalignment{r}%
+  \stackunder%
+    {\bm{n}\textbf{個}\left\{\tmp\right.}%
+    {\underbrace{\phantom{\smash{\tmp\mkern 0mu}}}_{\bm{m}\textbf{個}}\mkern 0mu}%
+    = a^{m \times n}
 \end{equation}
 
-少し捉えにくいかもしれない．$a$を$m$回掛けたものを\textbf{$\bm{n}$回掛けたら}，それは$a$を$m \times n$回乗算したものと同じになる．ただ，それだけの話．
+
+少し捉えにくいかもしれない．式(1.3)のように，$a$を$m$回掛けたものを縦に$\bm{n}$個並べる．
+それは$a$を$m \times n$に並べた長方形となり，$m \times n$回乗算したものと同じだと分かる．
+このように，視覚的に理解できるだろう．
 
 式(1.1)，式(1.2)は特に暗記しなくても，\textbf{累乗がどういうものだったか？}を考えれば簡単に分かる．
 
@@ -162,13 +179,7 @@ $a$を\textbf{底}，$n$を\textbf{指数}と次である．
   1 = nx
 \end{equation}
 
-よって，
-
-\begin{equation}
-  x = \frac{1}{n}
-\end{equation}
-
-である．そのため，$n$乗根を指数で表すと次で定義される．
+$x$について解き，$n$乗根を指数で表すと次で定義される．
 
 \begin{equation}
   \sqrt[n]{a} := a^{\tfrac{1}{n}}
