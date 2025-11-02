@@ -77,8 +77,8 @@
 任意の\footnote{「すべての」，「どんな」，「どれを選んでも」と同じ意味である．}$a$を$n$回掛けたものを$a$の$n$乗といい$a^n$と書く．$a$を\textbf{底}，$n$を\textbf{指数}という．
 特に，指数が正の整数($n > 0$\footnote{\label{note: notation-ref}第Ⅱ部\ \textbf{\hyperref[part: notations]{数学の記法と用語}}で取り扱う．})のとき\textbf{累乗}といい，それ以外の場合は，\textbf{べき乗}Exponentという．
 
-指数法則Exponential lawsは，定義より自明ではあるものの法則\footnote{一般には，経験則から導かれた証明できない事象のことである．今回の場合は，累乗の定義から自明であり説明するまでもないだろう．}
-として紹介されていることが多いので，法則として扱う．底を$a$，指数を$m, n$としたとき，次の2法則が成立する．
+指数法則Exponential lawsは，定義より自明\footnote{一般に法則として紹介されていることが多いので，本資料では法則として扱う．また法則とは一般に，経験則から導かれた証明できない事象のことを指す．}である．
+底を$a$，指数を$m, n$としたとき，次の2法則が成立する．
 
 \begin{equation}
   a^m \times a^n = \underbrace{a \times a \times a \times \cdots \times a}_{\bm{m}\textbf{個}} \cdot \underbrace{a \times a \times \cdots \times a}_{\bm{n}\textbf{個}} = a^{m+n}
@@ -107,7 +107,7 @@
 $a^m$に$a^0$を乗算しても\textbf{変化しない}．その数は，{\color{cyan}\textbf{1}}なので次と定義される．
 
 \begin{equation}
-  a^0 = 1
+  a^0 := 1
 \end{equation}
 
 \end{subequations}
@@ -124,7 +124,7 @@ $a^m$に$a^0$を乗算すると\textbf{1になる}．その数は，{\color{cyan
 \footnote{任意の数に\textbf{乗算すると1になる数}のこと．}なので次と定義される．
 
 \begin{equation}
-  a^{-m} = \frac{1}{a^m}
+  a^{-m} := \frac{1}{a^m}
 \end{equation}
 
 \end{subequations}
@@ -171,7 +171,7 @@ $a$を\textbf{底}，$n$を\textbf{指数}と次である．
 である．そのため，$n$乗根を指数で表すと次で定義される．
 
 \begin{equation}
-  \sqrt[n]{a} = a^{\tfrac{1}{n}}
+  \sqrt[n]{a} := a^{\tfrac{1}{n}}
 \end{equation}
 
 \end{subequations}
@@ -283,10 +283,10 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
 \footnote{$\sum$の計算は，基本的に$1 \leq k \leq n\ (k \in \bm{Z})$の範囲内での\textbf{総和}を示す記号である．$\sum$の下に書いてある数字から，上に書いてある数字までを\textbf{カウントアップして足したもの}である．}．
 
 \begin{equation}
-  \bar{x} = \frac{1}{n} \sum_{k=1}^n x_k = \frac{x_1 + x_2 + \cdots + x_n}{k}
+  \bar{x} := \frac{1}{n} \sum_{k=1}^n x_k = \frac{x_1 + x_2 + \cdots + x_n}{k}
 \end{equation}
 
-\begin{ascolorbox10}{その他概要}
+\begin{ascolorbox10}{平均値\ 概要}
 
   \begin{description}
     \item[メリット\cite{ave-3}] 全てのデータを考慮できる．
@@ -311,7 +311,7 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
   \footnote{$\prod$の計算は$\sum$の足し算を\textbf{掛け算に変えた}ものである，基本的に$1 \leq k \leq n\ (k \in \bm{Z})$の範囲内での\textbf{総積}を示す記号である．$\prod$の下に書いてある数字から，上に書いてある数字までを\textbf{カウントアップして掛けたもの}である．}．
 
   \begin{equation}
-    G = \left(\prod_{k=1}^n x_k\right)^{\tfrac{1}{n}} = \sqrt[n]{x_1 \times x_2 \times \cdots \times x_n}
+    G := \left(\prod_{k=1}^n x_k\right)^{\tfrac{1}{n}} = \sqrt[n]{x_1 \times x_2 \times \cdots \times x_n}
   \end{equation}
 
   　主に，成長率や増加率など\textbf{比率や割合で変化する数の平均}を算出したいときに用いる．
@@ -322,7 +322,7 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
   \idx{平均値}を $H$，データ数を$n$，各データを$x_k$とすると，次である．
 
   \begin{equation}
-    H^{-1} = \frac{1}{n} \left(\sum_{k=1}^n \frac{1}{x_k}\right) = \frac{\frac{1}{x_1} + \frac{1}{x_2} + \cdots + \frac{1}{x_n}}{n}
+    H^{-1} := \frac{1}{n} \left(\sum_{k=1}^n \frac{1}{x_k}\right) = \frac{\frac{1}{x_1} + \frac{1}{x_2} + \cdots + \frac{1}{x_n}}{n}
   \end{equation}
 
   　主に，平均速度や並列接続時の抵抗，直列接続時のコンデンサなど\textbf{比率で表わされる数の平均}を算出したいときに用いる．
@@ -340,7 +340,7 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
 
 数列$x_k$が昇べきの順に並んでいるとすると，集合$A$の\idx{中央値}は$x_3$である．
 
-\begin{ascolorbox10}{その他概要}
+\begin{ascolorbox10}{中央値\ 概要}
 
   \begin{description}
     \item[メリット\cite{ave-3}] \idx{外れ値}に強い．
@@ -361,7 +361,7 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
 
 このとき，集合$A$の\idx{最頻値}は$x_2$，$x_3$である．
 
-\begin{ascolorbox10}{その他概要}
+\begin{ascolorbox10}{最頻値\ 概要}
 
   \begin{description}
     \item[メリット\cite{ave-3}] \idx{外れ値}に強い．
@@ -377,7 +377,7 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
 データの集合内で，一番大きい値を\idx{最大値}，小さい値を\idx{最小値}という．例えば，集合$A$，式(1.2)を基にして考える．
 このとき，\idx{最大値}は$x_5$，\idx{最小値}は$x_1$である．
 
-\begin{ascolorbox10}{その他概要}
+\begin{ascolorbox10}{最大値・最小値\ 概要}
 
   \begin{description}
     \item[エクセル（最大値）] =MAX(Cell\textsubscript{1}:\ Cell\textsubscript{2})
@@ -395,13 +395,13 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
 各データと\textbf{平均との差}の平均である．一般にデータの\textbf{バラつき}を表す．\idx{分散}を$s^2$\footnote{$\sigma^2$と置くこともある．}，データ数を$n$，各データを$x_k$とすると，次である．
 
 \begin{equation}
-  s^2 = \frac{1}{n} \sum_{k=1}^n (x_k - \bar{x})^2= \dfrac{(x_1 - \bar{x})^2 + (x_2 - \bar{x})^2 + \cdots + (x_n - \bar{x})^2}{n}
+  s^2 := \frac{1}{n} \sum_{k=1}^n (x_k - \bar{x})^2= \dfrac{(x_1 - \bar{x})^2 + (x_2 - \bar{x})^2 + \cdots + (x_n - \bar{x})^2}{n}
 \end{equation}
 
 \idx{標準偏差}はこの2乗を外したもののことである．すなわち，\idx{分散}$s^2$をルート$\sqrt{\quad}$に入れたものである．そのため，\idx{標準偏差}を$s$\footnote{$\sigma$と置くこともある．}とすると次である．
 
 \begin{equation}
-  s = \sqrt{\frac{1}{n} \sum_{k=1}^n (x_k - \bar{x})^2}
+  s := \sqrt{\frac{1}{n} \sum_{k=1}^n (x_k - \bar{x})^2}
 \end{equation}
 
 \begin{ascolorbox4}[なぜ2乗した誤差を考えるのか？\cite{var-1}]{余談}
@@ -566,8 +566,7 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
 \label{sec: vec-unit}
 
 ユークリッド空間（実数を$n$個並べた全体の集合）において，3つの直交座標をそれぞれ$x$軸，$y$軸，$z$軸とする．
-そのなかで\textbf{大きさを「1」に仕立てた}ベクトルを単位ベクトルという．
-（単位○○は基本的に，○○の大きさを「1」に仕立てたもののことである．）
+そのなかで\textbf{大きさを「1」に仕立てた}ベクトルを単位ベクトル\footnote{単位＊＊は基本的に，＊＊の大きさを「1」に仕立てたもののことである．}という．
 
 また，$x$軸と平行な単位ベクトルを$\bm{i}$，$y$軸と平行な単位ベクトルを$\bm{j}$，$z$軸と平行な単位ベクトルを$\bm{k}$とする．
 
