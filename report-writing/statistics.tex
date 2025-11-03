@@ -105,43 +105,43 @@
 \end{equation}
 
 
-少し捉えにくいかもしれない．式(1.3)のように，$a$を$m$回掛けたものを縦に$n$個並べる．
+少し捉えにくいかもしれない．\eqref{eq: rpt-2}のように，$a$を$m$回掛けたものを縦に$n$個並べる．
 それは$a$を$m \times n$に並べた長方形となり，$m \times n$回乗算したものと同じだと分かる．
 このように，視覚的に理解できるだろう．
 
-式(1.1)，式(1.2)は特に暗記しなくても，\textbf{累乗がどういうものだったか？}を考えれば簡単に分かる．
+\eqref{eq: rpt-1}，\eqref{eq: rpt-2}は特に暗記しなくても，\textbf{累乗がどういうものだったか？}を考えれば簡単に分かる．
 
 \subsection{0乗とマイナス乗}
 
-式(1.1)が正しいと仮定すると，0乗とマイナス乗を定義できる．まず，式(1.1)を$n=0$とすると次である．
+\eqref{eq: rpt-1}が正しいと仮定すると，0乗とマイナス乗を定義できる．まず，\eqref{eq: rpt-1}を$n=0$とすると次である．
 
 \begin{subequations}
 
 \begin{equation}
-  a^m \times a^0 = a^{m+0} = a^m
+  a^m \times a^0 = a^{m+0} = a^m \label{eq: zrp-1}
 \end{equation}
 
 $a^m$に$a^0$を乗算しても\textbf{変化しない}．その数は，{\color{cyan}\textbf{1}}なので次と定義される．
 
 \begin{equation}
-  a^0 := 1
+  a^0 := 1 \label{eq: zrp-2}
 \end{equation}
 
 \end{subequations}
 
-式(1.4)が正しいと仮定し，式(1.1)を$n=-m$とすると次である．
+\eqref{eq: zrp-2}が正しいと仮定し，\eqref{eq: rpt-1}を$n=-m$とすると次である．
 
 \begin{subequations}
 
 \begin{equation}
-  a^m \times a^{-m} = a^{m-m} = a^0 = 1
+  a^m \times a^{-m} = a^{m-m} = a^0 = 1 \label{eq: mnp-1}
 \end{equation}
 
 $a^m$に$a^0$を乗算すると\textbf{1になる}．その数は，{\color{cyan}\textbf{逆数}}
 \footnote{任意の数に\textbf{乗算すると1になる数}のこと．}なので次と定義される．
 
 \begin{equation}
-  a^{-m} := \frac{1}{a^m}
+  a^{-m} := \frac{1}{a^m} \label{eq: mnp-2}
 \end{equation}
 
 \end{subequations}
@@ -157,32 +157,32 @@ $a$を\textbf{底}，$n$を\textbf{指数}と次である．
 \begin{subequations}
 
 \begin{equation}
-  \sqrt[n]{a} = a^x
+  \sqrt[n]{a} = a^x \label{eq: ipr-1}
 \end{equation}
 
 辺々\footnote{両辺と同じ意味．左辺（左側の式）と右辺（右側の式）の両方の式という意味である．}$n$乗すると，次である．
 
 \begin{equation}
-  \big(\sqrt[n]{a}\big)^n = \big(a^x\big)^n
+  \big(\sqrt[n]{a}\big)^n = \big(a^x\big)^n \label{eq: ipr-2}
 \end{equation}
 
 左辺はルートが外れ，指数で表現される．また，分かりやすいように1乗として書くと次である．
 
 \begin{equation}
-  a^1 = a^{nx}
+  a^1 = a^{nx} \label{eq: ipr-3}
 \end{equation}
 
 底が同じ方程式\footnote{等号で結ばれた式のこと．}は，指数も同じである\footnote{これが指数方程式の基本的な考え方である．}．
 指数だけ取り出して等式にすると，次である．
 
 \begin{equation}
-  1 = nx
+  1 = nx \label{eq: ipr-4}
 \end{equation}
 
 $x$について解き，$n$乗根を指数で表すと次で定義される．
 
 \begin{equation}
-  \sqrt[n]{a} := a^{\tfrac{1}{n}}
+  \sqrt[n]{a} := a^{\tfrac{1}{n}} \label{eq: ipr-5}
 \end{equation}
 
 \end{subequations}
@@ -267,7 +267,7 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
 次式は，「\textbf{1日は何秒か？}」を求めたものである．恐らく，一度は計算したことがあるだろう．
 
 \begin{equation}
-  1\ [\mathrm{day}] = 1\ \cancel{[\mathrm{day}]} \times \frac{24\ \cancel{[\mathrm{hr}]}}{1\ \cancel{[\mathrm{day}]}} \times \frac{60\ \cancel{[\mathrm{min}]}}{1\ \cancel{[\mathrm{hr}]}} \times \frac{60\ [\mathrm{sec}]}{1\ \cancel{[\mathrm{min}]}} = 86,400\ [\mathrm{sec}]
+  1\ [\mathrm{day}] = 1\ \cancel{[\mathrm{day}]} \times \frac{24\ \cancel{[\mathrm{hr}]}}{1\ \cancel{[\mathrm{day}]}} \times \frac{60\ \cancel{[\mathrm{min}]}}{1\ \cancel{[\mathrm{hr}]}} \times \frac{60\ [\mathrm{sec}]}{1\ \cancel{[\mathrm{min}]}} = 86,400\ [\mathrm{sec}] \label{eq: uc-1}
 \end{equation}
 
 単位換算を行う上で押さえるポイントは，最初の単位と\textbf{求めたい単位に注目し}
@@ -294,7 +294,7 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
 \footnote{$\sum$の計算は，基本的に$1 \leq k \leq n\ (k \in \bm{Z})$の範囲内での\textbf{総和}を示す記号である．$\sum$の下に書いてある数字から，上に書いてある数字までを\textbf{カウントアップして足したもの}である．}．
 
 \begin{equation}
-  \bar{x} := \frac{1}{n} \sum_{k=1}^n x_k = \frac{x_1 + x_2 + \cdots + x_n}{k}
+  \bar{x} := \frac{1}{n} \sum_{k=1}^n x_k = \frac{x_1 + x_2 + \cdots + x_n}{k} \label{eq: ave-1}
 \end{equation}
 
 \begin{ascolorbox10}{平均値\ 概要}
@@ -322,7 +322,7 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
   \footnote{$\prod$の計算は$\sum$の足し算を\textbf{掛け算に変えた}ものである，基本的に$1 \leq k \leq n\ (k \in \bm{Z})$の範囲内での\textbf{総積}を示す記号である．$\prod$の下に書いてある数字から，上に書いてある数字までを\textbf{カウントアップして掛けたもの}である．}．
 
   \begin{equation}
-    G := \left(\prod_{k=1}^n x_k\right)^{\tfrac{1}{n}} = \sqrt[n]{x_1 \times x_2 \times \cdots \times x_n}
+    G := \left(\prod_{k=1}^n x_k\right)^{\tfrac{1}{n}} = \sqrt[n]{x_1 \times x_2 \times \cdots \times x_n} \label{eq: ave-2}
   \end{equation}
 
   　主に，成長率や増加率など\textbf{比率や割合で変化する数の平均}を算出したいときに用いる．
@@ -333,7 +333,7 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
   \idx{平均値}を $H$，データ数を$n$，各データを$x_k$とすると，次である．
 
   \begin{equation}
-    H^{-1} := \frac{1}{n} \left(\sum_{k=1}^n \frac{1}{x_k}\right) = \frac{\frac{1}{x_1} + \frac{1}{x_2} + \cdots + \frac{1}{x_n}}{n}
+    H^{-1} := \frac{1}{n} \left(\sum_{k=1}^n \frac{1}{x_k}\right) = \frac{\frac{1}{x_1} + \frac{1}{x_2} + \cdots + \frac{1}{x_n}}{n} \label{eq: ave-3}
   \end{equation}
 
   　主に，平均速度や並列接続時の抵抗，直列接続時のコンデンサなど\textbf{比率で表わされる数の平均}を算出したいときに用いる．
@@ -346,7 +346,7 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
 データを\textbf{大きさの順に}並べた際の，真ん中の値を指す．例えば，データの集合$A$を次と設定する．
 
 \begin{equation}
-  A = \{x_k|1 \leq k \leq 5\}
+  A = \{x_k|1 \leq k \leq 5\} \label{eq: med-1}
 \end{equation}
 
 数列$x_k$が昇べきの順に並んでいるとすると，集合$A$の\idx{中央値}は$x_3$である．
@@ -367,7 +367,7 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
 データの集合内で，同じデータが存在する場合がある．その同じデータが最も出現する値を指す．例えば，集合$A$，式(1.2)に次と設定する．
 
 \begin{equation}
-  x_2 = x_3
+  x_2 = x_3 \label{eq: mod-1}
 \end{equation}
 
 このとき，集合$A$の\idx{最頻値}は$x_2$，$x_3$である．
@@ -406,13 +406,13 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
 各データと\textbf{平均との差}の平均である．一般にデータの\textbf{バラつき}を表す．\idx{分散}を$s^2$\footnote{$\sigma^2$と置くこともある．}，データ数を$n$，各データを$x_k$とすると，次である．
 
 \begin{equation}
-  s^2 := \frac{1}{n} \sum_{k=1}^n (x_k - \bar{x})^2= \dfrac{(x_1 - \bar{x})^2 + (x_2 - \bar{x})^2 + \cdots + (x_n - \bar{x})^2}{n}
+  s^2 := \frac{1}{n} \sum_{k=1}^n (x_k - \bar{x})^2= \dfrac{(x_1 - \bar{x})^2 + (x_2 - \bar{x})^2 + \cdots + (x_n - \bar{x})^2}{n} \label{eq: var-1}
 \end{equation}
 
 \idx{標準偏差}はこの2乗を外したもののことである．すなわち，\idx{分散}$s^2$をルート$\sqrt{\quad}$に入れたものである．そのため，\idx{標準偏差}を$s$\footnote{$\sigma$と置くこともある．}とすると次である．
 
 \begin{equation}
-  s := \sqrt{\frac{1}{n} \sum_{k=1}^n (x_k - \bar{x})^2}
+  s := \sqrt{\frac{1}{n} \sum_{k=1}^n (x_k - \bar{x})^2} \label{eq: sdv-1}
 \end{equation}
 
 \begin{ascolorbox4}[なぜ2乗した誤差を考えるのか？\cite{var-1}]{余談}
@@ -423,7 +423,7 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
   　平均との差であれば，絶対値を用いれば良いと考えられる．絶対値で計算する平均偏差と呼ばれるものを紹介する．平均偏差は次で求められる．
 
   \begin{equation}
-    MAE = \frac{1}{n} \sum_{k=1}^n |x_k - \bar{x}|
+    MAE = \frac{1}{n} \sum_{k=1}^n |x_k - \bar{x}| \label{eq: err-1}
   \end{equation}
 
   　ただし，これは数学的に扱いにくい．次に3点挙げる．
@@ -461,17 +461,17 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
 \centering
 \begin{minipage}[b]{0.49\columnwidth}
   \centering
-  \begin{equation*}
-    A = 2
-  \end{equation*}
+  \begin{equation}
+    A = 2 \label{eq: sca-1}
+  \end{equation}
   \caption{スカラー量}
   \label{eq: sca-quantity}
 \end{minipage}
 \begin{minipage}[b]{0.49\columnwidth}
   \centering
-  \begin{equation*}
-    \bm{B} = (2 \qquad 1 \qquad 3)
-  \end{equation*}
+  \begin{equation}
+    \bm{B} = (2 \qquad 1 \qquad 3) \label{eq: vec-1}
+  \end{equation}
   \caption{ベクトル量}
   \label{eq: vec-quantity}
 \end{minipage}
@@ -581,18 +581,19 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
 
 また，$x$軸と平行な単位ベクトルを$\bm{i}$，$y$軸と平行な単位ベクトルを$\bm{j}$，$z$軸と平行な単位ベクトルを$\bm{k}$とする．
 
-\subsection{ベクトルの成分表示}
+\subsection{ベクトルの成分表示Component form}
+\label{sec: component}
 
 単位ベクトルと係数倍を用いて，一般にベクトルを次のような式で表せる．
 
 \begin{equation}
-  \bm{a}=A \bm{i}+B \bm{j}+C \bm{k}
+  \bm{a}=A \bm{i}+B \bm{j}+C \bm{k} \label{eq: cpf-1}
 \end{equation}
 
 また，係数を座標のように表して，
 
 \begin{equation}
-  \bm{a}=(A \quad B \quad C)
+  \bm{a}=(A \quad B \quad C) \label{eq: cpf-2}
 \end{equation}
 
 とも表せる．
