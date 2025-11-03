@@ -66,6 +66,92 @@
 
 \pagenumbering{arabic}
 
+\part{数学の記法と用語}
+\label{part: notations}
+
+\section{国際単位系International System of units}
+\label{sec: si}
+
+物理学Physicsに関わらず\textbf{科学Science}の世界では，この単位系を用いて\textbf{数値と単位の組}を\text{物理量}という．
+7つの\textbf{基本単位系}を組み合わせ\textbf{組立単位}にすることで，さまざまな単位を作ることができる．
+組立単位を知ることによって，求めたい単位に変える\textbf{単位換算}を行うことができるようになる．
+
+\subsection{基本単位系Basic units}
+\label{sec: basic units}
+
+基本単位は次の7つである．
+
+\begin{table}[hbtp]
+  \caption{基本単位系}
+  \label{tab: basic units}
+  \centering
+  \begin{tabular}{ccc}
+    \hline
+    データの種類 & 英語 & 単位 \\
+    \hline
+    時間 & $t$ime & [s] \\
+    距離 & $r$oute & [m] \\
+    電流 & $I$ntensity of current & [A] \\
+    質量 & $m$ass & [g] \\
+    絶対温度 & $T$emperture & [K] \\
+    物質量 & $n$umber & [mol] \\
+    光度 & Luminous $I$ntensity & [cd] \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\begin{ascolorbox4}[基本単位系の定義]{余談}
+\label{col: basic def}
+
+  \hspace{5pt}
+
+  　基本単位系には，\textbf{一義性}\footnote{ただ1つに定まること．}を持った基準が必要であり世界共通のものである．
+  その\textbf{厳密な定義}を紹介する．
+
+  \subsubsection{時間の定義}
+
+\end{ascolorbox4}
+
+\subsection{接頭辞Prefix}
+\label{sec: prefix}
+
+接頭辞とは，基本単位系よりも\textbf{大きい・小さいことを表す指標}のことである．
+Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われる$\times 10^{12}$までを紹介する．
+
+\begin{table}[htbp]
+  \caption{Si接頭辞}
+  \label{tab: prefix}
+  \centering
+  \begin{tabular}{cccccc}
+    \hline
+    ($+$)接頭辞 & 英語 & 指数乗 & ($-$)接頭辞 & 英語 & 指数乗 \\
+    \hline
+    T & $T$era & $\times 10^{12}$ & p & $p$ico & $\times 10^{-12}$ \\
+    G & $G$iga & $\times 10^{9}$ & n & $n$ano & $\times 10^{-9}$ \\
+    M & $M$ega & $\times 10^{6}$ & $\mu$ & $m$icro & $\times 10^{-6}$ \\
+    k & $k$ilo & $\times 10^{3}$ & m & milli & $\times 10^{-3}$ \\
+    h & $h$ecto & $\times 10^{2}$ & c & $c$enti & $\times 10^{-2}$ \\
+    da & $d$ec$a$ & $\times 10^{1}$ & d & $d$eci & $\times 10^{-1}$ \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\subsection{単位換算Unit conversion}
+\label{sec: convertion}
+
+単位は，\textbf{定義に基づいて}組み立てることで新しい単位ができる．
+基本的には，\textbf{同じ意味を持つもの同士を分母と分子に置き}，{\color{cyan}\textbf{約分する}}ことで求めたい単位へと変える．
+次式は，「\textbf{1日は何秒か？}」を求めたものである．恐らく，一度は計算したことがあるだろう．
+
+\begin{equation}
+  1\ [\mathrm{day}] = 1\ \cancel{[\mathrm{day}]} \times \frac{24\ \cancel{[\mathrm{hr}]}}{1\ \cancel{[\mathrm{day}]}} \times \frac{60\ \cancel{[\mathrm{min}]}}{1\ \cancel{[\mathrm{hr}]}} \times \frac{60\ [\mathrm{sec}]}{1\ \cancel{[\mathrm{min}]}} = 86,400\ [\mathrm{sec}] \label{eq: uc-1}
+\end{equation}
+
+単位換算を行う上で押さえるポイントは，最初の単位と\textbf{求めたい単位に注目し}
+定義として\textbf{どの物理量同士が等しいか}考え約分する必要がある．
+
+\clearpage
+
 \part{初歩的な計算}
 \label{part: calculate}
 
@@ -186,92 +272,6 @@ $x$について解き，$n$乗根を指数で表すと次で定義される．
 \end{equation}
 
 \end{subequations}
-
-\clearpage
-
-\part{数学の記法と用語}
-\label{part: notations}
-
-\section{国際単位系International System of units}
-\label{sec: si}
-
-物理学Physicsに関わらず\textbf{科学Science}の世界では，この単位系を用いて\textbf{数値と単位の組}を\text{物理量}という．
-7つの\textbf{基本単位系}を組み合わせ\textbf{組立単位}にすることで，さまざまな単位を作ることができる．
-組立単位を知ることによって，求めたい単位に変える\textbf{単位換算}を行うことができるようになる．
-
-\subsection{基本単位系Basic units}
-\label{sec: basic units}
-
-基本単位は次の7つである．
-
-\begin{table}[hbtp]
-  \caption{基本単位系}
-  \label{tab: basic units}
-  \centering
-  \begin{tabular}{ccc}
-    \hline
-    データの種類 & 英語 & 単位 \\
-    \hline
-    時間 & $t$ime & [s] \\
-    距離 & $r$oute & [m] \\
-    電流 & $I$ntensity of current & [A] \\
-    質量 & $m$ass & [g] \\
-    絶対温度 & $T$emperture & [K] \\
-    物質量 & $n$umber & [mol] \\
-    光度 & Luminous $I$ntensity & [cd] \\
-    \hline
-  \end{tabular}
-\end{table}
-
-\begin{ascolorbox4}[基本単位系の定義]{余談}
-\label{col: basic def}
-
-  \hspace{5pt}
-
-  　基本単位系には，\textbf{一義性}\footnote{ただ1つに定まること．}を持った基準が必要であり世界共通のものである．
-  その\textbf{厳密な定義}を紹介する．
-
-  \subsubsection{時間の定義}
-
-\end{ascolorbox4}
-
-\subsection{接頭辞Prefix}
-\label{sec: prefix}
-
-接頭辞とは，基本単位系よりも\textbf{大きい・小さいことを表す指標}のことである．
-Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われる$\times 10^{12}$までを紹介する．
-
-\begin{table}[htbp]
-  \caption{Si接頭辞}
-  \label{tab: prefix}
-  \centering
-  \begin{tabular}{cccccc}
-    \hline
-    ($+$)接頭辞 & 英語 & 指数乗 & ($-$)接頭辞 & 英語 & 指数乗 \\
-    \hline
-    T & $T$era & $\times 10^{12}$ & p & $p$ico & $\times 10^{-12}$ \\
-    G & $G$iga & $\times 10^{9}$ & n & $n$ano & $\times 10^{-9}$ \\
-    M & $M$ega & $\times 10^{6}$ & $\mu$ & $m$icro & $\times 10^{-6}$ \\
-    k & $k$ilo & $\times 10^{3}$ & m & milli & $\times 10^{-3}$ \\
-    h & $h$ecto & $\times 10^{2}$ & c & $c$enti & $\times 10^{-2}$ \\
-    da & $d$ec$a$ & $\times 10^{1}$ & d & $d$eci & $\times 10^{-1}$ \\
-    \hline
-  \end{tabular}
-\end{table}
-
-\subsection{単位換算Unit conversion}
-\label{sec: convertion}
-
-単位は，\textbf{定義に基づいて}組み立てることで新しい単位ができる．
-基本的には，\textbf{同じ意味を持つもの同士を分母と分子に置き}，{\color{cyan}\textbf{約分する}}ことで求めたい単位へと変える．
-次式は，「\textbf{1日は何秒か？}」を求めたものである．恐らく，一度は計算したことがあるだろう．
-
-\begin{equation}
-  1\ [\mathrm{day}] = 1\ \cancel{[\mathrm{day}]} \times \frac{24\ \cancel{[\mathrm{hr}]}}{1\ \cancel{[\mathrm{day}]}} \times \frac{60\ \cancel{[\mathrm{min}]}}{1\ \cancel{[\mathrm{hr}]}} \times \frac{60\ [\mathrm{sec}]}{1\ \cancel{[\mathrm{min}]}} = 86,400\ [\mathrm{sec}] \label{eq: uc-1}
-\end{equation}
-
-単位換算を行う上で押さえるポイントは，最初の単位と\textbf{求めたい単位に注目し}
-定義として\textbf{どの物理量同士が等しいか}考え約分する必要がある．
 
 \clearpage
 
