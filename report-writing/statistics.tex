@@ -126,10 +126,10 @@
 
   \subsubsection{時間の定義\cite{units-2}}
 
-  　セシウム原子時計のマイクロ波の振動$\Delta \nu_{\mathrm{Cs}}$を，$9,192,631,770$回数えたときを１秒と定義した．
+  　原子や分子には，固有の振動数の光や電波を吸収し放射する性質がある．セシウム原子時計のマイクロ波の振動$\Delta \nu_{\mathrm{Cs}}$を，$9,192,631,770$回数えたときを１秒と定義した．
   [Hz]\footnote{ヘルツは，\textbf{回数}を示す単位である．}は\textbf{単位時間あたりの振動数}のことであり，$\mathrm{[s^{-1}]}$と同じ意味である．
 
-\subsubsection{距離の定義}
+  \subsubsection{距離の定義}
 
   　真空中の光の速さ$c$を$299,792,458$ [m/s]と定めることによって定義した．
 
@@ -137,6 +137,42 @@
 
   　電気素量$e$\footnote{ファラデー定数（電子1 [mol]が持つ電気量の値のこと）を$F$，アボガドロ定数を$N_A$とすると，$e=\tfrac{F}{N_A}$でも求められる．}を$1.602,176,634 \times 10^{−19}$ [C]と定めることによって定義した．
   [C]は\textbf{単位時間あたりの電気量}のことであり，$\mathrm{[A \cdot s]}$と同じ意味である．
+
+  \subsubsection{質量の定義\cite{units-3}}
+
+  　物体の静止質量を$m$，光子の周波数を$\nu$，プランク定数を$\hslash$とすると，
+  アインシュタインが導いた質量とエネルギーの等価性の式は次である．
+
+  \begin{equation}
+    E = mc^2 = \hslash \nu \label{eq: einstein}
+  \end{equation}
+
+  　ここでプランク定数$\hslash$を$6.626,070,15 \times 10^{−34}\ \mathrm{[J \cdot s]}$と定義することで，
+  周波数$\nu$\ [Hz]の光子のエネルギー$E$と等価な質量が$m$\ [kg]である．
+
+  \subsubsection{絶対温度の定義\cite{units-4}}
+
+  　理想気体の場合，個々の分子は他の分子と衝突するとき以外は自由に動く．
+  1個の単原子の平均の運動エネルギーは，質量を$m$，2乗平均速度を$\bar{v^2}$，ボルツマン定数$k$，絶対温度$T$とすると次である．
+
+  \begin{equation}
+    \frac{1}{2} m \bar{v^2} = \frac{3}{2} kT \label{eq: boltzmann-1}
+  \end{equation}
+
+  　一方で，理想気体の分子$n$個を体積$V$の容器に入れた場合，その圧力$p$は，質量$m$と2乗平均速度$\bar{v^2}$とすると次である．
+
+  \begin{equation}
+    p = \frac{1}{3} \frac{nm}{V} \bar{v^2} \label{eq: boltzmann-2}
+  \end{equation}
+
+  　\cref{eq: boltzmann-1,eq: boltzmann-2}より，次の理想気体の状態方程式が得られる．
+
+  \begin{equation}
+    p(T)V = nkT \label{eq: air}
+  \end{equation}
+
+  　エネルギーは$[\mathrm{J}] = [\mathrm{kg \cdot m^2s^{-2}}]$で表される．
+  ここでボルツマン定数$k$を$1.380, 649 × 10^{−23}$\ [J/K]と定義することで，ケルビンを定めることと同じになる．
 
 \end{ascolorbox4}
 

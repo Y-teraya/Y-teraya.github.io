@@ -4,42 +4,45 @@
 技術でブランドを支える ケムファク.
 \newblock 知っておきたい様々な平均値.
 \newblock \url{https://chem-fac.com/average}.
-\newblock アクセス日: 2025-11-02.
 
 \bibitem{units-1}
 産総研 計量標準総合センター.
 \newblock 国際単位系（si））.
 \newblock \url{https://unit.aist.go.jp/nmij/library/si-units}.
-\newblock アクセス日: 2025-11-03.
 
 \bibitem{units-2}
 科学技術振興機構 香取創造時空間プロジェクト.
 \newblock 世界を変える1秒の誕生.
 \newblock \url{https://www.jst.go.jp/erato/katori/feature}.
-\newblock アクセス日: 2025-11-03.
 
 \bibitem{ave-3}
 高校数学の美しい物語.
 \newblock 平均値，中央値，最頻値の求め方といくつかの例.
 \newblock \url{https://manabitimes.jp/math/985}.
-\newblock アクセス日: 2025-10-28.
+
+\bibitem{units-4}
+中野享 山田善郎.
+\newblock 熱力学温度の単位「ケルビン」の定義改定.
+\newblock \url{https://unit.aist.go.jp/nmij/public/report/si-brochure/pdf/5_SI_%E3%82%B1%E3%83%AB%E3%83%93%E3%83%B3.pdf}.
 
 \bibitem{var-1}
 数学の景色.
 \newblock データの分散・標準偏差の定義・具体例・性質まとめ.
 \newblock \url{https://mathlandscape.com/variance}.
-\newblock アクセス日: 2025-10-28.
+
+\bibitem{units-3}
+藤井賢一.
+\newblock プランク定数にもとづくキログラムの新しい定義.
+\newblock \url{https://www.jstage.jst.go.jp/article/jaesjb/61/10/61_716/_pdf/-char/en}.
 
 \bibitem{ave-1}
 内田誠一.
 \newblock 2-1-2. データの分布と代表値.
 \newblock \url{https://mi.u-tokyo.ac.jp/consortium/pdf/2-1-2.pdf}.
-\newblock アクセス日: 2025-10-28.
 
 \bibitem{ave-2}
 内田誠一.
 \newblock 2-1-3. 代表値の性質の違い.
 \newblock \url{https://mi.u-tokyo.ac.jp/consortium/pdf/2-1-3.pdf}.
-\newblock アクセス日: 2025-10-28.
 
 \end{thebibliography}
