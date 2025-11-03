@@ -16,6 +16,20 @@
  urlcolor=blue,
 }
 
+\crefname{equation}{式}{式}
+\crefname{figure}{図}{図}
+\crefname{table}{表}{表}
+
+\crefname{section}{第}{第}
+\creflabelformat{section}{#2#1節#3}
+\crefname{subsection}{第}{第}
+\creflabelformat{subsection}{#2#1小節#3}
+
+\newcommand{\crefpairconjunction}{と}
+\newcommand{\crefrangeconjunction}{から}
+\newcommand{\crefmiddleconjunction}{，}
+\newcommand{\creflastconjunction}{，および}
+
 \makeindex
 \numberwithin{equation}{section}
 \captionsetup{compatibility=false}
@@ -196,7 +210,7 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
 それは$a$を$m \times n$に並べた長方形となり，$m \times n$回乗算したものと同じだと分かる．
 このように，視覚的に理解できるだろう．
 
-\cref{eq: rpt-1}，\cref{eq: rpt-2}は特に暗記しなくても，\textbf{累乗がどういうものだったか？}を考えれば簡単に分かる．
+\cref{eq: rpt-1, eq: rpt-2}は特に暗記しなくても，\textbf{累乗がどういうものだったか？}を考えれば簡単に分かる．
 
 \subsection{0乗とマイナス乗}
 
