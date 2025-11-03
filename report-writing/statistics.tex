@@ -1,6 +1,7 @@
 \documentclass[a4paper,11pt]{ltjsarticle}
 \usepackage{amsmath, mathtools, mathbbol, amssymb, bm, cancel, fancyhdr, anyfontsize, subcaption, multirow, wrapfig, graphicx, url, enumitem, ascmac, tikz, tikz-3dplot, makeidx}
 \usepackage[luatex]{hyperref}
+\usepackage[most]{tcolorbox}
 \usepackage{ascolorbox}
 \usepackage{stackengine}
 \usepackage{cleveref}
@@ -89,7 +90,7 @@
 
 \textbf{科学Science}の世界では，この単位系を用いて\textbf{数値と単位の組}を\textbf{物理量}Physical quantityという．
 7つの\textbf{基本単位系}を組み合わせ\textbf{組立単位}にすることで，さまざまな単位を作ることができる．
-組立単位を知ることによって，求めたい単位に変える\textbf{単位換算}を行うことができるようになる．
+組立単位を知ることによって，求めたい単位に変える\textbf{単位換算}Unit conversionを行うことができるようになる．
 
 \subsection{基本単位系Basic units}
 \label{sec: basic units}
@@ -115,15 +116,27 @@
   \end{tabular}
 \end{table}
 
-\begin{ascolorbox4}[基本単位系の定義]{余談}
+\begin{ascolorbox4}[基本単位系の定義\cite{units-1}]{余談}
 \label{col: basic def}
 
   \hspace{5pt}
 
-  　基本単位系には，\textbf{一義性}\footnote{ただ1つに定まること．}を持った基準が必要であり世界共通のものである．
+  　基本単位系には，\textbf{一義性}\footnote{ただ1つに定まる性質のこと．}と時が経っても\textbf{べき等性}\footnote{同じ操作を何度繰り返しても，同じ結果が得られる性質}を持った基準が必要であり世界共通のものである．
   その\textbf{厳密な定義}を紹介する．
 
-  \subsubsection{時間の定義}
+  \subsubsection{時間の定義\cite{units-2}}
+
+  　セシウム原子時計のマイクロ波の振動$\Delta \nu_{\mathrm{Cs}}$を，$9,192,631,770$回数えたときを１秒と定義した．
+  [Hz]\footnote{ヘルツは，\textbf{回数}を示す単位である．}は\textbf{単位時間あたりの振動数}のことであり，$\mathrm{[s^{-1}]}$と同じ意味である．
+
+\subsubsection{距離の定義}
+
+  　真空中の光の速さ$c$を$299,792,458$ [m/s]と定めることによって定義した．
+
+  \subsubsection{電流の定義}
+
+  　電気素量$e$\footnote{ファラデー定数（電子1 [mol]が持つ電気量の値のこと．）を$F$，アボガドロ定数を$N_A$とすると，$e=\tfrac{F}{N_A}$でも求められる．}を$1.602,176,634 \times 10^{−19}$ [C]と定めることによって定義した．
+  [C]は\textbf{単位時間あたりの電気量}のことであり，$\mathrm{[A \cdot s]}$と同じ意味である．
 
 \end{ascolorbox4}
 
@@ -183,7 +196,7 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
 底を$a$，指数を$m, n$としたとき，次の2法則が成立する．
 
 \begin{equation}
-  a^m \times a^n = \underbrace{a \times a \times a \times \cdots \times a}_{\bm{m}\textbf{個}} \cdot \underbrace{a \times a \times \cdots \times a}_{\bm{n}\textbf{個}} = a^{m+n} \label{eq: rpt-1}
+  a^m \times a^n = \underbrace{a \times a \times a \times \cdots \times a}_\text{\bm{m}\textbf{\normalsize 個}} \cdot \underbrace{a \times a \times \cdots \times a}_\text{\bm{n}\textbf{\normalsize 個}} = a^{m+n} \label{eq: rpt-1}
 \end{equation}
 
 これは単純．$a$を$m$回掛けたものと$a$を$n$回掛けたものを全て乗算したら，$a$を$m+n$回掛けたものと同じになる．
@@ -192,16 +205,16 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
   \begin{matrix}
   a & \times & a & \times & \cdots & \times & a \\
   a & \times & a & \times & \cdots & \times & a \\
-  \vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+  \vdots &  & \vdots &  & \ddots &  & \vdots \\
   a & \times & a & \times & \cdots & \times & a \\
   \end{matrix}
-}%
+}
 \begin{equation}
   \big(a^m\big)^n = 
 \stackMath\def\stackalignment{r}%
   \stackunder%
     {\bm{n}\textbf{個}\left\{\tmp\right.}%
-    {\underbrace{\phantom{\smash{\tmp\mkern 0mu}}}_{\bm{m}\textbf{個}}\mkern 0mu}%
+    {\underbrace{\phantom{\smash{\tmp\mkern 0mu}}}_\text{\bm{m}\textbf{\normalsize 個}}\mkern 0mu}%
     = a^{m \times n} \label{eq: rpt-2}
 \end{equation}
 
@@ -247,8 +260,8 @@ $a^m$に$a^0$を乗算すると\textbf{1になる}．その数は，{\color{cyan
 
 \end{subequations}
 
-\subsection{累乗根Power root}
-\label{sec: power}
+\subsection{累乗根Radical root}
+\label{sec: Radical}
 
 $n$乗すると任意の数$a$になる数のことを累乗根Radical rootといい$\sqrt[n]{a}$と書く．$n$乗を強調して，\textbf{$\bm{n}$乗根}ともいう．
 また，$n=2$のとき，\textbf{平方根}Square rootといい$\sqrt{a}$と書き，ルートの左肩の2は省略できる．
