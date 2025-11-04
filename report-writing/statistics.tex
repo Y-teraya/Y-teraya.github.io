@@ -24,7 +24,7 @@
 \crefname{section}{第}{第}
 \creflabelformat{section}{#2#1節#3}
 \crefname{subsection}{第}{第}
-\creflabelformat{subsection}{#2#1小節#3}
+\creflabelformat{subsection}{#2#1節#3}
 
 \newcommand{\crefpairconjunction}{と}
 \newcommand{\crefrangeconjunction}{から}
@@ -57,9 +57,6 @@
 \begin{abstract}
   本資料は，統計の基礎的な計算方法をまとめたものである．
   実験計画法を主として扱い，実務で直結する内容（Excel函数など）を備忘録として記しておく．
-  ほか，線形代数や微分積分も取り扱う．
-
-  また，総和$\sum$の記号に苦手意識を持っている人も多いので，理解して欲しい重要な式のみ$\sum$無しで表現した式も併記している．
 \end{abstract}
 
 \tableofcontents
@@ -121,27 +118,33 @@
 
   \hspace{5pt}
 
-  　基本単位系には，\textbf{一義性}\footnote{ただ1つに定まる性質のこと．}と時が経っても\textbf{べき等性}\footnote{同じ操作を何度繰り返しても，同じ結果が得られる性質のこと．}を持った基準が必要であり世界共通のものである．
+  　基本単位系には，\textbf{一義性}\footnote{ただ1つに定まる性質のこと．}と\textbf{普遍性}\footnote{広く全ての場合にあてはめることができる性質のこと．}を持った基準が必要であり世界共通のものである．
   その\textbf{厳密な定義}を紹介する．
 
   \subsubsection{時間の定義\cite{units-2}}
 
-  　原子や分子には，固有の振動数の光や電波を吸収し放射する性質がある．セシウム原子時計のマイクロ波の振動$\Delta \nu_{\mathrm{Cs}}$を，$9,192,631,770$回数えたときを１秒と定義した．
-  [Hz]\footnote{ヘルツは，\textbf{回数}を示す単位である．}は\textbf{単位時間あたりの振動数}のことであり，$\mathrm{[s^{-1}]}$と同じ意味である．
+  　原子や分子には，固有の振動数の光や電波を吸収し放射する性質がある．その性質を利用して，セシウム原子のマイクロ波の振動$\Delta \nu_{\mathrm{Cs}}$を，$9,192,631,770$回数えたときを１秒と定義した．
+  [Hz]\footnote{ヘルツは，\textbf{回数}を示す単位である．}は\textbf{単位時間あたりの振動数}のことであり，[/s]と同じ意味である．
 
   \subsubsection{距離の定義}
 
   　真空中の光の速さ$c$を$299,792,458$ [m/s]と定めることによって定義した．
 
-  \subsubsection{電流の定義}
+  \subsubsection{電流の定義\cite{units-5}}
 
-  　電気素量$e$\footnote{ファラデー定数（電子1 [mol]が持つ電気量の値のこと）を$F$，アボガドロ定数を$N_A$とすると，$e=\tfrac{F}{N_A}$でも求められる．}を$1.602,176,634 \times 10^{−19}$ [C]と定めることによって定義した．
+  　かつては，真空中に1\ [m]間隔で平行に置いた無限に長い2本の導体がそれぞれを流れ，これらの導体の長さ1\ [m]につき$2 \times 10^{-7}$\ [N]の力を及ぼし合う一定の電流を1\ [A]としていた．
+  ただし，電流の単位を力として定義している．これは\textbf{電流は素粒子の流れ}であるという本質が分かっていなかったためである．そのため，2019 年に改定された．
+
+  　新たに電気素量$e$\footnote{ファラデー定数（電子1 [mol]が持つ電気量の値のこと）を$F$，アボガドロ定数を$N_A$とすると，$e=\tfrac{F}{N_A}$でも求められる．}を$1.602,176,634 \times 10^{−19}$ [C]と定めることによって定義した．
   [C]は\textbf{単位時間あたりの電気量}のことであり，$\mathrm{[A \cdot s]}$と同じ意味である．
 
   \subsubsection{質量の定義\cite{units-3}}
 
+  　かつては，国際キログラム原器（白金とイリジウムの合金で出来た円柱）の質量を1\ [kg]としていた．
+  ただし，経年劣化により一義性に欠けるため，電流と同様に2019年に改定された．
+  
   　物体の静止質量を$m$，光子の周波数を$\nu$，プランク定数を$\hslash$とすると，
-  アインシュタインが導いた質量とエネルギーの等価性の式は次である．
+  アインシュタインの相対性理論によれば次である．
 
   \begin{equation}
     E = mc^2 = \hslash \nu \label{eq: einstein}
@@ -152,27 +155,46 @@
 
   \subsubsection{絶対温度の定義\cite{units-4}}
 
+  　かつては，氷と水，水蒸気が共存する温度$0.01 ^\circ \mathrm{C}$の約273分の1を1\ [K]としていた．
+  ただし，「水」という物質に依存しており，かつ三重点の実現可能性が低いため電流と同様に2019年に改定された．
+
   　理想気体の場合，個々の分子は他の分子と衝突するとき以外は自由に動く．
-  1個の単原子の平均の運動エネルギーは，質量を$m$，2乗平均速度を$\bar{v^2}$，ボルツマン定数$k$，絶対温度$T$とすると次である．
+  1個の単原子の平均の運動エネルギーは，質量を$m$，2乗平均速度を$\overline{v^2}$，ボルツマン定数$k$，絶対温度$T$とすると次である．
+
+\begin{subequations}
 
   \begin{equation}
-    \frac{1}{2} m \bar{v^2} = \frac{3}{2} kT \label{eq: boltzmann-1}
+    \frac{1}{2} m \overline{v^2} = \frac{3}{2} kT \label{eq: boltzmann-1}
   \end{equation}
 
-  　一方で，理想気体の分子$n$個を体積$V$の容器に入れた場合，その圧力$p$は，質量$m$と2乗平均速度$\bar{v^2}$とすると次である．
+  　一方で，理想気体の分子$nN_A$個\footnote{$N_A$はアボガドロ定数であり，ボルツマン定数$k$と乗算することで気体定数$R$となる．}を体積$V$の容器に入れた場合，その圧力$p$は，質量$m$と2乗平均速度$\overline{v^2}$とすると次である．
 
   \begin{equation}
-    p = \frac{1}{3} \frac{nm}{V} \bar{v^2} \label{eq: boltzmann-2}
+    p = \frac{1}{3} \frac{nN_Am}{V} \overline{v^2} \label{eq: boltzmann-2}
   \end{equation}
 
   　\cref{eq: boltzmann-1,eq: boltzmann-2}より，次の理想気体の状態方程式が得られる．
 
   \begin{equation}
-    p(T)V = nkT \label{eq: air}
+    p(T)V = nN_AkT \label{eq: air}
   \end{equation}
 
-  　エネルギーは$[\mathrm{J}] = [\mathrm{kg \cdot m^2s^{-2}}]$で表される．
-  ここでボルツマン定数$k$を$1.380, 649 \times 10^{−23}$\ [J/K]と定義することで，ケルビンを定めることと同じになる．
+\end{subequations}
+
+  　エネルギーは$[\mathrm{J}] = [\mathrm{kg \cdot m^2/s^2}]$で表される．
+  ここでボルツマン定数$k$を$1.380, 649 \times 10^{−23}$\ [J/K]と定義することで，単位の大きさを定めることと同じになる．
+
+  \subsubsection{物質量の定義\cite{units-6}}
+
+  　原子1粒同士を比較しても，非常に小さいため明確に重さの違いは分からない．しかし，何万，何億の粒を集めて比較すると，違いが分かるようになる．
+  かつては，炭素原子を基準として12\ [g]になるために必要な数である$6.022 \times 10^{23}$個(アボカドロ数)を1\ [mol]としていた．ただし，絶対温度の同じように今回は「炭素」依存での定義であり普遍性に欠ける．そのため，電流と同様に2019年に改定された．
+
+  　ここでアボガドロ定数$N_A$を$6.022,140,76 \times 10^{23}$\ [/mol]と定義することで，単位の大きさを定めた．
+  簡単にいれば，原子や分子の粒を$N_A$個のことを1\ [mol]と置いた．この考えは，12個を1ダースと置くのと同じである．
+
+  \subsubsection{光度の定義}
+
+  　特定の周波数$540 \times 10^{12}$\ [Hz]の緑色の光を出す特定の方向に，放射強度$K_{\mathrm{cd}}$が683 [lm/W]である点光源の光度を，1\ [cd]と定義した．
 
 \end{ascolorbox4}
 
@@ -213,6 +235,20 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
 
 単位換算を行う上で押さえるポイントは，最初の単位と\textbf{求めたい単位に注目し}
 定義として\textbf{どの物理量同士が等しいか}考え約分する必要がある．
+今回の場合，1\ [day] と 24\ [hr]は定義より等しいので，分母と分子に置くことで理論上約分でき1と同じ意味となる．
+
+次に，\cref{sec: prefix}の接頭辞を用いた単位換算を扱う．一例として，[mL]を[L]に変える場合を考える．
+
+\begin{equation}
+  1,000\ [\mathrm{{\color{cyan}m}L}] = 1,000 \times {\color{cyan}10^{-3}}\ [\mathrm{L}] = 1\ [\mathrm{L}] \label{eq: uc-2}
+\end{equation}
+
+[mL]の{\color{cyan}m}は，\cref{tab: prefix}を参照すると指数乗は{\color{cyan}$10^{-3}$}である．
+そのため，まず\textbf{接頭辞を指数乗に変える}．そのあと，指数乗を掛けることで単位を換算できる．
+
+
+
+詳しく調べたい場合は，\href{https://www.dainippon-tosho.co.jp/unit/list}{\textbf{大日本図書 いろいろな単位}}が分かりやすいので紹介しておく．
 
 \subsection{ギリシャ文字Greek alphabet}
 
@@ -274,12 +310,12 @@ Si接尾辞では$\times 10^{30}$まで定まっているが，よく使われ�
   \end{matrix}
 }
 \begin{equation}
-  \big(a^m\big)^n = 
-\stackMath\def\stackalignment{r}%
+  \big(a^m\big)^n =\ 
+  \stackMath\def\stackalignment{r}%
   \stackunder%
-    {\bm{n}\textbf{個}\left\{\tmp\right.}%
-    {\underbrace{\phantom{\smash{\tmp\mkern 0mu}}}_\text{\bm{m}\textbf{\normalsize 個}}\mkern 0mu}%
-    = a^{m \times n} \label{eq: rpt-2}
+  {\text{\bm{n}\textbf{\normalsize 個}}\left\{\tmp\right.}%
+  {\underbrace{\phantom{\smash{\tmp\mkern 0mu}}}_\text{\bm{m}\textbf{\normalsize 個}}\mkern 0mu}%
+  \ =a^{m \times n} \label{eq: rpt-2}
 \end{equation}
 
 
@@ -325,7 +361,7 @@ $a^m$に$a^0$を乗算すると\textbf{1になる}．その数は，{\color{cyan
 \end{subequations}
 
 \subsection{累乗根Radical root}
-\label{sec: Radical}
+\label{sec: radical}
 
 $n$乗すると任意の数$a$になる数のことを累乗根Radical rootといい$\sqrt[n]{a}$と書く．$n$乗を強調して，\textbf{$\bm{n}$乗根}ともいう．
 また，$n=2$のとき，\textbf{平方根}Square rootといい$\sqrt{a}$と書き，ルートの左肩の2は省略できる．
@@ -382,11 +418,11 @@ $x$について解き，$n$乗根を指数で表すと次で定義される．
 \label{sec: mean}
 
 主に\idx{算術平均}のことを指す．全データを合計し，データの数で割ることで求められる．
-\idx{平均値}を $\bar{x}$\footnote{$\mu$と置くこともある．}，データ数を$n$，各データを$x_k$とすると，次と定義\footnote{$:=$は\textbf{左辺を右辺と定義する}と示す記号である．}する
+\idx{平均値}を $\overline{x}$\footnote{$\mu$と置くこともある．}，データ数を$n$，各データを$x_k$とすると，次と定義\footnote{$:=$は\textbf{左辺を右辺と定義する}と示す記号である．}する
 \footnote{$\sum$の計算は，基本的に$1 \leq k \leq n\ (k \in \bm{Z})$の範囲内での\textbf{総和}を示す記号である．$\sum$の下に書いてある数字から，上に書いてある数字までを\textbf{カウントアップして足したもの}である．}．
 
 \begin{equation}
-  \bar{x} := \frac{1}{n} \sum_{k=1}^n x_k = \frac{x_1 + x_2 + \cdots + x_n}{k} \label{eq: ave-1}
+  \overline{x} := \frac{1}{n} \sum_{k=1}^n x_k = \frac{x_1 + x_2 + \cdots + x_n}{k} \label{eq: ave-1}
 \end{equation}
 
 \begin{ascolorbox10}{平均値\ 概要}
@@ -498,13 +534,13 @@ $x$について解き，$n$乗根を指数で表すと次で定義される．
 各データと\textbf{平均との差}の平均である．一般にデータの\textbf{バラつき}を表す．\idx{分散}を$s^2$\footnote{$\sigma^2$と置くこともある．}，データ数を$n$，各データを$x_k$とすると，次である．
 
 \begin{equation}
-  s^2 := \frac{1}{n} \sum_{k=1}^n (x_k - \bar{x})^2= \dfrac{(x_1 - \bar{x})^2 + (x_2 - \bar{x})^2 + \cdots + (x_n - \bar{x})^2}{n} \label{eq: var-1}
+  s^2 := \frac{1}{n} \sum_{k=1}^n (x_k - \overline{x})^2= \dfrac{(x_1 - \overline{x})^2 + (x_2 - \overline{x})^2 + \cdots + (x_n - \overline{x})^2}{n} \label{eq: var-1}
 \end{equation}
 
 \idx{標準偏差}はこの2乗を外したもののことである．すなわち，\idx{分散}$s^2$をルート$\sqrt{\quad}$に入れたものである．そのため，\idx{標準偏差}を$s$\footnote{$\sigma$と置くこともある．}とすると次である．
 
 \begin{equation}
-  s := \sqrt{\frac{1}{n} \sum_{k=1}^n (x_k - \bar{x})^2} \label{eq: sdv-1}
+  s := \sqrt{\frac{1}{n} \sum_{k=1}^n (x_k - \overline{x})^2} \label{eq: sdv-1}
 \end{equation}
 
 \begin{ascolorbox4}[なぜ2乗した誤差を考えるのか？\cite{var-1}]{余談}
@@ -515,7 +551,7 @@ $x$について解き，$n$乗根を指数で表すと次で定義される．
   　平均との差であれば，絶対値を用いれば良いと考えられる．絶対値で計算する平均偏差と呼ばれるものを紹介する．平均偏差は次で求められる．
 
   \begin{equation}
-    MAE = \frac{1}{n} \sum_{k=1}^n |x_k - \bar{x}| \label{eq: err-1}
+    MAE = \frac{1}{n} \sum_{k=1}^n |x_k - \overline{x}| \label{eq: err-1}
   \end{equation}
 
   　ただし，これは数学的に扱いにくい．次に3点挙げる．
@@ -523,7 +559,7 @@ $x$について解き，$n$乗根を指数で表すと次で定義される．
   \begin{enumerate}
     \item 絶対値は函数として微分可能でなく扱いづらい．
     \item 場合分けが必要になることがある．
-    \item $\displaystyle{\bar{x} \ne \arg \min_{\bar{x}} \sum_{k=1}^n |x_k - \bar{x}|}$である．
+    \item $\displaystyle{\overline{x} \ne \arg \min_{\overline{x}} \sum_{k=1}^n |x_k - \overline{x}|}$である．
   \end{enumerate}
 
   　特に3つ目が問題であるが，説明は参考文献の記事に譲る．

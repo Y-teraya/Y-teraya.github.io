@@ -1,4 +1,4 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 
 \bibitem{ave-4}
 技術でブランドを支える ケムファク.
@@ -25,10 +25,20 @@
 \newblock 熱力学温度の単位「ケルビン」の定義改定.
 \newblock \url{https://unit.aist.go.jp/nmij/public/report/si-brochure/pdf/5_SI_%E3%82%B1%E3%83%AB%E3%83%93%E3%83%B3.pdf}.
 
+\bibitem{units-5}
+森北出版.
+\newblock 「アンペア」の定義のこれまでといま.
+\newblock \url{https://note.com/morikita/n/n0d9537d45ce1}.
+
 \bibitem{var-1}
 数学の景色.
 \newblock データの分散・標準偏差の定義・具体例・性質まとめ.
 \newblock \url{https://mathlandscape.com/variance}.
+
+\bibitem{units-6}
+倉本直樹.
+\newblock 物質量の単位「モル」の基礎解説とアボガドロ定数にもとづく新たな定義を導いた計測技術.
+\newblock \url{https://unit.aist.go.jp/nmij/public/report/si-brochure/pdf/6_SI_%E3%83%A2%E3%83%AB.pdf}.
 
 \bibitem{units-3}
 藤井賢一.
