@@ -139,14 +139,14 @@
   　かつては，国際キログラム原器（白金とイリジウムの合金で出来た円柱）の質量を1\ [kg]としていた．
   ただし，経年劣化により一義性に欠けるため，電流と同様に2019年に改定された．
   
-  　物体の静止質量を$m$，光子の周波数を$\nu$，プランク定数を$\hslash$とすると，
-  アインシュタインの相対性理論によれば次である．
+  　物体の静止質量を$m$，光子の周波数を$\nu$，プランク定数を$h$とすると，
+  アインシュタインの相対性理論によれば\cref{eq: einstein}である．
 
   \begin{equation}
-    E = mc^2 = \hslash \nu \label{eq: einstein}
+    E = mc^2 = h \nu \label{eq: einstein}
   \end{equation}
 
-  　ここでプランク定数$\hslash$を$6.626,070,15 \times 10^{−34}\ \mathrm{[J \cdot s]}$と定義することで，
+  　ここでプランク定数$h$を$6.626,070,15 \times 10^{−34}\ \mathrm{[J \cdot s]}$と定義することで，
   周波数$\nu$\ [Hz]の光子のエネルギー$E$と等価な質量が$m$\ [kg]である．
 
   \subsubsection{絶対温度の定義\cite{units-4}}
@@ -155,7 +155,7 @@
   ただし，「水」という物質に依存しており，かつ三重点の実現可能性が低いため電流と同様に2019年に改定された．
 
   　理想気体の場合，個々の分子は他の分子と衝突するとき以外は自由に動く．
-  1個の単原子の平均の運動エネルギーは，質量を$m$，2乗平均速度を$\overline{v^2}$，ボルツマン定数$k$，絶対温度$T$とすると次である．
+  1個の単原子の平均の運動エネルギーは，質量を$m$，2乗平均速度を$\overline{v^2}$，ボルツマン定数$k$，絶対温度$T$とすると\cref{eq: boltzmann-1}である．
 
 \begin{subequations}
 
@@ -163,13 +163,13 @@
     \frac{1}{2} m \overline{v^2} = \frac{3}{2} kT \label{eq: boltzmann-1}
   \end{equation}
 
-  　一方で，理想気体の分子$nN_A$個\footnote{$N_A$はアボガドロ定数であり，ボルツマン定数$k$と乗算することで気体定数$R$となる．}を体積$V$の容器に入れた場合，その圧力$p$は，質量$m$と2乗平均速度$\overline{v^2}$とすると次である．
+  　一方で，理想気体の分子$nN_A$個\footnote{$N_A$はアボガドロ定数であり，ボルツマン定数$k$と乗算することで気体定数$R$となる．}を体積$V$の容器に入れた場合，その圧力$p$は，質量$m$と2乗平均速度$\overline{v^2}$とすると\cref{eq: boltzmann-2}である．
 
   \begin{equation}
     p = \frac{1}{3} \frac{nN_Am}{V} \overline{v^2} \label{eq: boltzmann-2}
   \end{equation}
 
-  　\cref{eq: boltzmann-1,eq: boltzmann-2}より，次の理想気体の状態方程式が得られる．
+  　\cref{eq: boltzmann-1,eq: boltzmann-2}より，\cref{eq: air}の理想気体の状態方程式が得られる．
 
   \begin{equation}
     p(T)V = nN_AkT \label{eq: air}
@@ -259,8 +259,8 @@ Si接尾辞では$\times 10^{\pm 30}$まで定まっているが，よく使わ�
     ニュートン & 1\ [N] := 1\ [kg \cdot m/s$^2$] & 体積と質量 & 1\ [cc] = 1\ [mL] = 1\ [g] \\
     角度 & 1\ [deg] := $\tfrac{\pi}{180}$\ [rad] & 体積と体積 & 1\ [L] := 1\ [dm$^3$] = 0.001\ [m$^3$] \\
     パスカル & 1\ [Pa] := 1\ [kg/m \cdot s$^2$] & モル濃度 & 1\ [M] := 1\ [mol/L] \\
-    ジュール & 1\ [J] := 1\ [N \cdot m] & 水素イオン係数 & $\mathrm{pH} := - \log[\mathrm{H}^+]$ \\
-    ワット & 1\ [W] := 1\ [J/s] & 温度 & 1\ $[^\circ \mathrm{C}] := -273.15$\ [K] \\
+    ジュール & 1\ [J] := 1\ [N \cdot m] & 水素イオン濃度 & $\mathrm{pH} := - \log[\mathrm{H}^+]$ \\
+    ワット & 1\ [W] := 1\ [J/s] & 温度 & 1\ $[^\circ \mathrm{C}] := 273.15$\ [K] \\
     クーロン & 1\ [C] := 1\ [A \cdot s] \\
     ボルト & 1\ [V] := 1\ [W/A] = 1\ [J/C] \\
     ヘルツ & 1\ [Hz] := 1\ [/s] \\
@@ -313,7 +313,7 @@ Si接尾辞では$\times 10^{\pm 30}$まで定まっているが，よく使わ�
 特に，指数が正の整数($n > 0$)のとき\textbf{累乗}Repeat multiplicationといい，それ以外の場合は，\textbf{べき乗}Powerという．
 
 指数法則Exponential lawsは，定義より自明\footnote{一般に法則として紹介されていることが多いので，本資料では法則として扱う．また一般に法則とは，経験則から導かれた証明できない事象のことを指す．}である．
-底を$a$，指数を$m, n$としたとき，次の2法則が成立する．
+底を$a$，指数を$m, n$としたとき，\cref{eq: rpt-1,eq: rpt-2}の2法則が成立する．
 
 \begin{equation}
   a^m \times a^n = \underbrace{a \times a \times a \times \cdots \times a}_\text{\bm{m}\textbf{\normalsize 個}} \cdot \underbrace{a \times a \times \cdots \times a}_\text{\bm{n}\textbf{\normalsize 個}} = a^{m+n} \label{eq: rpt-1}
@@ -347,7 +347,7 @@ Si接尾辞では$\times 10^{\pm 30}$まで定まっているが，よく使わ�
 
 \subsection{0乗とマイナス乗}
 
-\cref{eq: rpt-1}が正しいと仮定すると，0乗とマイナス乗を定義できる．まず，\cref{eq: rpt-1}を$n=0$とすると次である．
+\cref{eq: rpt-1}が正しいと仮定すると，0乗とマイナス乗を定義できる．まず，\cref{eq: rpt-1}を$n=0$とすると\cref{eq: zrp-1}である．
 
 \begin{subequations}
 
@@ -355,7 +355,7 @@ Si接尾辞では$\times 10^{\pm 30}$まで定まっているが，よく使わ�
   a^m \times a^0 = a^{m+0} = a^m \label{eq: zrp-1}
 \end{equation}
 
-$a^m$に$a^0$を乗算しても\textbf{変化しない}．その数は，{\color{cyan}\textbf{1}}なので次と定義される．
+$a^m$に$a^0$を乗算しても\textbf{変化しない}．その数は，{\color{cyan}\textbf{1}}なので\cref{eq: zrp-2}と定義される．
 
 \begin{equation}
   a^0 := 1 \label{eq: zrp-2}
@@ -363,7 +363,7 @@ $a^m$に$a^0$を乗算しても\textbf{変化しない}．その数は，{\color
 
 \end{subequations}
 
-\cref{eq: zrp-2}が正しいと仮定し，\cref{eq: rpt-1}を$n=-m$とすると次である．
+\cref{eq: zrp-2}が正しいと仮定し，\cref{eq: rpt-1}を$n=-m$とすると\cref{eq: mnp-1}である．
 
 \begin{subequations}
 
@@ -372,7 +372,7 @@ $a^m$に$a^0$を乗算しても\textbf{変化しない}．その数は，{\color
 \end{equation}
 
 $a^m$に$a^0$を乗算すると\textbf{1になる}．その数は，{\color{cyan}\textbf{逆数}}
-\footnote{任意の数に\textbf{乗算すると1になる数}のこと．}なので次と定義される．
+\footnote{任意の数に\textbf{乗算すると1になる数}のこと．}なので\cref{eq: mnp-2}と定義される．
 
 \begin{equation}
   a^{-m} := \frac{1}{a^m} \label{eq: mnp-2}
@@ -386,7 +386,7 @@ $a^m$に$a^0$を乗算すると\textbf{1になる}．その数は，{\color{cyan
 $n$乗すると任意の数$a$になる数のことを累乗根Radical rootといい$\sqrt[n]{a}$と書く．$n$乗を強調して，\textbf{$\bm{n}$乗根}ともいう．
 また，$n=2$のとき，\textbf{平方根}Square rootといい$\sqrt{a}$と書き，ルートの左肩の2は省略できる．
 ただし，ルートで表記するのは見ずらくなるので指数で表現したい．指数方程式を解くことで累乗根を指数で定義できる．
-$a$を\textbf{底}，$n$を\textbf{指数}と次である．
+$a$を\textbf{底}，$n$を\textbf{指数}と\cref{eq: ipr-1}である．
 
 \begin{subequations}
 
@@ -394,26 +394,26 @@ $a$を\textbf{底}，$n$を\textbf{指数}と次である．
   \sqrt[n]{a} = a^x \label{eq: ipr-1}
 \end{equation}
 
-辺々\footnote{両辺と同じ意味．左辺（左側の式）と右辺（右側の式）の両方の式という意味である．}$n$乗すると，次である．
+辺々\footnote{両辺と同じ意味．左辺（左側の式）と右辺（右側の式）の両方の式という意味である．}$n$乗すると，\cref{eq: ipr-2}である．
 
 \begin{equation}
   \big(\sqrt[n]{a}\big)^n = \big(a^x\big)^n \label{eq: ipr-2}
 \end{equation}
 
-左辺はルートが外れ，指数で表現される．また，分かりやすいように1乗として書くと次である．
+左辺はルートが外れ，指数で表現される．また，分かりやすいように1乗として書くと\cref{eq: ipr-3}である．
 
 \begin{equation}
   a^1 = a^{nx} \label{eq: ipr-3}
 \end{equation}
 
 底が同じ方程式\footnote{等号で結ばれた式のこと．}は，指数も同じである\footnote{これが指数方程式の基本的な考え方である．}．
-指数だけ取り出して等式にすると，次である．
+指数だけ取り出して等式にすると，\cref{eq: ipr-4}である．
 
 \begin{equation}
   1 = nx \label{eq: ipr-4}
 \end{equation}
 
-$x$について解き，$n$乗根を指数で表すと次で定義される．
+$x$について解き，$n$乗根を指数で表すと\cref{eq: ipr-5}で定義される．
 
 \begin{equation}
   \sqrt[n]{a} := a^{\tfrac{1}{n}} \label{eq: ipr-5}
@@ -438,7 +438,7 @@ $x$について解き，$n$乗根を指数で表すと次で定義される．
 \label{sec: mean}
 
 主に\idx{算術平均}のことを指す．全データを合計し，データの数で割ることで求められる．
-\idx{平均値}を $\overline{x}$\footnote{$\mu$と置くこともある．}，データ数を$n$，各データを$x_k$とすると，次と定義\footnote{$:=$は\textbf{左辺を右辺と定義する}と示す記号である．}する
+\idx{平均値}を $\overline{x}$\footnote{$\mu$と置くこともある．}，データ数を$n$，各データを$x_k$とすると，\cref{eq: ave-1}と定義\footnote{$:=$は\textbf{左辺を右辺と定義する}と示す記号である．}する
 \footnote{$\sum$の計算は，基本的に$1 \leq k \leq n\ (k \in \bm{Z})$の範囲内での\textbf{総和}を示す記号である．$\sum$の下に書いてある数字から，上に書いてある数字までを\textbf{カウントアップして足したもの}である．}．
 
 \begin{equation}
@@ -466,7 +466,7 @@ $x$について解き，$n$乗根を指数で表すと次で定義される．
   \subsubsection{幾何平均（相乗平均）}
 
   　算術平均は足し算においての平均であったが，これは掛け算においての平均である．
-  \idx{平均値}を $G$，データ数を$n$，各データを$x_k$とすると，次である
+  \idx{平均値}を $G$，データ数を$n$，各データを$x_k$とすると，\cref{eq: ave-2}である
   \footnote{$\prod$の計算は$\sum$の足し算を\textbf{掛け算に変えた}ものである，基本的に$1 \leq k \leq n\ (k \in \bm{Z})$の範囲内での\textbf{総積}を示す記号である．$\prod$の下に書いてある数字から，上に書いてある数字までを\textbf{カウントアップして掛けたもの}である．}．
 
   \begin{equation}
@@ -478,7 +478,7 @@ $x$について解き，$n$乗根を指数で表すと次で定義される．
   \subsubsection{調和平均}
 
   　調和平均は，一度逆数にしたデータの算術平均のことである．
-  \idx{平均値}を $H$，データ数を$n$，各データを$x_k$とすると，次である．
+  \idx{平均値}を $H$，データ数を$n$，各データを$x_k$とすると，\cref{eq: ave-3}である．
 
   \begin{equation}
     H^{-1} := \frac{1}{n} \left(\sum_{k=1}^n \frac{1}{x_k}\right) = \frac{\frac{1}{x_1} + \frac{1}{x_2} + \cdots + \frac{1}{x_n}}{n} \label{eq: ave-3}
@@ -491,7 +491,7 @@ $x$について解き，$n$乗根を指数で表すと次で定義される．
 \subsection{\idx{中央値}\idx{Median}}
 \label{sec: median}
 
-データを\textbf{大きさの順に}並べた際の，真ん中の値を指す．例えば，データの集合$A$を次と設定する．
+データを\textbf{大きさの順に}並べた際の，真ん中の値を指す．例えば，データの集合$A$を\cref{eq: med-1}と設定する．
 
 \begin{equation}
   A = \{x_k|1 \leq k \leq 5\} \label{eq: med-1}
@@ -512,7 +512,7 @@ $x$について解き，$n$乗根を指数で表すと次で定義される．
 \subsection{\idx{最頻値}\idx{Mode}}
 \label{sec: mode}
 
-データの集合内で，同じデータが存在する場合がある．その同じデータが最も出現する値を指す．例えば，集合$A$，\cref{eq: med-1}に次と設定する．
+データの集合内で，同じデータが存在する場合がある．その同じデータが最も出現する値を指す．例えば，集合$A$，\cref{eq: med-1}に\cref{eq: mod-1}と設定する．
 
 \begin{equation}
   x_2 = x_3 \label{eq: mod-1}
@@ -551,13 +551,13 @@ $x$について解き，$n$乗根を指数で表すと次で定義される．
 \subsection{\idx{分散}\idx{Variance}・\idx{標準偏差}\idx{Standard deviation}}
 \label{sec: variance}
 
-各データと\textbf{平均との差}の平均である．一般にデータの\textbf{バラつき}を表す．\idx{分散}を$s^2$\footnote{$\sigma^2$と置くこともある．}，データ数を$n$，各データを$x_k$とすると，次である．
+各データと\textbf{平均との差}の平均である．一般にデータの\textbf{バラつき}を表す．\idx{分散}を$s^2$\footnote{$\sigma^2$と置くこともある．}，データ数を$n$，各データを$x_k$とすると，\cref{eq: var-1}である．
 
 \begin{equation}
   s^2 := \frac{1}{n} \sum_{k=1}^n (x_k - \overline{x})^2= \dfrac{(x_1 - \overline{x})^2 + (x_2 - \overline{x})^2 + \cdots + (x_n - \overline{x})^2}{n} \label{eq: var-1}
 \end{equation}
 
-\idx{標準偏差}はこの2乗を外したもののことである．すなわち，\idx{分散}$s^2$をルート$\sqrt{\quad}$に入れたものである．そのため，\idx{標準偏差}を$s$\footnote{$\sigma$と置くこともある．}とすると次である．
+\idx{標準偏差}はこの2乗を外したもののことである．すなわち，\idx{分散}$s^2$をルート$\sqrt{\quad}$に入れたものである．そのため，\idx{標準偏差}を$s$\footnote{$\sigma$と置くこともある．}とすると\cref{eq: sdv-1}である．
 
 \begin{equation}
   s := \sqrt{\frac{1}{n} \sum_{k=1}^n (x_k - \overline{x})^2} \label{eq: sdv-1}
@@ -568,7 +568,7 @@ $x$について解き，$n$乗根を指数で表すと次で定義される．
 
   \hspace{5pt}
 
-  　平均との差であれば，絶対値を用いれば良いと考えられる．絶対値で計算する平均偏差と呼ばれるものを紹介する．平均偏差は次で求められる．
+  　平均との差であれば，絶対値を用いれば良いと考えられる．絶対値で計算する平均偏差と呼ばれるものを紹介する．平均偏差は\cref{eq: err-1}で求められる．
 
   \begin{equation}
     MAE = \frac{1}{n} \sum_{k=1}^n |x_k - \overline{x}| \label{eq: err-1}
@@ -732,7 +732,7 @@ $x$について解き，$n$乗根を指数で表すと次で定義される．
 \subsection{ベクトルの成分表示Component form}
 \label{sec: component}
 
-単位ベクトルと係数倍を用いて，一般にベクトルを次のような式で表せる．
+単位ベクトルと係数倍を用いて，一般にベクトルを\cref{eq: cpf-1}のような式で表せる．
 
 \begin{equation}
   \bm{a}=A \bm{i}+B \bm{j}+C \bm{k} \label{eq: cpf-1}
