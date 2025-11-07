@@ -5,6 +5,7 @@
 \usepackage{ascolorbox}
 \usepackage{stackengine}
 \usepackage{cleveref}
+\usepackage{appendix}
 
 \hypersetup{
  pdfencoding=auto,
@@ -21,9 +22,9 @@
 \crefname{figure}{図}{図}
 \crefname{table}{表}{表}
 
-\crefname{section}{第}{第}
+\crefname{section}{}{}
 \creflabelformat{section}{#2#1節#3}
-\crefname{subsection}{第}{第}
+\crefname{subsection}{}{}
 \creflabelformat{subsection}{#2#1節#3}
 
 \newcommand{\crefpairconjunction}{と}
@@ -71,7 +72,7 @@
   また本資料の著作権は，\href{https://creativecommons.org/licenses/by-nc-sa/4.0}{CC BY-NC-SA 4.0}を適応する．
 \end{center}
 
-\clearpage
+\cleardoublepage
 
 \pagenumbering{arabic}
 
@@ -194,7 +195,7 @@
 
 \end{ascolorbox4}
 
-\clearpage
+\cleardoublepage
 
 \subsection{接頭辞Prefix}
 \label{sec: prefix}
@@ -244,7 +245,7 @@ Si接尾辞では$\times 10^{\pm 30}$まで定まっているが，よく使わ�
 [mL]の{\color{cyan}m}は，\cref{tab: prefix}を参照すると指数乗は{\color{cyan}$10^{-3}$}である．
 そのため，まず\textbf{接頭辞を指数乗に変える}．そのあと，指数乗を掛けることで単位を換算できる．
 
-\clearpage
+\cleardoublepage
 
 その他，戸惑いやすいが変換できるものを紹介する．
 
@@ -257,7 +258,7 @@ Si接尾辞では$\times 10^{\pm 30}$まで定まっているが，よく使わ�
     \multicolumn{2}{c}{物理学} & \multicolumn{2}{c}{生命化学} \\
     \hline
     ニュートン & 1\ [N] := 1\ [kg \cdot m/s$^2$] & 体積と質量 & 1\ [cc] = 1\ [mL] = 1\ [g] \\
-    角度 & 1\ [deg] := $\tfrac{\pi}{180}$\ [rad] & 体積と体積 & 1\ [L] := 1\ [dm$^3$] = 0.001\ [m$^3$] \\
+    角度 & 1\ [deg] := $\tfrac{\pi}{180}$\ [rad] & 体積と密度 & 1\ [L] := 1\ [dm$^3$] = 0.001\ [m$^3$] \\
     パスカル & 1\ [Pa] := 1\ [kg/m \cdot s$^2$] & モル濃度 & 1\ [M] := 1\ [mol/L] \\
     ジュール & 1\ [J] := 1\ [N \cdot m] & 水素イオン濃度 & $\mathrm{pH} := - \log[\mathrm{H}^+]$ \\
     ワット & 1\ [W] := 1\ [J/s] & 温度 & 1\ $[^\circ \mathrm{C}] := 273.15$\ [K] \\
@@ -269,6 +270,11 @@ Si接尾辞では$\times 10^{\pm 30}$まで定まっているが，よく使わ�
 \end{table}
 
 詳しく調べたい場合は，\href{https://www.dainippon-tosho.co.jp/unit/list}{\textbf{大日本図書 いろいろな単位}}が分かりやすいので紹介しておく．
+その他は，付録にいくつか記載している．
+
+\begin{itemize}
+  \item モル計算，濃度計算: \ref{sec: mol-cal}
+\end{itemize}
 
 \subsection{ギリシャ文字Greek alphabet}
 
@@ -298,7 +304,7 @@ Si接尾辞では$\times 10^{\pm 30}$まで定まっているが，よく使わ�
   \end{tabular}
 \end{table}
 
-\clearpage
+\cleardoublepage
 
 \part{初歩的な計算}
 \label{part: calculate}
@@ -421,7 +427,7 @@ $x$について解き，$n$乗根を指数で表すと\cref{eq: ipr-5}で定義�
 
 \end{subequations}
 
-\clearpage
+\cleardoublepage
 
 \part{統計のデータ}
 \label{part: statistics}
@@ -592,7 +598,7 @@ $x$について解き，$n$乗根を指数で表すと\cref{eq: ipr-5}で定義�
 単に\idx{最大値}と\idx{最小値}の差である．例えば，集合$A$，\cref{eq: med-1}を基にして考える．
 このとき，\idx{範囲}は$x_5 - x_1$である．
 
-\clearpage
+\cleardoublepage
 
 \part{データのイメージ}
 \label{part: deta}
@@ -746,15 +752,25 @@ $x$について解き，$n$乗根を指数で表すと\cref{eq: ipr-5}で定義�
 
 とも表せる．
 
-\clearpage
+\cleardoublepage
 
 \pagenumbering{alph}
 
 \lhead{}
+\cleardoublepage
+\addcontentsline{toc}{section}{参考文献}
 \bibliographystyle{plain}
 \bibliography{ref.bib}
 \nocite{*}
 
+\cleardoublepage
+\addcontentsline{toc}{section}{索引}
 \printindex
+
+\cleardoublepage
+\appendix
+
+\section{モル計算，濃度計算}
+\label{sec: mol-cal}
 
 \end{document}
