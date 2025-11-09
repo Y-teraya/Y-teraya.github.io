@@ -5,7 +5,7 @@
 \usepackage{ascolorbox}
 \usepackage{stackengine}
 \usepackage{cleveref}
-\usepackage{appendix}
+\usepackage{appendix, adjustbox}
 
 \hypersetup{
  pdfencoding=auto,
@@ -60,7 +60,7 @@
   これらの計算ができない限り，実験系を組むことができず実験のスタートラインに立てない．そのため，計算できるようになることを目的とする．
 
   化学Chemistryの基本的な考え方は，\textbf{すべての物質は粒で構成されている}ということである．
-  その粒の構造や運動を，帰納的かつ\textbf{実験的に}導かれていることを忘れないで欲しい．
+  その粒の構造や運動を，\textbf{実験的に導かれ}帰納的に体系化されていることを忘れないで欲しい．
 \end{abstract}
 
 \tableofcontents
@@ -189,6 +189,12 @@ Si接尾辞では$\times 10^{\pm 30}$まで定まっているが，よく使わ�
     \hline
   \end{tabular}
 \end{table}
+
+\href{https://example.com}{%
+  \adjustbox{border=2pt solid blue}{%
+    \includegraphics[width=0.5\textwidth]{periodic_table.pdf}%
+  }%
+}
 
 \cleardoublepage
 
