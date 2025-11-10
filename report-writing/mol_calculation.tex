@@ -6,7 +6,7 @@
 \usepackage{stackengine}
 \usepackage{cleveref}
 \usepackage{appendix, xcolor}
-\usepackage{tablefootnote}
+\usepackage{tablefootnote, titlesec}
 
 \hypersetup{
  pdfencoding=auto,
@@ -299,7 +299,7 @@ molを含んだ組立単位を\cref{tab: unit-2}に示す．
 \end{table}
 
 モル質量は大きく3つある．原子量，分子量，式量である．
-ただし，この3つは\textbf{無単位量}\foornote{これらは，相対質量として定められている．$^{12}\mathrm{C} = 12$として，\textbf{比の形}で表現される．そのため，単位が約分され無単位量として扱われる．}
+ただし，この3つは\textbf{無単位量}\footnote{これらは，相対質量として定められている．$^{12}\mathrm{C} = 12$を基準として，\textbf{比の形}で他の原子量を表現する．そのため，単位が約分され無単位量として扱われる．}
 として扱われているが，相対質量がモル質量と一致するので単位としては[g/mol]で良い．
 
 \begin{table}[htbp]
@@ -308,11 +308,11 @@ molを含んだ組立単位を\cref{tab: unit-2}に示す．
   \centering
   \begin{tabular}{lcl}
     \hline
-    & 略称 & 対象 \\
+    Weight & 略称 & 対象 \\
     \hline
     原子量Atomic Weight & A.W. & 単一原子 \\
     分子量Molecular Weight & M.W. & 共有結合の分子 \\
-    式量Formula Weight & 1\ [mol] & イオン・塩などの化学式 \\
+    式量Formula Weight & F.W. & イオン・塩などの化学式 \\
     \hline
   \end{tabular}
 \end{table}
@@ -330,10 +330,10 @@ molを含んだ組立単位を\cref{tab: unit-2}に示す．
 
 \cleardoublepage
 \appendix
+\begingroup
+\renewcommand{\addcontentsline}[3]{}
 \section{基本単位の定義}
 \label{col: basic def}
-
-\hspace{5pt}
 
 基本単位には，\textbf{一義性}\footnote{ただ1つに定まる性質のこと．}と\textbf{普遍性}\footnote{広く全ての場合にあてはめることができる性質のこと．}を持った基準が必要であり世界共通のものである．
 その\textbf{厳密な定義}\cite{units-1}を紹介する．
@@ -440,5 +440,7 @@ molを含んだ組立単位を\cref{tab: unit-2}に示す．
     \hline
   \end{tabular}
 \end{table}
+
+\endgroup
 
 \end{document}
