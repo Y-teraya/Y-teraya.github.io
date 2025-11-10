@@ -262,13 +262,13 @@ meter\ [m]は一次元でありただの\textbf{直線}(\cref{fig: R^1})であ�
   \label{fig: periodic}
 \end{figure}
 
-\subsection{間違えやすいが変換できる単位}
+\subsection{戸惑いやすいが換算できる単位}
 
 ここから先の内容は，知っているか知らないかの0と1である．そのため，簡単に表にまとめる程度にする．
-まずは，一見では変換できなさそうだけど定義上同じものである\footnote{通常の$=$は同じことを示しているが，$:=$は\textbf{左辺を右辺と定義する}という意味である．}．
+まずは，一見では換算できなさそうだけど定義上同じものである\footnote{通常の$=$は同じことを示しているが，$:=$は\textbf{左辺を右辺と定義する}という意味である．}．
 
 \begin{table}[htbp]
-  \caption{間違えやすいが変換できる単位}
+  \caption{戸惑いやすいが換算できる単位}
   \label{tab: unit-1}
   \centering
   \begin{tabular}{rlrlrl}
@@ -280,24 +280,42 @@ meter\ [m]は一次元でありただの\textbf{直線}(\cref{fig: R^1})であ�
   \end{tabular}
 \end{table}
 
-\subsection{molを含む組立単位}
+\subsection{molから換算できる単位}
 
-やっと本題の話．molを含んだ組立単位を\cref{tab: unit-2}に示す．
+molを含んだ組立単位を\cref{tab: unit-2}に示す．
 
 \begin{table}[htbp]
-  \caption{molを含む単位}
+  \caption{molから換算できる単位}
   \label{tab: unit-2}
   \centering
   \begin{tabular}{rlrlrl}
     \hline
     物質量とアボガドロ定数 & 1\ [mol] &:=& $6.022 \times 10^{23}$\ [個/mol]\tablefootnote{アボガドロ定数の単位は，一般には「個」を省略して[/mol]を用いる．} \\
-    物質量と気体の体積 & 1\ [mol] &:=& 22.4\ [L] \\
-    物質量と液体・個体の体積 & 1\ [mol] &:=& $\tfrac{nm}{\rho}$\tablefootnote{$n$を物質量，$m$をモル質量，$\rho$を密度とする．} \\
+    物質量と気体の体積 & 1\ [mol] &:=& 22.4\ [L/mol] \\
+    物質量と液体の体積 & 1\ [mol] &:=& $\tfrac{nm}{\rho}\ [\mathrm{mL/mol}]$\tablefootnote{$n$を物質量，$m$をモル質量，$\rho$を密度とする．} \\
+    物質量と固体の体積 & 1\ [mol] &:=& $\tfrac{nm}{\rho}\ [\mathrm{cm^3/mol}]$ \\
     \hline
   \end{tabular}
 \end{table}
 
-モル質量というものは，大きく3つある．
+モル質量は大きく3つある．原子量，分子量，式量である．
+ただし，この3つは\textbf{無単位量}\foornote{これらは，相対質量として定められている．$^{12}\mathrm{C} = 12$として，\textbf{比の形}で表現される．そのため，単位が約分され無単位量として扱われる．}
+として扱われているが，相対質量がモル質量と一致するので単位としては[g/mol]で良い．
+
+\begin{table}[htbp]
+  \caption{原子量，分子量，式量}
+  \label{tab: wt-1}
+  \centering
+  \begin{tabular}{lcl}
+    \hline
+    & 略称 & 対象 \\
+    \hline
+    原子量Atomic Weight & A.W. & 単一原子 \\
+    分子量Molecular Weight & M.W. & 共有結合の分子 \\
+    式量Formula Weight & 1\ [mol] & イオン・塩などの化学式 \\
+    \hline
+  \end{tabular}
+\end{table}
 
 \subsection{百分率は分母に100が隠れてる}
 
@@ -358,7 +376,7 @@ meter\ [m]は一次元でありただの\textbf{直線}(\cref{fig: R^1})であ�
 ただし，「水」という物質に依存しており，かつ三重点の実現可能性が低いため電流と同様に2019年に改定された．
 
 理想気体の場合，個々の分子は他の分子と衝突するとき以外は自由に動く．
-1個の単原子の平均の運動エネルギーは，質量を$m$，2乗平均速度を$\overline{v^2}$，ボルツマン定数$k$，絶対温度$T$とすると\cref{eq: boltzmann-1}である．
+1個の単原子の平均の運動エネルギーは，質量$m$，2乗平均速度$\overline{v^2}$，ボルツマン定数$k$，絶対温度$T$とすると\cref{eq: boltzmann-1}である．
 
 \begin{subequations}
 
@@ -386,5 +404,41 @@ meter\ [m]は一次元でありただの\textbf{直線}(\cref{fig: R^1})であ�
 \subsection*{光度の定義}
 
 特定の周波数$540 \times 10^{12}$\ [Hz]の緑色の光を出す特定の方向に，放射強度$K_{\mathrm{cd}}$が683 [lm/W]である点光源の光度を，1\ [cd]と定義した．
+
+\cleardoublepage
+
+\section{単位まとめ}
+
+
+
+\cleardoublepage
+
+\section{ギリシャ文字Greek alphabet}
+
+よく数式の記号でギリシャ文字が用いられるので，知っていると役に立つだろう．
+
+\begin{table}[htbp]
+  \caption{ギリシャ文字}
+  \label{tab: greek}
+  \centering
+  \begin{tabular}{rcccrccc}
+    \hline
+    読み方 &  & 大文字 & 小文字 & 読み方 &  & 大文字 & 小文字 \\
+    \hline
+    alpha & ｱﾙﾌｧ & A & \alpha & beta & ﾍﾞｰﾀ & B & \beta \\
+    gamma & ｶﾞﾝﾏ & \Gamma & \gamma & delta & ﾃﾞﾙﾀ & \Delta & \delta \\
+    epsilon & ｲﾌﾟｼﾛﾝ & E & \varepsilon, \epsilon & zeta & ｾﾞｰﾀ & Z & \zeta \\
+    eta & ｲｰﾀ & H & \eta & theta & ｼｰﾀ & \Theta & \theta, \vartheta \\
+    iota & ｲｵﾀ & I & \iota & kappa & ｶｯﾊﾟ & K & \kappa \\
+    lambda & ﾗﾑﾀﾞ & \Lambda &\lambda & mu & ﾐｭｰ & M & \mu \\
+    nu & ﾆｭｰ & N & \nu & omicron & ｵﾐｸﾛﾝ & O & $o$ \\
+    xi & ｸｼｰ, ｸﾞｻﾞｲ & \Xi & \xi & pi & ﾊﾟｲ & \Pi & \pi, \varpi \\
+    pho & ﾛｰ & P & \rho, \varrho & sigma & ｼｸﾞﾏ & \Sigma & \sigma, \varsigma \\
+    tau & ﾀｳ & T & \tau & upsilon & ｳﾌﾟｼﾛﾝ & \Upsilon & \upsilon \\
+    phi & ﾌｧｲ & \Phi & \phi, \varphi & chi & ｶｲ & X & \chi \\
+    psi & ﾌﾟｻｲ & \Psi & \psi & omega & ｵﾒｶﾞ & \Omega & \omega \\
+    \hline
+  \end{tabular}
+\end{table}
 
 \end{document}
