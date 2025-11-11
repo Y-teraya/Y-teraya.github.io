@@ -1,149 +1,128 @@
 \documentclass[a4paper,11pt]{ltjsarticle}
 \usepackage[margin=28truemm]{geometry}
-\makeatletter
-\renewcommand{\section}{%
-  \@startsection{section}{1}{\z@}%
-    {1\Cvs \@plus.5\Cdp \@minus.2\Cdp}%
-    {.5\Cvs \@plus.3\Cdp}%
-    {\fontsize{14pt}{0pt}\selectfont\textsf}%
-}
-\renewcommand{\subsection}{%
-  \@startsection{subsection}{2}{\z@}%
-    {1\Cvs \@plus.3\Cdp \@minus.2\Cdp}%  % 前のスペース
-    {.3\Cvs \@plus.2\Cdp}%                % 後のスペース
-    {\fontsize{12pt}{0pt}\selectfont\textsf}%  % フォントサイズとスタイル
-}
-\makeatother
+
 \usepackage{booktabs}
-\usepackage{fancyhdr}
-\usepackage{ascmac}
+\usepackage{amsmath, mathtools, mathbbol, amssymb, bm, cancel, fancyhdr, anyfontsize, subcaption, multirow, wrapfig, graphicx, url, enumitem, ascmac, tikz, tikz-3dplot, makeidx}
+\usepackage[luatex]{hyperref}
+\usepackage[most]{tcolorbox}
+\usepackage{ascolorbox}
+\usepackage{stackengine}
+\usepackage{cleveref}
+\usepackage{appendix, xcolor}
+\usepackage{tablefootnote}
 \usepackage{tabularx}
+
+\newtcolorbox{marker}[1][]{enhanced,
+  before skip=2mm,after skip=3mm,fontupper=\gtfamily\sffamily,
+  boxrule=0.4pt,left=5mm,right=2mm,top=1mm,bottom=1mm,
+  colback=yellow!50,
+  colframe=yellow!20!black,
+  sharp corners,rounded corners=southeast,arc is angular,arc=3mm,
+  underlay={%
+    \path[fill=tcbcolback!80!black] ([yshift=3mm]interior.south east)--++(-0.4,-0.1)--++(0.1,-0.2);
+    \path[draw=tcbcolframe,shorten <=-0.05mm,shorten >=-0.05mm] ([yshift=3mm]interior.south east)--++(-0.4,-0.1)--++(0.1,-0.2);
+    \path[fill=yellow!50!black,draw=none] (interior.south west) rectangle node[white]{\Huge\bfseries !} ([xshift=4mm]interior.north west);
+    },
+  drop fuzzy shadow,#1
+  }
 
 \begin{document}
 
 \pagestyle{fancy}
-\lhead{第6章: 進路指導とキャリア教育（D，11/5）}
+\lhead{第10章: 非行問題の理解と対応（D，12/3）}
 \rhead{}
 \cfoot{\thepage}
 
-\section{職業指導からキャリア教育への変遷}
+\section{非行少年の分類と現状}
+
+少年法第3条により，非行少年は以下の3つに分類される:
 
 \begin{description}
-    \item[職業指導] Parsons (1908)の職業選択支援運動が起源．日本では1927年に文部省通達，1947年の教育基本法で学校教育に導入．
-    \item[進路指導] 1958年に「職業指導」から名称変更．就職希望者のみでなく，全生徒の成長・発達を意識した支援へ転換．1961年に文部省が「教師が組織的，継続的に援助する過程」と定義．
-                    \textbf{キャリア教育の部分集合}である．
-    \item[キャリア教育] 1999年の中央教育審議会答申で初登場．小学校段階から発達段階に応じた実施が提言され，2017年の学習指導要領で明記．
+    \item[犯罪少年] 14歳以上で犯罪を行った者
+    \item[触法少年] 14歳未満で犯罪少年と同じ行為を行った者
+    \item[ぐ犯少年] 今後犯罪少年や触法少年になる可能性の高い者
 \end{description}
 
-\section{キャリア教育の定義と目的}
+近年，非行少年数は減少傾向にあるが，\textbf{多様化・低年齢化}が進んでいる．
 
-\begin{description}
-    \item[中央教育審議会（2011）の定義] 「一人一人の社会的・職業的自立に向け，必要な基盤となる能力や態度を育てることを通して，キャリア発達を促す教育」
-\end{description}
-
-\vspace{-10pt}
-
-\renewcommand{\arraystretch}{1.5}
 \begin{table}[htbp]
     \centering
-    \caption{3つの意義}
-    \begin{tabularx}{\textwidth}{|X|X|X|}
-        \hline
-        学校教育構成の理念と方向性の提示 & 各学校段階での発達課題の明確化 & 学校生活と社会生活・職業生活の連結による学習意欲の喚起 \\
-        \hline
-    \end{tabularx}
-\end{table}
-
-\section{基礎的・汎用的能力（4つの柱）}
-
-\vspace{-10pt}
-
-\renewcommand{\arraystretch}{1}
-\begin{table}[htbp]
-    \centering
-    \caption{基礎的・汎用的能力（4つの柱）}
+    \caption{非行問題を理解する3つの危機}
     \begin{tabularx}{\textwidth}{XXXX}
         \hline
-        \textbf{人間関係形成・社会形成能力} & \textbf{自己理解・自己管理能力} & \textbf{課題対応能力} & \textbf{キャリアプランニング能力} \\
+        危機の種類 &  & 内容 & 対応の特徴 \\
         \hline
-        多様な他者理解，協力・協働，社会参画 & 肯定的自己理解，主体的行動，自己管理 & 課題発見・分析，計画立案，問題解決 & 「働くこと」の意義理解，主体的キャリア形成 \\
-        \hline
-    \end{tabularx}
-\end{table}
-
-※これら4つの能力は相互に関連・依存し，特定の順序や均一な習得を求めるものではない．
-
-\section{キャリア教育の実践}
-
-\vspace{-10pt}
-
-\renewcommand{\arraystretch}{2}
-\begin{table}[htbp]
-    \centering
-    \caption{進路指導の6つの活動（文部省，1995）}
-    \begin{tabularx}{\textwidth}{|X|X|X|}
-        \hline
-        生徒理解と自己理解 & 進路情報の提供 & 啓発的経験の提供 \\
-        \hline
-        進路相談 & 就職・進学指導 & 卒業者の追指導 \\
+        \textbf{発達的危機} & 遍在性 & 思春期・青年期特有の心理的不安定さ & 予防・開発的対応 \\
+        \textbf{基本的危機} & 偏在性 & 精神障害や知的・発達障害を伴う場合 & 医療的理解と対応 \\
+        \textbf{個人的危機} & 偏在性 & 困窮した経済状況，崩壊した家庭環境での生育 & 福祉的理解と対応 \\
         \hline
     \end{tabularx}
 \end{table}
 
-\clearpage
+\begin{marker}
+遍在性と偏在性を混同すると，過度な一般化が起こり，問題をより深刻化させる．
+\end{marker}
 
-\subsection{特別活動との連携}
-特別活動を「要」としつつ各教科等でキャリア教育を実施．「勤労生産・奉仕的行事」は体験的キャリア教育の重要機会．キャリア・パスポートを活用し，児童生徒の自己理解と将来設計を支援．
-
-\section{評価と連携}
-
-\vspace{-10pt}
-
-\renewcommand{\arraystretch}{2}
-\begin{table}[htbp]
-    \centering
-    \caption{3つの評価対象}
-    \begin{tabularx}{\textwidth}{|X|X|X|}
-        \hline
-        生徒の学習状況 & 教師の学習指導 & 学校の指導計画 \\
-        \hline
-    \end{tabularx}
-\end{table}
+\section{非行少年の3つの顕著な傾向}
 
 \begin{description}
-    \item[評価方法] 観察，制作物，キャリア・パスポート，自己評価，相互評価，他者評価など．
-    \item[連携の重要性] 外部連携（地域・社会との接続）と学校間連携（発達段階に応じた継続的支援）が不可欠．
+    \item[悪い自己イメージ] 劣等感・疎外感・低い自己肯定感
+    \item[自己管理能力の低さ] 基本的生活習慣の欠如，金銭管理能力の不足
+    \item[コミュニケーション能力の低さ] ソーシャルスキルの欠如，衝動や攻撃性のコントロール困難
 \end{description}
 
-\section{PDCAサイクルの活用}
+\begin{ascolorbox9}{非行の悪化段階（ショウ・マッケイ，ベッカーの説）}[3]
 
-\vspace{-10pt}
-
-\renewcommand{\arraystretch}{1.8}
-\begin{table}[htbp]
-    \centering
-    \caption{藤田（2014）が示す7つの重要ポイント}
-    \begin{tabularx}{\textwidth}{|X|X|X|}
-        \hline
-        行動レベルでの現状把握と目標設定 & 教職員・保護者・地域の納得できる目標 & 基礎的・汎用的能力の活用 \\
-        \hline
-        評価指標の設定と成果評価 & 包括的評価の工夫 & 教科評価との区別 \\
-        \hline
-        評価結果に基づく改善 & & \\
-        \hline
-    \end{tabularx}
-\end{table}
-
-\begin{description}
-    \item[A（改善）の重要性] 評価を踏まえた目標の再検討が特に重要．キャリア教育は継続的・体系的な実践が求められる．
-\end{description}
-
-\begin{boxnote}
     \begin{enumerate}
-        \item 中学生時代の職場体験や職業調べにおいて，「このような仕事が存在するのか」と驚いた職業はありましたか．
-        \item 「人間関係形成・社会形成能力」「自己理解・自己管理能力」「課題対応能力」「キャリアプランニング能力」の4つのうち，自身が最も得意または苦手とする能力はどれですか．
-        \item 仮に自身が中学校教員として「勤労生産・奉仕的行事」を企画する場合，どのような活動を考えますか．
+        \item 遊戯・最初の規則違反
+        \item 社会的規範との葛藤（喫煙・飲酒・深夜徘徊）
+        \item 非行行動の継続
+        \item 非行集団への忠誠と一体感
+        \item 組織的非行行動
+        \item 非行ギャング化とヒエラルキー上昇
     \end{enumerate}
-\end{boxnote}
+
+\end{ascolorbox9}
+
+\section{ハーシの社会的絆理論（非行予防）}
+
+非行行動は社会的絆の4つの強さによって抑制される:
+
+\begin{description}
+    \item[愛着] 両親・教師・仲間との情緒的つながり
+    \item[投資] 教育や仕事への思い入れ・こだわり
+    \item[巻き込み] 日常的な集団活動・余暇活動への参加
+    \item[規範観念] 社会規範の受容と習慣化
+\end{description}
+
+現代の非行少年はこれらすべての要素が弱い傾向にある．
+
+\section{学校における3段階の援助}
+
+学校における対応は，N-of-1に考える必要もある:
+
+\begin{table}[htbp]
+    \centering
+    \caption{非行問題を理解する3つの危機}
+    \begin{tabularx}{\textwidth}{XXXX}
+        \hline
+        援助レベル &  & 対象 & 主な対応 \\
+        \hline
+        \textbf{1次的援助} & 発達支持的 & すべての子ども & 規範意識の学習，社会的絆の形成，構成的グループエンカウンター，ソーシャルスキル・トレーニング \\
+        \textbf{2次的援助} & 課題未然防止・早期発見 & 配慮を要する子ども & 個別対応の継続，専門機関との連携，呼び出し面接（丁寧語で淡々と） \\
+        \textbf{3次的援助} & 困難課題対応 & 犯罪を犯した少年 & 警察・家庭裁判所・児童相談所等の専門機関による処遇 \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+\begin{ascolorbox4}{質問}
+
+    \begin{enumerate}
+        \item 最近の自己管理能力は，どうやって鍛えてますか．
+        \item 社会的絆は，デジタル空間でも成立すると思いますか．
+        \item 規範意識は，文化によって変わるものだと思いますか．
+    \end{enumerate}
+
+\end{ascolorbox4}
 
 \end{document}
