@@ -78,7 +78,8 @@
 \vspace{12pt}
 
 \begin{center}
-  \textbf{\color{blue}青文字}をクリックすると，対応したページに遷移する．
+  \textbf{\color{blue}青文字}をクリックすると，対応したページに遷移する．\\
+  本資料の著作権は，\href{https://creativecommons.org/licenses/by-nc-sa/4.0}{CC BY-NC-SA 4.0}を適応する．
 \end{center}
 
 \cleardoublepage
@@ -285,12 +286,10 @@ meter\ [m]は一次元でありただの\textbf{直線}(\cref{fig: R^1})であ�
     体積と質量 & 1\ [cc] &=& 1\ [mL] &=& 1\ [g]\tablefootnote{$4^\circ \mathrm{C}$の水基準である．それ以外では，値が前後することがあるので正確に量り取るときには適さない．} \\
     体積と密度 & 1\ [L] &:=& 1\ [dm$^3$] &=& 0.001\ [m$^3$] \\
     モル濃度Molarity & 1\ [M] &:=& 1\ [mol/L] \\
-    規定度Normality & 1\ [N] &:=& 1\ [M] \times\ Eq. &=& 1\ [N] \\
+    規定度Normality & 1\ [N] &:=& 1\ [M] \times\ Eq. &=& 1\ [N]\tablefootnote{モル質量に価数Eq.を乗算したものである．価数は，化学式で表現したときの$\mathrm{H}^+$または$\mathrm{OH}^-$の数である．$\mathrm{Eq.} = 1$のとき，モル濃度と同じである．} \\
     \hline
   \end{tabular}
 \end{table}
-
-
 
 \subsection{molから換算できる単位}
 
@@ -311,7 +310,7 @@ molを含んだ組立単位を\cref{tab: unit-2}に示す．
 \end{table}
 
 モル質量は大きく3つある．原子量，分子量，式量である．
-ただし，この3つは\textbf{無単位量}\footnote{これらは，相対質量として定められている．$^{12}\mathrm{C} = 12$を基準として，\textbf{比の形}で他の原子量を表現する．そのため，単位が約分され無単位量として扱われる．}
+ただし，この3つは\textbf{無単位量}\footnote{これらは，相対質量として定められている．$^{12}\mathrm{C} = 12$を基準として，\textbf{比の形}で他の原子量を表現する．そのため，単位が約分され無単位量として扱われる．正確な数値は，国際純正・応用化学連合IUPACによって承認されている．}
 として扱われているが，相対質量がモル質量と一致するので単位としては[g/mol]で良い．
 
 \begin{table}[htbp]
@@ -331,6 +330,36 @@ molを含んだ組立単位を\cref{tab: unit-2}に示す．
 
 \subsection{百分率は分母に100が隠れてる}
 
+ここからは，濃度の計算を扱う．試薬の調製において，特定のモル濃度や規定度に合わせるときに使う．
+質量weight\ [g]と体積volume\ [mL]の違いの組み合わせで，大きく3つの濃度がある．
+
+\begin{table}[htbp]
+  \caption{質量\%濃度，質量/体積\%濃度，体積\%濃度}
+  \label{tab: con-1}
+  \centering
+  \begin{tabular}{lllll}
+    \hline
+    Concentration & 単位 & 意味 & 単位換算用単位 & 対象 \\
+    \hline
+    質量百分率 & (w/w)\% & 溶液100\ [g]中の溶質の[g]数 & [g/100g] & 粉末混合 \\
+    質量対体積百分率 & (w/v)\% & 溶液100\ [g]中の溶質の[mL]数 & [g/100mL] & 滴定 \\
+    体積百分率 & (v/v)\% & 溶液100\ [mL]中の溶質の[L]数 & [mL/100mL] & 溶媒混合 \\
+    \hline
+  \end{tabular}
+\end{table}
+
+またよく使うものを，事前に高濃度で\textbf{ストック溶液stock solution}として用意されている．
+これを\textbf{作業溶液working solution}にするためには，希釈dilutionして濃度を下げる操作を行う．
+
+これは単純で，希釈前と希釈後の物質量が\textbf{変化しない}ということさえ押さえておけばよい．
+モル\ [mol]はモル濃度\ [mol/L]と体積\ [L]の積で求められるので，\cref{eq: dilution}が成立する．
+
+\begin{equation}
+  a\ [\mathrm{mol/L}] \times b\ [\mathrm{L}] = x\ [\mathrm{mol/L}] \times y\ [\mathrm{L}] \label{eq: dilution}
+\end{equation}
+
+これで本稿は以上とする．以下に参考文献，付録を追加してある，必要に応じて参考にして欲しい．
+
 \cleardoublepage
 
 \lhead{}
@@ -344,6 +373,13 @@ molを含んだ組立単位を\cref{tab: unit-2}に示す．
 \appendix
 \begingroup
 \renewcommand{\addcontentsline}[3]{}
+
+% \section{可換可能な単位}
+%
+%
+%
+% \cleardoublepage
+
 \section{基本単位の定義}
 \label{col: basic def}
 
@@ -416,12 +452,6 @@ molを含んだ組立単位を\cref{tab: unit-2}に示す．
 \subsection*{光度の定義}
 
 特定の周波数$540 \times 10^{12}$\ [Hz]の緑色の光を出す特定の方向に，放射強度$K_{\mathrm{cd}}$が683 [lm/W]である点光源の光度を，1\ [cd]と定義した．
-
-\cleardoublepage
-
-\section{単位まとめ}
-
-
 
 \cleardoublepage
 
