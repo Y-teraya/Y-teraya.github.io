@@ -374,37 +374,6 @@ $X, Y$を集合，$X$から$Y$への写像を$f$とすると，以下のよう�
     \end{tabular}
 \end{table}
 
-\subsection{平均と分散}
-
-平均は，すべてのデータを均したものである．
-
-\begin{equation}
-    平均\ \mu = \dfrac{x_1 + x_2 + x_3 + \cdots + x_i}{i}
-\end{equation}
-
-\clearpage
-
-分散は，各データと平均との差の平均である．一般にデータの\textbf{バラつき}を表す．
-
-\begin{equation}
-    分散\ \sigma^2 = \dfrac{(x_1 - \mu)^2 + (x_2 - \mu)^2 + (x_2 - \mu)^2 + \cdots + (x_n - \mu)^2}{n}
-\end{equation}
-
-また，共分散は各成分の平均との差の積で求められる．なお$X, Y$の平均をそれぞれ$\mu_x, \mu_y$とする．
-$\sum$の計算は，変数$k$が$1 \le k \le n$の範囲での\textbf{総和}であることを示している．
-
-\begin{equation}
-    共分散\ Cov(X, Y) = \dfrac{1}{n}\sum_{k=1}^{n}(x_k - \mu_x)(y_k - \mu_y)
-\end{equation}
-
-\subsection{最小二乗法}
-
-最小二乗法は，以下の式で計算できる．
-
-\begin{equation}
-    {\color{cyan}y =} \dfrac{Cov(X, Y)}{\sigma^2_x}{\color{cyan}x} + \left(\mu_y - \dfrac{Cov(X, Y)}{\sigma^2_x}\mu_x\right)
-\end{equation}
-
 \subsection{絶対誤差と相対誤差}
 
 絶対誤差とは，実測値と理論値の差のことである．理論値は，最小二乗法によって求めた函数に代入して求める．
