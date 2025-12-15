@@ -1,0 +1,65 @@
+\documentclass[a4paper,11pt]{ltjsarticle}
+\usepackage{amsmath, mathtools, mathbbol, amssymb, bm, cancel, fancyhdr, anyfontsize, subcaption, multirow, wrapfig, graphicx, url, enumitem, ascmac, tikz, tikz-3dplot, makeidx}
+\usepackage[luatex]{hyperref}
+\usepackage[most]{tcolorbox}
+\usepackage{ascolorbox}
+\usepackage{stackengine}
+\usepackage{cleveref}
+\usepackage{appendix}
+
+\hypersetup{
+ pdfencoding=auto,
+ setpagesize=false,
+ bookmarksnumbered=true,
+ bookmarksopen=true,
+ colorlinks=true,
+ linkcolor=blue,
+ citecolor=blue,
+ urlcolor=blue,
+}
+
+\crefname{equation}{式}{式}
+\crefname{figure}{図}{図}
+\crefname{table}{表}{表}
+
+\crefname{section}{}{}
+\creflabelformat{section}{#2#1節#3}
+\crefname{subsection}{}{}
+\creflabelformat{subsection}{#2#1節#3}
+
+\newcommand{\crefpairconjunction}{と}
+\newcommand{\crefrangeconjunction}{から}
+\newcommand{\crefmiddleconjunction}{，}
+\newcommand{\creflastconjunction}{，および}
+
+\makeindex
+\numberwithin{equation}{section}
+\captionsetup{compatibility=false}
+\usepackage[numbers]{natbib}
+\usetikzlibrary{arrows, angles, quotes, cd}
+\renewcommand{\cite}[1]{\textsuperscript{\citep{#1}}}
+\newcommand{\idx}[1]{#1\index{#1}}
+
+\pagestyle{fancy}
+\rhead{\textbf{\thepage}}
+\cfoot{}
+\renewcommand{\headrulewidth}{0pt}
+
+\title{\textbf{統計計算の基礎}}
+\author{BIO23113236\ 寺谷優輝}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{}
+
+\cleardoublepage
+
+\lhead{}
+\bibliographystyle{plain}
+\bibliography{nod-ref.bib}
+\nocite{*}
+
+\end{document}
