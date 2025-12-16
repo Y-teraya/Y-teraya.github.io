@@ -1,13 +1,15 @@
 \documentclass[a4paper,11pt]{ltjsarticle}
-\usepackage{amsmath, mathtools, mathbbol, amssymb, bm, fancyhdr, anyfonts}
-\usepackage[luatex]{hyperref}
-\usepackage[numbers]{natbib}
+\usepackage{amsmath, mathtools, mathbbol, amssymb, bm, fancyhdr, anyfontsize, graphicx, url, enumitem}
 
 \begin{document}
 
 \null
 
+\pagestyle{fancy}
 \lhead{}
+\rhead{}
+\cfoot{}
+\renewcommand{\headrulewidth}{0pt}
 \bibliographystyle{apalike}
 \bibliography{nod-ref.bib}
 \nocite{*}
