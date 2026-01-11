@@ -1,0 +1,68 @@
+\documentclass[a4paper, 11pt]{ltjsarticle}
+\usepackage{amsmath, mathtools, mathbbol, amssymb, bm, fancyhdr, anyfontsize, enumitem, graphicx, xcolor, ulem, setspace}
+
+\pagestyle{fancy}
+\lhead{熱力学01\ 確認問題\textbf{\color{blue}「解答例」}}
+\rhead{各10点}
+\lfoot{学年･ｸﾗｽ･番号}
+\cfoot{氏名}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\begin{document}
+
+\textbf{本日の演習}\quad 以下の問題を有効数字に注意して解け．
+\begin{itemize}
+  \item 名前が分かるように写真を撮り，授業時間内にLMSの所定の場所に提出すること．
+  \item 解答例は授業終了後に，LMSから配信する．
+\end{itemize}
+
+\begin{enumerate}[label=問題. ]
+  \item 冷蔵庫から出したジャムビンのふたが固くて開かない．そこでふたの部分だけを$60\ [^\circ\mathrm{C}]$のお湯に$30\ [\mathrm{s}]$ほど浸けたところ，簡単に開けられるようになった．ふたは鋼製，ビンはガラス製とする．
+  \begin{enumerate}[label=\roman*)]
+    \item なぜお湯に浸けるとふたが開きやすくなるのか，\textbf{熱膨張の観点から}説明せよ．\\[5pt]
+    \textbf{\color{blue}
+    　お湯に浸けると，ビンのふたが温められて膨張し，ふたの直径が大きくなる．その結果，ビンの口に対してふたが締め付けられる力が弱まり，ふたが開けやすくなる．
+    }\\[5pt]
+    \item  鋼の線膨張率を$1.2 \times 10^{-5}\ [/^\circ\mathrm{C}]$，初めの温度を$5.0\ [^\circ\mathrm{C}]$とする．ふたの直径が$6.0\ [\mathrm{cm}]$のとき，$60\ [^\circ\mathrm{C}]$に温めると\textbf{直径は何$[\mathrm{mm}]$増加するか}答えよ．
+    \\[5pt]
+    \textbf{\color{blue}
+    　線膨張の式は次である．
+     \begin{equation}
+       \Delta D = D_0 \alpha \Delta t
+     \end{equation}
+     　題意より，$D_0$，$\alpha$，$\Delta t$は以下である．
+      \begin{itemize}
+        \item $D_0 = 6.0\ [\mathrm{cm}] = 60\ [\mathrm{mm}]$
+        \item $\alpha = 1.2 \times 10^{-5}\ [/^\circ\mathrm{C}]$
+        \item $\Delta t = 60 - 5 = 55\ [^\circ\mathrm{C}]$
+      \end{itemize}
+      \vspace{5pt}
+      　$(1)$式に代入すると次である．
+      \begin{equation}
+        \Delta D = 60 \times 1.2 \times 10^{-5} \times 55 = 3,960 \times 10^{-5}
+      \end{equation}
+      \begin{flushright}
+        \underline{\therefore\ 約$4.0 \times 10^{-2}\ [\mathrm{mm}]$増加する．}
+      \end{flushright}
+    }
+    \vspace{25pt}
+    \item ガラスの線膨張率は$0.9 \times 10^{-5}\ [/^\circ\mathrm{C}]$である．鋼製のふたとガラス製のビンを同じ温度，時間で温めた場合，どちらがより大きく膨張するか．\textbf{膨張後の直径を比較して}答えよ．
+    \\[5pt]
+    \textbf{\color{blue}
+    　線膨張率を比較すると以下である．
+      \begin{itemize}
+        \item 鋼製のふた: $\alpha_{\mathrm{steal}} = 1.2 \times 10^{-5}\ [/^\circ\mathrm{C}]$
+        \item ガラス製のビン: $\alpha_{\mathrm{glass}} = 0.9 \times 10^{-5}\ [/^\circ\mathrm{C}]$
+      \end{itemize}
+      　鋼製は$\mathrm{ii})$で求めたので$\alpha_{\mathrm{glass}}$を$(1)$式に代入すると次である．
+      \begin{equation}
+        \Delta D_{\mathrm{glass}} = 60 \times 0.9 \times 10^{-5} \times 55 = 2,970 \times 10^{-5}
+      \end{equation}
+      \begin{flushright}
+        \underline{\therefore\ $4.0 \times 10^{-2} < 3.0 \times 10^{-2}$より，鋼製のふたの方がより大きく膨張する．}
+      \end{flushright}
+    }
+  \end{enumerate}
+\end{enumerate}
+
+\end{document}
