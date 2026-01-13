@@ -280,7 +280,7 @@ function formatAuthorsForCitation(authors) {
   if (!authors || authors.length === 0) return "";
   if (authors.length === 1) return authors[0].last;
   if (authors.length === 2) return `${authors[0].last} & ${authors[1].last}`;
-  return `${authors[0].last} et al.`;
+  return `${authors[0].last}`;
 }
 
 // ========= フォーマット判定 =========
@@ -361,25 +361,17 @@ function parseNbib(text) {
   for (const e of entries) {
     const r = e.raw;
 
-    // 著者: FAU / AU
-    const auList = [];
-    if (r["FAU"]) {
-      // FAU は複数行のはずだが、上の実装では連結されているので
-      // ここでは AU を使用することも考え、fallback させる
-    }
-    if (r["AU"]) {
-      const lines = text.match(/^AU\s*-\s*(.*)$/gm) || [];
-      for (const l of lines) {
-        const v = l.split("-")[1].trim();
-        auList.push(v);
-      }
-    } else if (r["FAU"]) {
-      const lines = text.match(/^FAU\s*-\s*(.*)$/gm) || [];
-      for (const l of lines) {
-        const v = l.split("-")[1].trim();
-        auList.push(v);
-      }
-    }
+// 著者: FAU のみ使用
+const auList = [];
+
+if (r["FAU"]) {
+  // FAU は複数行のはずなので、テキストから FAU 行を抽出
+  const lines = text.match(/^FAU\s*-\s*(.*)$/gm) || [];
+  for (const l of lines) {
+    const v = l.split("-")[1].trim();
+    auList.push(v);
+  }
+}
     // "Last, First M" と仮定
     e.authors = auList.map(a => {
       const parts = a.split(",");
@@ -584,9 +576,11 @@ function parseBibtex(text) {
           (fval[0] === "\"" && fval[fval.length-1] === "\"")) {
         fval = fval.substring(1, fval.length-1);
       }
-      fields[fname] = fval;
       if (fname === "month") {
-      fields[fname] = monthToNumber(fval);
+        const monthNum = monthToNumber(fval);
+        fields[fname] = monthNum || fval;
+      } else {
+        fields[fname] = fval;
   }
 
     }
