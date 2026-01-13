@@ -220,13 +220,6 @@ function normalizePages(pages) {
   return pages.replace(/[–—−―‐–]+/g, "-").replace(/--+/g, "-");
 }
 
-// ISSN 正規化：XXXX-XXXX だけ抽出
-function normalizeISSN(str) {
-  if (!str) return "";
-  const m = str.match(/(\d{4}-\d{3}[\dxX])/);
-  return m ? m[1] : "";
-}
-
 // 著者文字列 → {last, first} の配列
 // nbib/ris/bib からある程度共通で扱えるようにかなり素朴に実装
 function parseAuthorString(authorStr) {
@@ -399,9 +392,6 @@ if (r["FAU"]) {
     // pages
     e.pages = normalizePages(r["PG"] || "");
 
-    // ISSN
-    e.issn = normalizeISSN(r["IS"] || r["ISSN"] || "");
-
     // DOI (LID に "doi " などが含まれうる)
     if (r["LID"]) {
       const mdoi = r["LID"].match(/10\.\S+/);
@@ -533,11 +523,6 @@ function parseRis(text) {
     // DOI
     e.doi = (r["DO"] && r["DO"][0]) || "";
 
-    // ISSN / SN
-    e.issn = normalizeISSN(
-      (r["SN"] && r["SN"][0]) || (r["ISSN"] && r["ISSN"][0]) || ""
-    );
-
     // URL
     e.url = (r["UR"] && r["UR"][0]) || "";
 
@@ -635,7 +620,6 @@ function toBibtex(entries) {
       ["pages", e.pages],
       ["year", e.year],
       ["month", e.month],
-      ["issn", e.issn],
       ["doi", e.doi],
       ["url", e.url],
       ["eprint", e.eprint]
