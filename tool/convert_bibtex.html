@@ -584,6 +584,12 @@ function parseBibtex(text) {
           (fval[0] === "\"" && fval[fval.length-1] === "\"")) {
         fval = fval.substring(1, fval.length-1);
       }
+  fval = fval.replace(/,$/, "");
+
+  // ★ month を算用数字に変換
+  if (fname === "month") {
+    fval = monthToNumber(fval);
+  }
       fields[fname] = fval;
       if (fname === "month") {
       fields[fname] = monthToNumber(fval);
