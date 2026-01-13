@@ -569,32 +569,35 @@ function parseBibtex(text) {
   const entries = [];
   const re = /@(\w+)\s*\{\s*([^,]+),([\s\S]*?)}\s*(?=@|$)/g;
   let m;
-  while ((m = re.exec(text)) != null) {
-    const type = m[1].toLowerCase();
-    const key = m[2].trim();
-    const body = m[3];
+  while ((fm = fRe.exec(body)) != null) {
+  const fname = fm[1].toLowerCase();
+  let fval = fm[2];
 
-    const fields = {};
-    const fRe = /(\w+)\s*=\s*({([^{}]*|{[^{}]*})*}|\"[^\"]*\"|[^,\n]+)\s*,?/g;
-    let fm;
-    while ((fm = fRe.exec(body)) != null) {
-      const fname = fm[1].toLowerCase();
-      let fval = fm[2].trim();
-      if ((fval[0] === "{" && fval[fval.length-1] === "}") ||
-          (fval[0] === "\"" && fval[fval.length-1] === "\"")) {
-        fval = fval.substring(1, fval.length-1);
-      }
-  fval = fval.replace(/,$/, "");
+  if (!fval) {
+    fields[fname] = "";
+    continue;
+  }
 
-  // ★ month を算用数字に変換
+  fval = fval.trim();
+
+  // 括弧除去（完全一致のみ）
+  if (
+    (fval.startsWith("{") && fval.endsWith("}")) ||
+    (fval.startsWith("\"") && fval.endsWith("\""))
+  ) {
+    fval = fval.substring(1, fval.length - 1).trim();
+  }
+
+  // 末尾のカンマ除去
+  fval = fval.replace(/,$/, "").trim();
+
+  // ★ 数字・英字どちらも monthToNumber に通す
   if (fname === "month") {
-    fval = monthToNumber(fval);
-  }
-      fields[fname] = fval;
-      if (fname === "month") {
-      fields[fname] = monthToNumber(fval);
+    fval = monthToNumber(fval.toLowerCase().trim());
   }
 
+  fields[fname] = fval;
+}
     }
 
     // 共通構造に詰め替え
