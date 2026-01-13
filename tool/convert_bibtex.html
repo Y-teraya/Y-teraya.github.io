@@ -569,8 +569,8 @@ function parseBibtex(text) {
   const entries = [];
   const re = /@(\w+)\s*\{\s*([^,]+),([\s\S]*?)}\s*(?=@|$)/g;
   let m;
-  while ((fm = fRe.exec(body)) != null) {
-  const fname = fm[1].toLowerCase();
+  while ((m = Re.exec(body)) != null) {
+  const name = fm[1].toLowerCase();
   let fval = fm[2];
 
   if (!fval) {
