@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>nbib / RIS / BibTeX → BibTeX & 参考文献コンバータ</title>
+<title>参考文献コンバータ</title>
 <style>
   body { monospace; margin: 1.5rem; }
   textarea { width: 100%; box-sizing: border-box; font-family: inherit; }
@@ -19,7 +19,7 @@
 </head>
 <body>
 
-<h1>BibTeX & 参考文献コンバータ</h1>
+<h1>参考文献コンバータ</h1>
 
 <div>
   <label for="fileInput">ファイル入力（.nbib / .ris / .bib / .txt）</label><br>
@@ -56,12 +56,12 @@
     <div>
       <label for="styleSelect">スタイル:</label>
       <select id="styleSelect">
+        <option value="apa">APA</option>
         <option value="nogyokagaku">日本農芸化学会</option>
-        <option value="seibutsu">日本生物工学会</option>
-        <option value="jozo">日本醸造学会</option>
         <option value="shokubutsu">日本植物生理学会</option>
         <option value="dojofeiryo">日本土壌肥料学会</option>
-        <option value="apa">APA</option>
+        <option value="seibutsu">日本生物工学会</option>
+        <option value="jozo">日本醸造学会</option>
       </select>
       <button id="convertRefBtn">参考文献リストに変換</button>
       <button id="copyRefBtn">参考文献リストをコピー</button>
