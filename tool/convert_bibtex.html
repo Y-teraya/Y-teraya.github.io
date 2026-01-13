@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>nbib / RIS / BibTeX → BibTeX & 参考文献コンバータ</title>
 <style>
-  body { font-family: Consolas, "Courier New", monospace; margin: 1.5rem; }
+  body { monospace; margin: 1.5rem; }
   textarea { width: 100%; box-sizing: border-box; font-family: inherit; }
   #input { height: 250px; }
   #bibtexOutput, #refOutput, #logOutput { height: 220px; }
@@ -19,7 +19,7 @@
 </head>
 <body>
 
-<h2>nbib / RIS / BibTeX → BibTeX & 参考文献コンバータ</h2>
+<h1>BibTeX & 参考文献コンバータ</h1>
 
 <div>
   <label for="fileInput">ファイル入力（.nbib / .ris / .bib / .txt）</label><br>
@@ -35,24 +35,25 @@
 <div class="row">
   <div class="col">
     <label for="bibtexOutput">BibTeX 出力</label>
-    <textarea id="bibtexOutput" readonly></textarea>
-    <div>
-      <button id="convertBibtexBtn">@comment 付き BibTeX に変換</button>
-      <button id="copyBibtexBtn">BibTeX をコピー</button>
+    <div id="bibtexOutput" contenteditable="true" style="
+        width:98%;
+        height:220px;
+        border:1px solid #ccc;
+        padding:8px;
+        overflow:auto;
+        white-space:pre-wrap;
+        font-family:inherit;">
     </div>
-    <div class="small">
-      ・@comment{} を先頭に追加（ブランク）<br>
-      ・author, title, publisher, journal, volume, number, pages, year, month, issn, doi, url, eprint の順で<br>
-      ・フィールドが無くても field = {} をすべて出力<br>
-      ・人名のアクセントは LaTeX アクセント（\'{} など）に変換<br>
-      ・複数著者は <code>and</code>＋改行＋インデントで接続
+    <div>
+      <button id="convertBibtexBtn">BibTeX に変換</button>
+      <button id="copyBibtexBtn">BibTeX をコピー</button>
     </div>
   </div>
 
   <div class="col">
-    <label for="refOutput">参考文献リスト出力（スタイル選択）</label>
+    <label for="refOutput">参考文献リスト出力</label>
     <div id="refOutput" contenteditable="true" style="
-        width:100%;
+        width:98%;
         height:220px;
         border:1px solid #ccc;
         padding:8px;
@@ -73,18 +74,6 @@
       <button id="convertRefBtn">参考文献リストに変換</button>
       <button id="copyRefBtn">参考文献リストをコピー</button>
     </div>
-    <div class="small">
-      ・HTML上で斜体 / 太字指定（コピー時に維持されるエディタ向け）<br>
-      ・著者名は改行をまたいで全員取得（2人でストップしない）<br>
-      ・引用形は「名前:発行年」を基本単位として想定
-    </div>
-  </div>
-</div>
-
-<div class="row">
-  <div class="col">
-    <label for="logOutput">ログ / メモ</label>
-    <textarea id="logOutput" readonly></textarea>
   </div>
 </div>
 
@@ -282,23 +271,15 @@ function parseAuthorString(authorStr) {
 // 著者配列 → BibTeX author 文字列（アクセント変換＋改行and）
 function formatAuthorsForBibtex(authors) {
   if (!authors || authors.length === 0) return "";
+
   const parts = authors.map(a => {
     const last = convertAccentsToLatex(a.last || "");
     const first = convertAccentsToLatex(a.first || "");
-    if (first) return `${last}, ${first}`;
-    return last;
+    return first ? `${last}, ${first}` : last;
   });
-  if (parts.length === 1) return parts[0];
 
-  // 複数の場合: A, B and\n  C, D and\n  E, F ...
-  let out = parts[0];
-  for (let i = 1; i < parts.length; i++) {
-    out += " and " + parts[i];
-    if (i < parts.length - 1) {
-      out += "\n  ";
-    }
-  }
-  return out;
+  // RIS と同じ方式：join で一気に改行＋インデント
+  return parts.join("\n      and ");
 }
 
 // 著者配列 → 引用用 "名前:年" の「名前」部分
@@ -612,6 +593,10 @@ function parseBibtex(text) {
         fval = fval.substring(1, fval.length-1);
       }
       fields[fname] = fval;
+      if (fname === "month") {
+      fields[fname] = monthToNumber(fval);
+  }
+
     }
 
     // 共通構造に詰め替え
