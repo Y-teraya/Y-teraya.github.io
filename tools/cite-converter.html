@@ -604,12 +604,24 @@ function toBibtex(entries) {
   lines.push("@comment{}");
 
   entries.forEach((e, idx) => {
-    const keyBase = formatAuthorsForCitation(e.authors) || `ref${idx+1}`;
+
+    // --- 安全な author 処理 ---
+    const safeAuthors = Array.isArray(e.authors) ? e.authors : [];
+
+    const keyBase =
+      (safeAuthors.length > 0
+        ? formatAuthorsForCitation(safeAuthors)
+        : `ref${idx+1}`);
+
     const keyYear = e.year || "xxxx";
     const key = (keyBase.replace(/\s+/g, "") + keyYear).toLowerCase();
 
-    const authorStr = formatAuthorsForBibtex(e.authors);
+    const authorStr =
+      (safeAuthors.length > 0
+        ? formatAuthorsForBibtex(safeAuthors)
+        : "");
 
+    // --- ISSN は削除済み ---
     const fields = [
       ["author", authorStr],
       ["title", convertAccentsToLatex(e.title)],
