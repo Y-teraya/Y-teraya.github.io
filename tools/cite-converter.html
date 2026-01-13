@@ -392,6 +392,9 @@ if (r["FAU"]) {
     // pages
     e.pages = normalizePages(r["PG"] || "");
 
+    // ISSN
+    e.issn = normalizeISSN(r["IS"] || r["ISSN"] || "");
+
     // DOI (LID に "doi " などが含まれうる)
     if (r["LID"]) {
       const mdoi = r["LID"].match(/10\.\S+/);
@@ -523,6 +526,11 @@ function parseRis(text) {
     // DOI
     e.doi = (r["DO"] && r["DO"][0]) || "";
 
+    // ISSN / SN
+    e.issn = normalizeISSN(
+      (r["SN"] && r["SN"][0]) || (r["ISSN"] && r["ISSN"][0]) || ""
+    );
+
     // URL
     e.url = (r["UR"] && r["UR"][0]) || "";
 
@@ -585,7 +593,6 @@ function parseBibtex(text) {
       pages: normalizePages(fields["pages"] || ""),
       year: dObj.year || fields["year"] || "",
       month: fields["month"] || "",
-      issn: normalizeISSN(fields["issn"] || ""),
       doi: fields["doi"] || "",
       url: fields["url"] || "",
       eprint: fields["eprint"] || "",
@@ -604,24 +611,12 @@ function toBibtex(entries) {
   lines.push("@comment{}");
 
   entries.forEach((e, idx) => {
-
-    // --- 安全な author 処理 ---
-    const safeAuthors = Array.isArray(e.authors) ? e.authors : [];
-
-    const keyBase =
-      (safeAuthors.length > 0
-        ? formatAuthorsForCitation(safeAuthors)
-        : `ref${idx+1}`);
-
+    const keyBase = formatAuthorsForCitation(e.authors) || `ref${idx+1}`;
     const keyYear = e.year || "xxxx";
     const key = (keyBase.replace(/\s+/g, "") + keyYear).toLowerCase();
 
-    const authorStr =
-      (safeAuthors.length > 0
-        ? formatAuthorsForBibtex(safeAuthors)
-        : "");
+    const authorStr = formatAuthorsForBibtex(e.authors);
 
-    // --- ISSN は削除済み ---
     const fields = [
       ["author", authorStr],
       ["title", convertAccentsToLatex(e.title)],
@@ -919,8 +914,8 @@ document.getElementById("copyRefBtn").addEventListener("click", copyRef);
 </body>
 
 <footer>
-  Copyright © 2025 by Y-teraya is marked 
-  <a href="https://creativecommons.org/publicdomain/zero/1.0">CC0 1.0 Universal</a><br>
+  Copyright © 2025 by Y-teraya is licensed under 
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a><br>
   [最終更新日：2026年1月13日]
 </footer>
 
