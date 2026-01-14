@@ -29,8 +29,10 @@
 
 <div style="margin-top:0.5rem;">
   <label for="input">入力テキスト</label><br>
-  <textarea id="input" placeholder="ここに nbib / RIS / BibTeX / テキストを貼り付け"></textarea>
+  <textarea id="input" placeholder="ここに nbib / RIS / BibTeX / テキストを貼り付け" rows="10" cols="60"></textarea>
 </div>
+
+<button id="removeComment"> @comment{…} を削除 </button>
 
 <div class="row">
   <div class="col">
@@ -70,6 +72,17 @@
 </div>
 
 <script>
+
+document.getElementById("removeComment").addEventListener("click", () => {
+    const textarea = document.getElementById("input");
+    const text = textarea.value;
+
+    // 改行を考慮しない @comment{...} 削除
+    const cleaned = text.replace(/@comment\{.*?\}/g, "");
+
+    textarea.value = cleaned;
+  });
+
 // ========= ユーティリティ =========
 
 // 文字列トリム（null セーフ）
