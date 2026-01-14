@@ -683,7 +683,7 @@ function formatRefNogyokagaku(e, index) {
   const pages = e.pages ? `, ${escHtml(e.pages)}` : "";
   const yearBlock = e.year ? ` (${escHtml(e.year)}).` : "";
 
-  return `${index}). ${escHtml(authorsStr)}, ${title} ${journal},${vol}${pages}${yearBlock}`;
+  return `${index}) ${escHtml(authorsStr)}, ${title} ${journal},${vol}${pages}${yearBlock}`;
 }
 
 function formatRefSeibutsu(e, index) {
