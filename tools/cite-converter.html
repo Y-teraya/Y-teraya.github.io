@@ -24,13 +24,15 @@
 <div>
   <label for="fileInput">ファイル入力（.nbib / .ris / .bib / .txt）</label><br>
   <input id="fileInput" type="file" accept=".nbib,.ris,.bib,.txt">
-  <button id="clearInputBtn">入力削除</button>
 </div>
 
 <div style="margin-top:0.5rem;">
   <label for="input">入力テキスト</label><br>
-  <textarea id="input" placeholder="ここに nbib / RIS / BibTeX / テキストを貼り付け"></textarea>
+  <textarea id="input" placeholder="ここに nbib / RIS / BibTeX / テキストを貼り付け" rows="10" cols="60"></textarea>
 </div>
+
+<button id="removeComment"> @comment{…} を削除 </button>
+<button id="clearInputBtn">入力削除</button>
 
 <div class="row">
   <div class="col">
@@ -70,6 +72,17 @@
 </div>
 
 <script>
+
+document.getElementById("removeComment").addEventListener("click", () => {
+    const textarea = document.getElementById("input");
+    const text = textarea.value;
+
+    // 改行を考慮しない @comment{...} 削除
+    const cleaned = text.replace(/@comment\{.*?\}/g, "");
+
+    textarea.value = cleaned;
+  });
+
 // ========= ユーティリティ =========
 
 // 文字列トリム（null セーフ）
@@ -683,7 +696,7 @@ function formatRefNogyokagaku(e, index) {
   const pages = e.pages ? `, ${escHtml(e.pages)}` : "";
   const yearBlock = e.year ? ` (${escHtml(e.year)}).` : "";
 
-  return `${index}). ${escHtml(authorsStr)}, ${title} ${journal},${vol}${pages}${yearBlock}`;
+  return `${index}) ${escHtml(authorsStr)}, ${title} ${journal},${vol}${pages}${yearBlock}`;
 }
 
 function formatRefSeibutsu(e, index) {
