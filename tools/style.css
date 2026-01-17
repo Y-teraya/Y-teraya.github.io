@@ -1,0 +1,11 @@
+body { monospace; margin: 1.5rem; }
+textarea { width: 100%; box-sizing: border-box; font-family: inherit; }
+#input { height: 250px; }
+#bibtexOutput, #refOutput, #logOutput { height: 220px; }
+.row { display: flex; gap: 1rem; margin-top: 1rem; }
+.col { flex: 1; display: flex; flex-direction: column; }
+label { font-weight: bold; }
+button { margin-right: 0.5rem; margin-top: 0.3rem; }
+select { margin-top: 0.3rem; }
+.small { font-size: 0.85rem; color: #555; }
+pre { white-space: pre-wrap; }
