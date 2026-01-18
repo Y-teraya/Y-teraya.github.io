@@ -587,7 +587,14 @@ else if (type === "misc") {
   if (urlMatch) common.url = urlMatch[0];
 }
       // 過剰なカンマを整理
-      let rawAuthors = yearMatch[1].replace(/,\s*,/g, ",").replace(/\s+/g, " ").trim();
+      let rawAuthors = yearMatch[1]
+  .replace(/\u3000/g, " ")        // 全角スペース除去
+  .replace(/\u00A0/g, " ")        // NBSP除去
+  .replace(/[\u200B-\u200F]/g, "")// ゼロ幅スペース除去
+  .replace(/\s+and\s+/gi, ", ")   // and → カンマ
+  .replace(/,\s*,/g, ",")         // カンマ重複除去
+  .replace(/\s+/g, " ")           // 連続スペース除去
+  .trim();
       
       const authorList = rawAuthors.split(/\s+and\s+|,\s+and\s+|,/)
         .map(a => a.trim())
