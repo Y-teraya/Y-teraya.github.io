@@ -553,6 +553,39 @@ function parseBbl(text) {
     const yearMatch = body.match(/(.*?)\s*\((\d{4})\)/);
     if (yearMatch) {
       common.year = yearMatch[2];
+    // 文献タイプ判定
+const type = detectBblType(body);
+common.type = type;
+
+// タイプ別処理
+if (type === "book") {
+  const m = body.match(/\((\d{4})\)\s*(.*?)\.\s*(.*?),\s*(.*?)\./);
+  if (m) {
+    common.year = m[1];
+    common.title = m[2];
+    common.publisher = m[3];
+    common.address = m[4];
+  }
+}
+
+else if (type === "incollection") {
+  const chapterMatch = body.match(/\)\s*(.*?)\.\s*In/);
+  if (chapterMatch) common.title = chapterMatch[1];
+
+  const bookMatch = body.match(/In\s+\{\\em\s+([^}]+)\}/);
+  if (bookMatch) common.booktitle = bookMatch[1];
+
+  const pagesMatch = body.match(/pages?\s+([\d\-–—]+)/i);
+  if (pagesMatch) common.pages = pagesMatch[1];
+}
+
+else if (type === "misc") {
+  const titleMatch = body.match(/\)\s*(.*?)\./);
+  if (titleMatch) common.title = titleMatch[1];
+
+  const urlMatch = body.match(/https?:\/\/\S+/);
+  if (urlMatch) common.url = urlMatch[0];
+}
       // 過剰なカンマを整理
       let rawAuthors = yearMatch[1].replace(/,\s*,/g, ",").replace(/\s+/g, " ").trim();
       
