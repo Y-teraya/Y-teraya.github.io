@@ -23,40 +23,44 @@
 <button id="clearInputBtn">入力削除</button>
 
 <div class="row">
-  <div class="col">
-    <label for="bibtexOutput">BibTeX 出力</label>
-    <textarea id="bibtexOutput" readonly></textarea>
-    <div>
-      <button id="convertBibtexBtn">BibTeX に変換</button>
-      <button id="copyBibtexBtn">BibTeX をコピー</button>
-    </div>
-  </div>
+  <div class="col" style="width: 100%;">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+  <label for="styleSelect">参考文献スタイル:</label>
+  <select id="styleSelect">
+    <option value="apa">APA</option>
+    <option value="nogyokagaku">日本農芸化学会</option>
+    <option value="shokubutsu">日本植物生理学会</option>
+    <option value="dojofeiryo">日本土壌肥料学会</option>
+    <option value="seibutsu">日本生物工学会</option>
+  </select>
+  <button id="convertBibtexBtn">BibTeX として追加</button>
+  <button id="convertRefBtn">リストとして追加</button>
+</div>
 
-  <div class="col">
-    <label for="refOutput">参考文献リスト出力</label>
-    <div id="refOutput" contenteditable="true" style="
-        width:98%;
-        height:220px;
-        border:1px solid #ccc;
-        padding:8px;
-        overflow:auto;
-        white-space:pre-wrap;
-        font-family:inherit;">
-    </div>
-    <div>
-      <label for="styleSelect">スタイル:</label>
-      <select id="styleSelect">
-        <option value="apa">APA</option>
-        <option value="nogyokagaku">日本農芸化学会</option>
-        <option value="shokubutsu">日本植物生理学会</option>
-        <option value="dojofeiryo">日本土壌肥料学会</option>
-        <option value="seibutsu">日本生物工学会</option>
-        <option value="seibutsu">日本醸造学会</option>
-      </select>
-      <button id="convertRefBtn">参考文献リストに変換</button>
-      <button id="copyRefBtn">参考文献リストをコピー</button>
-    </div>
+<div id="unifiedOutput" contenteditable="true" style="
+    width:100%;
+    height:400px;
+    border:1px solid #ccc;
+    padding:8px;
+    overflow:auto;
+    white-space: pre-wrap;
+    font-family: 'Times New Roman', serif;
+    background: #fff;">
+</div>
+
+<div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+  <button id="copyAllBtn">すべてコピー</button>
+  <button id="downloadBibBtn">.bib で保存</button>
+  <button id="downloadRtfBtn">.rtf で保存</button> <button id="removeLastBtn" style="color: brown;">最後の一つを削除</button>
+  <button id="clearAllBtn" style="color: red;">すべて削除</button>
+</div>
+
   </div>
+</div>
+
+<div style="margin-top: 20px;">
+  <label>ログ:</label><br>
+  <textarea id="logOutput" readonly style="width: 100%; height: 60px; font-size: 0.8rem;"></textarea>
 </div>
 
 <script src="./script.js"></script>
@@ -65,7 +69,6 @@
 <footer>
   Copyright © 2025 by Y-teraya is licensed under 
   <a href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a><br>
-  [最終更新日：2026年1月18日]
+  [最終更新日：2026年1月19日]
 </footer>
-
 </html>

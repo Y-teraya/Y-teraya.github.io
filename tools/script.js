@@ -231,6 +231,12 @@ function detectFormat(text) {
   return "txt";
 }
 
+// 全てのパーサーで共通して使うスタック（関数の外に置く）
+let stackedEntries = [];
+function clearStack() {
+  stackedEntries = [];
+}
+
 // ========= nbib パーサ =========
 
 function parseNbib(text) {
@@ -360,7 +366,8 @@ function parseNbib(text) {
     e.note = notes.join("; ");
   }
 
-  return entries;
+  stackedEntries = stackedEntries.concat(entries);
+return stackedEntries;
 }
 
 // ========= RIS パーサ =========
@@ -476,7 +483,8 @@ function parseRis(text) {
     e.month = dObj.month;
   }
 
-  return entries;
+  stackedEntries = stackedEntries.concat(entries);
+return stackedEntries;
 }
 
 // ========= BibTeX パーサ(最低限) =========
@@ -531,7 +539,8 @@ function parseBibtex(text) {
       note: fields["note"] || ""
     });
   }
-  return entries;
+  stackedEntries = stackedEntries.concat(entries);
+return stackedEntries;
 }
 
 /**
@@ -636,7 +645,8 @@ function parseBbl(text) {
     entries.push(common);
   }
 
-  return entries;
+  stackedEntries = stackedEntries.concat(entries);
+return stackedEntries;
 }
 
 /**
@@ -707,22 +717,28 @@ function toBibtex(entries) {
 
 // ========= 共通 → 参考文献リスト（各スタイル） =========
 
-// HTMLタグを一応通す（貼り付け先が対応していれば斜体・太字維持）
+// エスケープ関数自体
 function escHtml(s) {
   return (s || "").replace(/[&<>]/g, c => {
     return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c] || c;
   });
 }
 
+// 著者リスト作成（中身だけをエスケープする）
 function formatAuthorsForStyle_all(authors, limit, etAlText) {
-  // limit までフル、超えたら et al. or ら など
   if (!authors || authors.length === 0) return "";
 
-  if (!limit || authors.length <= limit) {
-    return authors.map(a => `${a.last} ${a.first}`.trim()).join(", ");
+  // 姓名をエスケープしてから配列にする
+  const safeNames = authors.map(a => {
+    const fullName = `${a.last} ${a.first}`.trim();
+    return escHtml(fullName); // ここで名前を安全な文字列にする
+  });
+
+  if (!limit || safeNames.length <= limit) {
+    return safeNames.join(", ");
   }
-  const head = authors.slice(0, limit).map(a => `${a.last} ${a.first}`.trim()).join(", ");
-  return `${head}, ${etAlText}`;
+  const head = safeNames.slice(0, limit).join(", ");
+  return `${head}, ${etAlText}`; // etAlText (et al.など) はプログラム定数なのでそのまま
 }
 
 // -- 個別スタイル（ざっくり。細かいところは必要に応じて調整用） --
@@ -789,7 +805,7 @@ function formatAuthorList(authors, style = "default") {
 function formatRefAPA(e) {
   const authors = formatAuthorList(e.authors, "APA");
   const year = e.year ? ` (${escHtml(e.year)}).` : " (n.d.).";
-  const title = e.title ? ` ${escHtml(e.title)}.` : "";
+  const title = e.title ? ` ${e.title}.` : "";
   const journal = e.journal ? ` <i>${escHtml(e.journal)}</i>` : "";
   const vol = e.volume ? `, <i>${escHtml(e.volume)}</i>` : "";
   const num = e.number ? `(${escHtml(e.number)})` : "";
@@ -819,7 +835,7 @@ function formatRefShokubutsu(e) {
   }
 
   const year = e.year ? ` (${escHtml(e.year)})` : "";
-  const title = e.title ? ` ${escHtml(e.title)}.` : "";
+  const title = e.title ? ` ${e.title}.` : "";
   const journal = e.journal ? ` <i>${escHtml(e.journal)}</i>` : "";
   const vol = e.volume ? ` <b>${escHtml(e.volume)}</b>` : "";
   const pages = e.pages ? `: ${escHtml(e.pages)}` : "";
@@ -832,15 +848,15 @@ function formatRefDojo(e) {
   // 日本語著者が混ざるときもあるので、名字だけ / イニシャルはここでは凝らない
   const authors = e.authors.map(a => `${a.last} ${a.first}`.trim()).join("・");
   const year = e.year ? ` ${escHtml(e.year)}.` : "";
-  const title = e.title ? ` ${escHtml(e.title)}.` : "";
+  const title = e.title ? ` ${e.title}.` : "";
   const journal = e.journal ? ` <i>${escHtml(e.journal)}</i>` : "";
   const vol = e.volume ? `, <b>${escHtml(e.volume)}</b>` : "";
   const pages = e.pages ? `, ${escHtml(e.pages)}` : "";
   return `${escHtml(authors)}${year}${title}${journal}${vol}${pages}.`;
 }
 
-function toReferenceList(entries, style) {
-
+function toReferenceList(entries, style, startIndex = 1) {
+  // LaTeXアクセントのデコード処理
   entries = entries.map(e => {
     return {
       ...e,
@@ -856,147 +872,217 @@ function toReferenceList(entries, style) {
 
   let out = [];
   entries.forEach((e, i) => {
+    // 重要な変更点：startIndex を加算して全体の通し番号を作る
+    const currentIndex = startIndex + i;
+    
     let line = "";
     switch (style) {
       case "nogyokagaku":
-        line = formatRefNogyokagaku(e, i + 1);
+        line = formatRefNogyokagaku(e, currentIndex);
         break;
       case "seibutsu":
-        line = formatRefSeibutsu(e, i + 1);
-        break;
-      case "jozo":
-        line = formatRefJozo(e, i + 1);
+        line = formatRefSeibutsu(e, currentIndex);
         break;
       case "shokubutsu":
-        line = formatRefShokubutsu(e);
+        // 個別関数側が index を受け取れるように修正されている前提
+        line = formatRefShokubutsu(e, currentIndex);
         break;
       case "dojofeiryo":
-        line = formatRefDojo(e);
+        line = formatRefDojo(e, currentIndex);
         break;
       case "apa":
       default:
-        line = formatRefAPA(e);
+        line = formatRefAPA(e, currentIndex);
         break;
     }
     out.push(line);
   });
-  // スタイル定義では「1行空け」もあるが、ここでは1エントリ1行にしておく
+  
   return out.join("\n");
 }
 
-// ========= イベントハンドラ =========
+// ========= 状態管理 =========
+let rawEntriesStack = []; 
 
 const inputEl = document.getElementById("input");
-const bibtexOutputEl = document.getElementById("bibtexOutput");
-const refOutputEl = document.getElementById("refOutput");
+const unifiedOutputEl = document.getElementById("unifiedOutput");
 const logOutputEl = document.getElementById("logOutput");
+const styleSelectEl = document.getElementById("styleSelect");
 
-document.getElementById("fileInput").addEventListener("change", function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(ev) {
-    inputEl.value = ev.target.result;
-  };
-  reader.readAsText(file, "UTF-8");
-});
+// ========= 表示更新関数 =========
+function renderStack() {
+  const currentStyle = document.getElementById("styleSelect").value;
+  const unifiedOutputEl = document.getElementById("unifiedOutput");
+  let htmlBuffer = [];
+  let globalIndex = 1; // ここで全体の通し番号を管理
 
-document.getElementById("clearInputBtn").addEventListener("click", function() {
-  inputEl.value = "";
-  logOutputEl.value = "";
-});
+  rawEntriesStack.forEach((item, stackIndex) => {
+    const entriesCopy = JSON.parse(JSON.stringify(item.data));
 
-document.getElementById("convertBibtexBtn").addEventListener("click", function() {
+    if (item.type === "bib") {
+      const bibText = item.rawText || toBibtex(entriesCopy);
+      htmlBuffer.push(`<div data-index="${stackIndex}" style="font-family: monospace; background: #f4f4f4; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; white-space: pre-wrap;">${escHtml(bibText)}</div>`);
+    } else {
+      // 編集済みHTMLがある場合はそれを優先（番号も固定されている可能性あり）
+      if (item.editedHtml) {
+        htmlBuffer.push(`<div data-index="${stackIndex}" style="margin-bottom: 12px;">${item.editedHtml}</div>`);
+        // 編集済みの場合も、その中の文献数分 globalIndex を進める必要がある
+        globalIndex += entriesCopy.length;
+      } else {
+        // --- ここで通し番号を渡して変換 ---
+        // toReferenceListに現在のglobalIndexを渡せるように改修
+        const formatted = toReferenceList(entriesCopy, currentStyle, globalIndex);
+        htmlBuffer.push(`<div data-index="${stackIndex}" style="margin-bottom: 12px; font-family: serif;">${formatted.replace(/\n/g, "<br>")}</div>`);
+        
+        // 次のスタックのためにインデックスを更新
+        globalIndex += entriesCopy.length;
+      }
+    }
+  });
+  unifiedOutputEl.innerHTML = htmlBuffer.join("");
+}
+
+// ========= 変換・追加処理 =========
+function addEntriesToStack(mode) {
   const text = inputEl.value;
+  if (!text.trim()) return;
+
   const fmt = detectFormat(text);
+  
+  // 既存のパーサーを呼び出し
   let entries = [];
-  let log = `検出フォーマット: ${fmt}\n`;
+  // グローバルな stackedEntries を一度クリアしてからパース
+  if (typeof clearStack === "function") clearStack();
+  
+  if (fmt === "nbib") entries = parseNbib(text);
+  else if (fmt === "ris") entries = parseRis(text);
+  else if (fmt === "bibtex") entries = parseBibtex(text);
+  else if (fmt === "bbl") entries = parseBbl(text);
 
-  if (fmt === "nbib") {
-    entries = parseNbib(text);
-    log += `nbib エントリ数: ${entries.length}\n`;
-
-  } else if (fmt === "ris") {
-    entries = parseRis(text);
-    log += `RIS エントリ数: ${entries.length}\n`;
-
-  } else if (fmt === "bibtex") {
-    entries = parseBibtex(text);
-    log += `BibTeX エントリ数: ${entries.length}\n`;
-
-  } else if (fmt === "bbl") {
-    entries = parseBbl(text);
-    log += `BBL エントリ数: ${entries.length}\n`;
-
+  if (entries && entries.length > 0) {
+    // 成功したらスタックに追加
+    rawEntriesStack.push({ type: mode, data: JSON.parse(JSON.stringify(entries)) });
+    renderStack();
+    logOutputEl.value = `[${fmt}] から追加しました。現在のブロック数: ${rawEntriesStack.length}`;
   } else {
-    log += "txt/unknown: 自動変換対象外（手動編集してください）\n";
+    alert("文献データを検出できませんでした。形式を確認してください。");
   }
+}
 
-  if (entries.length === 0) {
-    bibtexOutputEl.value = "";
-    logOutputEl.value = log + "変換対象エントリがありません。";
-    return;
-  }
+// ========= ダウンロード機能 =========
+function downloadFile(content, fileName, contentType) {
+  const blob = new Blob([content], { type: contentType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 
-  const bib = toBibtex(entries);
-  bibtexOutputEl.value = bib;
-  logOutputEl.value = log + "BibTeX 変換完了。";
+// .bib (BibTeXのみ抽出)
+document.getElementById("downloadBibBtn").addEventListener("click", () => {
+    const bibItems = rawEntriesStack.filter(i => i.type === "bib");
+    const content = bibItems.map(i => i.rawText || toBibtex(i.data)).join("\n\n");
+    downloadFile(content, "references.bib", "text/plain");
 });
 
-document.getElementById("convertRefBtn").addEventListener("click", function() {
-  const text = inputEl.value;
-  const fmt = detectFormat(text);
-  const style = document.getElementById("styleSelect").value;
-  let entries = [];
-  let log = `検出フォーマット: ${fmt}\n`;
+// .rtf (リストのみ抽出、斜体維持)
+document.getElementById("downloadRtfBtn").onclick = () => {
+  let globalIndex = 1;
+  const content = rawEntriesStack.filter(i => i.type === "ref").map(item => {
+    if (item.editedHtml) {
+      globalIndex += item.data.length;
+      return item.editedHtml.replace(/<br\s*\/?>/gi, "\n");
+    }
+    const res = toReferenceList(item.data, styleSelectEl.value, globalIndex);
+    globalIndex += item.data.length;
+    return res;
+  }).join("\n\n");
 
-  if (fmt === "nbib") {
-    entries = parseNbib(text);
-    log += `nbib エントリ数: ${entries.length}\n`;
+  // 1. HTMLエスケープを戻す (&amp; -> &, &lt; -> < など)
+  let decoded = content
+    .replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&").replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
 
-  } else if (fmt === "ris") {
-    entries = parseRis(text);
-    log += `RIS エントリ数: ${entries.length}\n`;
+  // 2. HTMLタグを RTF命令に変換
+  let rtfBody = decoded
+    .replace(/<(?:i|em)>(.*?)<\/(?:i|em)>/gi, "{\\i $1}") // 斜体
+    .replace(/<(?:b|strong)>(.*?)<\/(?:b|strong)>/gi, "{\\b $1}") // 太字
+    .replace(/\n/g, "\\line\n"); // 改行
 
-  } else if (fmt === "bibtex") {
-    entries = parseBibtex(text);
-    log += `BibTeX エントリ数: ${entries.length}\n`;
+  // 3. アクセント付き文字 (Stéphanie等) の文字化け対策
+  // RTFは本来ASCIIベースなので、UnicodeをRTF形式( \uN? )に変換する
+  rtfBody = rtfBody.replace(/[^\x00-\x7F]/g, (c) => {
+    return "\\u" + c.charCodeAt(0).toString() + "?";
+  });
 
-  } else if (fmt === "bbl") {
-    entries = parseBbl(text);
-    log += `BBL エントリ数: ${entries.length}\n`;
+  const rtfHeader = "{\\rtf1\\ansi\\ansicpg932\\deff0 {\\fonttbl{\\f0 Times New Roman;}{\\f1 MS Mincho;}}\\f0\\fs24 ";
+  
+  // 保存 (Blobの時点でUTF-8を指定し、中身は上記でRTF用Unicode変換済み)
+  downloadFile(rtfHeader + rtfBody + "}", "reference_list.rtf", "application/rtf");
+};
 
-  } else {
-    log += "txt/unknown: 自動変換対象外（手動編集してください）\n";
+// ========= 各種ボタン・イベント =========
+styleSelectEl.onchange = renderStack; // 学会を変えた瞬間に全部変わる
+
+document.getElementById("convertBibtexBtn").onclick = () => addEntriesToStack("bib");
+document.getElementById("convertRefBtn").onclick = () => addEntriesToStack("ref");
+
+document.getElementById("removeLastBtn").onclick = () => {
+  rawEntriesStack.pop();
+  renderStack();
+};
+
+document.getElementById("clearAllBtn").onclick = () => {
+  if (confirm("スタックをすべて削除しますか？")) {
+    rawEntriesStack = [];
+    renderStack();
   }
+};
 
-  if (entries.length === 0) {
-    refOutputEl.value = "";
-    logOutputEl.value = log + "変換対象エントリがありません。";
-    return;
-  }
-
-  const ref = toReferenceList(entries, style);
-  refOutputEl.innerHTML = ref;
-  logOutputEl.value = log + `参考文献スタイル(${style}) 変換完了。`;
-});
-
-// --- ① 関数を外に定義 ---
-function copyRef() {
+document.getElementById("copyAllBtn").onclick = () => {
   const range = document.createRange();
-  range.selectNodeContents(refOutputEl);
+  range.selectNodeContents(unifiedOutputEl);
   const sel = window.getSelection();
   sel.removeAllRanges();
   sel.addRange(range);
   document.execCommand("copy");
-  sel.removeAllRanges();
-}
+  alert("すべてコピーしました");
+};
 
-// --- ② BibTeX コピー ---
-document.getElementById("copyBibtexBtn").addEventListener("click", function() {
-  bibtexOutputEl.select();
-  document.execCommand("copy");
+// (既存のファイル読み込みやコメント削除処理は維持)
+document.getElementById("clearInputBtn").onclick = () => { inputEl.value = ""; };
+document.getElementById("removeComment").onclick = () => {
+  let cleaned = inputEl.value.replace(/@comment\{.*?\}/g, "").replace(/\\begin\{thebibliography\}\{.*?\}/g, "").replace(/\\end\{thebibliography\}/g, "");
+  inputEl.value = cleaned;
+};
+document.getElementById("fileInput").onchange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const r = new FileReader();
+    r.onload = (ev) => { inputEl.value = ev.target.result; };
+    r.readAsText(file, "UTF-8");
+  }
+};
+
+// unifiedOutput の中身が編集されたら、rawEntriesStack の該当データを更新する
+document.getElementById("unifiedOutput").addEventListener("input", () => {
+    const blocks = document.querySelectorAll("#unifiedOutput > div");
+    blocks.forEach((block, index) => {
+        if (rawEntriesStack[index]) {
+            if (rawEntriesStack[index].type === "bib") {
+                // BibTeXの場合、HTMLタグを除去して生テキストとして保存
+                rawEntriesStack[index].rawText = block.innerText;
+            } else {
+                // 参考文献リストの場合、innerHTMLのまま（emタグ等込みで）保存
+                // ただし、この場合はオブジェクト構造(data)との同期が難しいため
+                // 編集済みフラグを立てて、再描画時にこれを優先するようにします
+                rawEntriesStack[index].editedHtml = block.innerHTML;
+            }
+        }
+    });
 });
-
-// --- ③ 参考文献コピー（1 回だけ登録） ---
-document.getElementById("copyRefBtn").addEventListener("click", copyRef);
