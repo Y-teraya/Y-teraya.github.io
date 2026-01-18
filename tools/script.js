@@ -534,98 +534,134 @@ function parseBibtex(text) {
   return entries;
 }
 
-// ========= bbl パーサ =========
-
+/**
+ * bblパーサ 完全版
+ * - LaTeXコマンド(\em, \it等)の除去
+ * - 重複するピリオド・カンマの自動修正
+ * - 末尾の不要な記号のクリーンアップ
+ */
 function parseBbl(text) {
   const entries = [];
+  // \bibitem で分割（最初の空要素は削除）
   const items = text.split(/\\bibitem\s*(?:\[[^\]]*\])?\s*\{/).slice(1);
+
+  /**
+   * 補助関数: 文字列からゴミを取り除く
+   */
+  const clean = (str) => {
+    if (!str) return "";
+    return str
+      .replace(/\\em\s+|\\it\s+|\\bf\s+|\\newblock/g, "") // LaTeXコマンド削除
+      .replace(/\{|\}/g, "")                            // 中括弧 {} 削除
+      .replace(/\s+/g, " ")                             // 連続空白を1つに
+      .replace(/,\s*,/g, ",")                           // カンマの重複を1つに
+      .replace(/\.\s*\./g, ".")                         // ピリオドの重複を1つに
+      .replace(/[.,\s]+$/, "")                          // 文末のカンマ・ピリオド・空白を削除
+      .trim();
+  };
+
+  /**
+   * 補助関数: ページ番号のハイフンを正規化
+   */
+  const normalizePages = (p) => p.replace(/[-–—]+/g, "-");
 
   for (const item of items) {
     const braceIndex = item.indexOf('}');
     if (braceIndex === -1) continue;
-    
+
+    // キー（ラベル）と本文を分離
     let body = item.substring(braceIndex + 1).trim();
-    body = body.replace(/\r?\n/g, " ").replace(/\s+/g, " ");
+    // 改行をスペースに置換
+    body = body.replace(/\r?\n/g, " ");
 
-    const common = { type: "article", authors: [], title: "", journal: "", year: "", volume: "", pages: "" };
+    const common = { 
+      type: "article", 
+      authors: [], 
+      title: "", 
+      journal: "", 
+      year: "", 
+      volume: "", 
+      pages: "",
+      hasEtAl: false 
+    };
 
-    // 著者と年の抽出
+    // 1. 著者と発行年の抽出: "Authors (Year)" のパターンを探す
     const yearMatch = body.match(/(.*?)\s*\((\d{4})\)/);
     if (yearMatch) {
       common.year = yearMatch[2];
-    // 文献タイプ判定
-const type = detectBblType(body);
-common.type = type;
-
-// タイプ別処理
-if (type === "book") {
-  const m = body.match(/\((\d{4})\)\s*(.*?)\.\s*(.*?),\s*(.*?)\./);
-  if (m) {
-    common.year = m[1];
-    common.title = m[2];
-    common.publisher = m[3];
-    common.address = m[4];
-  }
-}
-
-else if (type === "incollection") {
-  const chapterMatch = body.match(/\)\s*(.*?)\.\s*In/);
-  if (chapterMatch) common.title = chapterMatch[1];
-
-  const bookMatch = body.match(/In\s+\{\\em\s+([^}]+)\}/);
-  if (bookMatch) common.booktitle = bookMatch[1];
-
-  const pagesMatch = body.match(/pages?\s+([\d\-–—]+)/i);
-  if (pagesMatch) common.pages = pagesMatch[1];
-}
-
-else if (type === "misc") {
-  const titleMatch = body.match(/\)\s*(.*?)\./);
-  if (titleMatch) common.title = titleMatch[1];
-
-  const urlMatch = body.match(/https?:\/\/\S+/);
-  if (urlMatch) common.url = urlMatch[0];
-}
-      // 過剰なカンマを整理
-      let rawAuthors = yearMatch[1]
-  .replace(/\u3000/g, " ")        // 全角スペース除去
-  .replace(/\u00A0/g, " ")        // NBSP除去
-  .replace(/[\u200B-\u200F]/g, "")// ゼロ幅スペース除去
-  .replace(/\s+and\s+/gi, ", ")   // and → カンマ
-  .replace(/,\s*,/g, ",")         // カンマ重複除去
-  .replace(/\s+/g, " ")           // 連続スペース除去
-  .trim();
+      const rawAuthors = yearMatch[1];
       
-      const authorList = rawAuthors.split(/\s+and\s+|,\s+and\s+|,/)
+      // et al. のチェック
+      if (rawAuthors.includes("et al.")) {
+        common.hasEtAl = true;
+      }
+
+      // 著者を分割してリスト化
+      const authorList = rawAuthors
+        .split(/\s+and\s+|,\s+and\s+|,/)
         .map(a => a.trim())
         .filter(a => a.length > 0 && a !== "et al.");
-      
+
       common.authors = authorList.map(a => {
         const parts = a.split(",");
         return parts.length >= 2 
-          ? { last: parts[0].trim(), first: parts.slice(1).join(" ").trim() }
-          : { last: a, first: "" };
+          ? { last: clean(parts[0]), first: clean(parts.slice(1).join(" ")) }
+          : { last: clean(a), first: "" };
       });
-      if (yearMatch[1].includes("et al.")) common.hasEtAl = true;
     }
 
-    // タイトルと雑誌 (newblock で分割)
+    // 2. タイトルと雑誌情報の抽出 (\newblock で区切られている前提)
     const blocks = body.split(/\\newblock\s*/i).map(b => b.trim());
-    if (blocks[1]) common.title = blocks[1].replace(/\.$/, "");
+
+    // 第2ブロック: タイトル
+    if (blocks[1]) {
+      common.title = clean(blocks[1]);
+    }
+
+    // 第3ブロック: 雑誌名・巻・ページ
     if (blocks[2]) {
       const journalPart = blocks[2];
+      // 雑誌名 巻:ページ のパターン (例: Nature 500: 123-125)
       const jm = journalPart.match(/(.*?)\s*(\d+)\s*:\s*([\d\-–—]+)/);
       if (jm) {
-        common.journal = jm[1].replace(/\\em\s+|\\it\s+|[{}]/g, "").trim();
+        common.journal = clean(jm[1]);
         common.volume = jm[2];
         common.pages = normalizePages(jm[3]);
       } else {
-        common.journal = journalPart.replace(/[{}]/g, "");
+        // パターンに一致しない場合は文字列全体を掃除して格納
+        common.journal = clean(journalPart);
       }
     }
+    
     entries.push(common);
   }
+
   return entries;
+}
+
+/**
+ * 使い方例: 表示用文字列の組み立て
+ */
+function formatEntry(entry) {
+  // 著者名を結合 (Last First)
+  const authorNames = entry.authors
+    .map(a => `${a.last} ${a.first}`.trim())
+    .join(", ");
+  
+  const etAl = entry.hasEtAl ? " et al." : "";
+
+  // 存在する項目だけをカンマで繋ぐ（カンマ重複防止）
+  const parts = [
+    authorNames + etAl,
+    entry.title,
+    entry.journal,
+    entry.volume ? `Vol. ${entry.volume}` : "",
+    entry.pages ? `pp. ${entry.pages}` : "",
+    entry.year
+  ].filter(p => p && p.length > 0); // 空の項目を無視
+
+  // 最後に一括で ", " で結合し、末尾にピリオドを1つだけ打つ
+  return parts.join(", ") + ".";
 }
 
 // ========= 共通 → BibTeX 変換 =========
@@ -765,17 +801,6 @@ function formatRefAPA(e) {
 
 function formatRefSeibutsu(e, index) {
   // 日本生物工学会: 著者名1, 著者名2: 雑誌名, 巻, 頁 (年).
-  const authors = formatAuthorList(e.authors, "default");
-  const journal = e.journal ? `<i>${escHtml(e.journal)}</i>` : "";
-  const vol = e.volume ? `, <b>${escHtml(e.volume)}</b>` : "";
-  const pages = e.pages ? `, ${escHtml(e.pages)}` : "";
-  const year = e.year ? ` (${escHtml(e.year)})` : "";
-  
-  return `${index}) ${escHtml(authors)}: ${journal}${vol}${pages}${year}.`;
-}
-
-function formatRefJozo(e, index) {
-  // 日本醸造学会: 基本的に生物工学と同様だが、慣習に合わせ調整可能
   const authors = formatAuthorList(e.authors, "default");
   const journal = e.journal ? `<i>${escHtml(e.journal)}</i>` : "";
   const vol = e.volume ? `, <b>${escHtml(e.volume)}</b>` : "";
