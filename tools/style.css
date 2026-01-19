@@ -155,3 +155,49 @@ select {
         align-items: flex-start;
     }
 }
+
+/* 既存のスタイルに追加、または上書きしてください */
+
+.bulk-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.footer-actions {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px; /* 画面最下部との余白 */
+}
+
+/* 取り消しボタン（枠線のみのスタイル） */
+.btn-outline-danger {
+    background: transparent;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+}
+
+.btn-outline-danger:hover {
+    background: #fff5f5;
+}
+
+/* 全削除ボタン（注意を促すスタイル） */
+.btn-danger {
+    background: #dc3545;
+    color: white;
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+}
+
+.btn-danger:hover {
+    background: #c82333;
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+/* ボタンが無効（disabled）の時のスタイル */
+button:disabled {
+    background-color: #ccc !important; /* 灰色にする */
+    color: #888 !important;            /* 文字を薄くする */
+    cursor: not-allowed;               /* カーソルを禁止マークにする */
+    border-color: #bbb !important;
+    box-shadow: none !important;       /* 影を消す */
+}

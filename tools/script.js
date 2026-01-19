@@ -830,41 +830,6 @@ const unifiedOutputEl = document.getElementById("unifiedOutput");
 const logOutputEl = document.getElementById("logOutput");
 const styleSelectEl = document.getElementById("styleSelect");
 
-// ========= 表示更新関数 =========
-function renderStack() {
-  const currentStyle = document.getElementById("styleSelect").value;
-  const unifiedOutputEl = document.getElementById("unifiedOutput");
-  let htmlBuffer = [];
-  let globalIndex = 1;
-
-  rawEntriesStack.forEach((item, stackIndex) => {
-    const entriesCopy = JSON.parse(JSON.stringify(item.data));
-
-    // 【重要】ここで let cardHtml を宣言し、かつバッククォート直後の改行とインデントを完全に排除します
-    let cardHtml = `<div class="entry-card" style="position: relative; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;"><span style="font-weight: bold; color: #666; font-size: 1.5rem;">#${stackIndex + 1} [${item.type.toUpperCase()}]</span><button onclick="removeEntryAt(${stackIndex})" style="background: #ff4d4d; color: white; border: none; border-radius: 4px; padding: 4px 12px; cursor: pointer; font-size: 12px; font-weight: bold;">削除</button></div>`;
-
-    if (item.type === "bib") {
-      const bibText = item.rawText || toBibtex(entriesCopy);
-      // 【重要】` の直後に改行を入れず、直接 <div を開始することで上の空白を消します
-      cardHtml += `<div contenteditable="true" class="bib-content" style="font-family: monospace; font-size: 13px; white-space: pre-wrap; background: #f9f9f9; padding: 10px; border-radius: 4px; outline: none;">${escHtml(bibText)}</div>`;
-    } else {
-      let refContent = "";
-      if (item.editedHtml) {
-        refContent = item.editedHtml;
-      } else {
-        const formatted = toReferenceList(entriesCopy, currentStyle, globalIndex);
-        refContent = formatted.replace(/\n/g, "<br>");
-      }
-      cardHtml += `<div contenteditable="true" style="font-family: serif; line-height: 1.6; font-size: 15px; padding: 5px; outline: none;">${refContent}</div>`;
-      globalIndex += entriesCopy.length;
-    }
-
-    cardHtml += `</div>`;
-    htmlBuffer.push(cardHtml);
-  });
-  unifiedOutputEl.innerHTML = htmlBuffer.join("");
-}
-
 // ========= 1. データの追加処理 (1件ずつバラバラに保存するように修正) =========
 function addEntriesToStack(mode) {
   const text = inputEl.value;
@@ -975,60 +940,72 @@ function downloadFile(content, fileName, contentType) {
   URL.revokeObjectURL(url);
 }
 
-// .bib (BibTeXのみ抽出)
-document.getElementById("downloadBibBtn").addEventListener("click", () => {
+// .bib (BibTeXのみ抽出・空チェック付き)
+document.getElementById("downloadBibBtn").onclick = () => {
+    // BibTeX 形式のデータのみを抽出
     const bibItems = rawEntriesStack.filter(i => i.type === "bib");
+
+    // データが1つもない場合は中断
+    if (bibItems.length === 0) {
+        alert("スタックに BibTeX 形式の文献がありません。");
+        return;
+    }
+
     const content = bibItems.map(i => i.rawText || toBibtex(i.data)).join("\n\n");
     downloadFile(content, "references.bib", "text/plain");
-});
-
-// .rtf (リストのみ抽出，斜体維持)
-document.getElementById("downloadRtfBtn").onclick = () => {
-  let globalIndex = 1;
-  const content = rawEntriesStack.filter(i => i.type === "ref").map(item => {
-    if (item.editedHtml) {
-      globalIndex += item.data.length;
-      return item.editedHtml.replace(/<br\s*\/?>/gi, "\n");
-    }
-    const res = toReferenceList(item.data, styleSelectEl.value, globalIndex);
-    globalIndex += item.data.length;
-    return res;
-  }).join("\n\n");
-
-  // 1. HTMLエスケープを戻す (&amp; -> &, &lt; -> < など)
-  let decoded = content
-    .replace(/&lt;/g, "<").replace(/&gt;/g, ">")
-    .replace(/&amp;/g, "&").replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'");
-
-  // 2. HTMLタグを RTF命令に変換
-  let rtfBody = decoded
-    .replace(/<(?:i|em)>(.*?)<\/(?:i|em)>/gi, "{\\i $1}") // 斜体
-    .replace(/<(?:b|strong)>(.*?)<\/(?:b|strong)>/gi, "{\\b $1}") // 太字
-    .replace(/\n/g, "\\line\n"); // 改行
-
-  // 3. アクセント付き文字 (Stéphanie等) の文字化け対策
-  // RTFは本来ASCIIベースなので，UnicodeをRTF形式( \uN? )に変換する
-  rtfBody = rtfBody.replace(/[^\x00-\x7F]/g, (c) => {
-    return "\\u" + c.charCodeAt(0).toString() + "?";
-  });
-
-  const rtfHeader = "{\\rtf1\\ansi\\ansicpg932\\deff0 {\\fonttbl{\\f0 Times New Roman;}{\\f1 MS Mincho;}}\\f0\\fs24 ";
-  
-  // 保存 (Blobの時点でUTF-8を指定し，中身は上記でRTF用Unicode変換済み)
-  downloadFile(rtfHeader + rtfBody + "}", "reference_list.rtf", "application/rtf");
 };
+
+// .rtf (リストのみ抽出，斜体維持・空チェック付き)
+document.getElementById("downloadRtfBtn").onclick = () => {
+    // リスト形式のデータのみを抽出
+    const refItems = rawEntriesStack.filter(i => i.type === "ref");
+
+    // データが1つもない場合は中断
+    if (refItems.length === 0) {
+        alert("スタックに参考文献リストのデータがありません。");
+        return;
+    }
+
+    let globalIndex = 1;
+    const content = refItems.map(item => {
+        if (item.editedHtml) {
+            globalIndex += item.data.length;
+            return item.editedHtml.replace(/<br\s*\/?>/gi, "\n");
+        }
+        const res = toReferenceList(item.data, styleSelectEl.value, globalIndex);
+        globalIndex += item.data.length;
+        return res;
+    }).join("\n\n");
+
+    // 1. HTMLエスケープを戻す
+    let decoded = content
+        .replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+        .replace(/&amp;/g, "&").replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'");
+
+    // 2. HTMLタグを RTF命令に変換
+    let rtfBody = decoded
+        .replace(/<(?:i|em)>(.*?)<\/(?:i|em)>/gi, "{\\i $1}") 
+        .replace(/<(?:b|strong)>(.*?)<\/(?:b|strong)>/gi, "{\\b $1}") 
+        .replace(/\n/g, "\\line\n"); 
+
+    // 3. 文字化け対策
+    rtfBody = rtfBody.replace(/[^\x00-\x7F]/g, (c) => {
+        return "\\u" + c.charCodeAt(0).toString() + "?";
+    });
+
+    const rtfHeader = "{\\rtf1\\ansi\\ansicpg932\\deff0 {\\fonttbl{\\f0 Times New Roman;}{\\f1 MS Mincho;}}\\f0\\fs24 ";
+    
+    downloadFile(rtfHeader + rtfBody + "}", "reference_list.rtf", "application/rtf");
+};
+
+
 
 // ========= 各種ボタン・イベント =========
 styleSelectEl.onchange = renderStack; // 学会を変えた瞬間に全部変わる
 
 document.getElementById("convertBibtexBtn").onclick = () => addEntriesToStack("bib");
 document.getElementById("convertRefBtn").onclick = () => addEntriesToStack("ref");
-
-document.getElementById("removeLastBtn").onclick = () => {
-  rawEntriesStack.pop();
-  renderStack();
-};
 
 document.getElementById("clearAllBtn").onclick = () => {
   if (confirm("スタックをすべて削除しますか？")) {
@@ -1083,4 +1060,61 @@ document.getElementById("unifiedOutput").addEventListener("input", () => {
             }
         }
     });
+});
+
+// ========= 表示更新関数 =========
+function renderStack() {
+  const currentStyle = document.getElementById("styleSelect").value;
+  const unifiedOutputEl = document.getElementById("unifiedOutput");
+  let htmlBuffer = [];
+  let globalIndex = 1;
+
+  rawEntriesStack.forEach((item, stackIndex) => {
+    const entriesCopy = JSON.parse(JSON.stringify(item.data));
+
+    // カードのヘッダー部分
+    let cardHtml = `<div class="entry-card" style="position: relative; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;"><span style="font-weight: bold; color: #666; font-size: 1.5rem;">#${stackIndex + 1} [${item.type.toUpperCase()}]</span><button onclick="removeEntryAt(${stackIndex})" style="background: #ff4d4d; color: white; border: none; border-radius: 4px; padding: 4px 12px; cursor: pointer; font-size: 12px; font-weight: bold;">削除</button></div>`;
+
+    if (item.type === "bib") {
+      const bibText = item.rawText || toBibtex(entriesCopy);
+      cardHtml += `<div contenteditable="true" class="bib-content" style="font-family: monospace; font-size: 13px; white-space: pre-wrap; background: #f9f9f9; padding: 10px; border-radius: 4px; outline: none;">${escHtml(bibText)}</div>`;
+    } else {
+      let refContent = "";
+      if (item.editedHtml) {
+        refContent = item.editedHtml;
+      } else {
+        const formatted = toReferenceList(entriesCopy, currentStyle, globalIndex);
+        refContent = formatted.replace(/\n/g, "<br>");
+      }
+      cardHtml += `<div contenteditable="true" style="font-family: serif; line-height: 1.6; font-size: 15px; padding: 5px; outline: none;">${refContent}</div>`;
+      globalIndex += entriesCopy.length;
+    }
+
+    cardHtml += `</div>`;
+    htmlBuffer.push(cardHtml);
+  });
+
+  // 1. まず画面に文献を表示させる
+  unifiedOutputEl.innerHTML = htmlBuffer.length > 0 
+    ? htmlBuffer.join("") 
+    : "<p style='color:#999; padding:20px;'>スタックは空です。</p>";
+
+  // 2. 表示が終わった直後に、ボタンの有効/無効を切り替える
+  const hasBib = rawEntriesStack.some(e => e.type === 'bib');
+  const hasRef = rawEntriesStack.some(e => e.type === 'ref');
+
+  // ボタンが存在する場合のみ実行（エラー防止）
+  const btnBib = document.getElementById("downloadBibBtn");
+  const btnRef = document.getElementById("downloadRtfBtn");
+  const btnCopy = document.getElementById("copyAllBtn");
+
+  if (btnBib) btnBib.disabled = !hasBib;
+  if (btnRef) btnRef.disabled = !hasRef;
+  if (btnCopy) btnCopy.disabled = (rawEntriesStack.length === 0);
+}
+
+// ページが読み込まれた時に、一度だけ renderStack を実行する
+// これにより、起動直後（スタックが空の状態）でもボタンが灰色になります
+document.addEventListener("DOMContentLoaded", () => {
+    renderStack();
 });
