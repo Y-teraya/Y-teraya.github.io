@@ -195,9 +195,21 @@ select {
 
 /* ボタンが無効（disabled）の時のスタイル */
 button:disabled {
-    background-color: #ccc !important; /* 灰色にする */
-    color: #888 !important;            /* 文字を薄くする */
-    cursor: not-allowed;               /* カーソルを禁止マークにする */
-    border-color: #bbb !important;
-    box-shadow: none !important;       /* 影を消す */
+    /* スマホ固有のデフォルトデザインを無効化 */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    /* 色の設定 */
+    background-color: #cccccc !important;
+    color: #888888 !important;
+    border: 1px solid #bbbbbb !important;
+    
+    /* スマホでボタンが半透明になるのを防ぐ、または制御する */
+    opacity: 1; 
+    
+    /* 押し心地を消す */
+    cursor: not-allowed;
+    box-shadow: none !important;
+    text-shadow: none !important;
 }

@@ -1118,3 +1118,18 @@ function renderStack() {
 document.addEventListener("DOMContentLoaded", () => {
     renderStack();
 });
+
+// 全ての関数の外（ファイルの一番下）に記述
+function initApp() {
+    if (typeof renderStack === "function") {
+        renderStack();
+    }
+}
+
+// ページ読み込み完了時、および「戻る」でページが表示された時にも実行
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initApp);
+} else {
+    initApp();
+}
+window.addEventListener("pageshow", initApp);
