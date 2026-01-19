@@ -238,7 +238,6 @@ function clearStack() {
 }
 
 // ========= nbib パーサ =========
-
 function parseNbib(text) {
   const lines = text.replace(/\r\n/g, "\n").split("\n");
   const entries = [];
@@ -275,7 +274,6 @@ function parseNbib(text) {
     }
     const m = line.match(/^([A-Z0-9]{2,4})\s*-\s*(.*)$/);
     if (!m) {
-      // continuation line
       if (current && current._lastTag) {
         current.raw[current._lastTag] =
           (current.raw[current._lastTag] || "") + " " + line.trim();
@@ -286,7 +284,6 @@ function parseNbib(text) {
     const val = m[2].trim();
 
     if (tag === "PMID") {
-      // レコード開始
       if (current) pushCurrent();
       pushCurrent();
       current.pmid = val;
@@ -298,14 +295,11 @@ function parseNbib(text) {
   }
   if (current) entries.push(current);
 
-  // nbib → 共通フィールドへマッピング
   for (const e of entries) {
     const r = e.raw;
 
-    // 著者: FAU のみ使用
     const auList = [];
     if (r["FAU"]) {
-      // FAU は複数行のはずなので、テキストから FAU 行を抽出
       const lines = text.match(/^FAU\s*-\s*(.*)$/gm) || [];
       for (const l of lines) {
         const v = l.split("-")[1].trim();
@@ -313,7 +307,6 @@ function parseNbib(text) {
       }
     }
     
-    // "Last, First M" と仮定
     e.authors = auList.map(a => {
       const parts = a.split(",");
       if (parts.length >= 2) {
@@ -327,51 +320,36 @@ function parseNbib(text) {
       }
     });
 
-    // タイトル: TI
     e.title = r["TI"] || "";
-
-    // 雑誌名: JT(正式) / TA(略称)
     e.journal = r["JT"] || r["TA"] || "";
-
-    // volume / issue
     e.volume = r["VI"] || "";
     e.number = r["IP"] || "";
-
-    // pages
     e.pages = normalizePages(r["PG"] || "");
 
-    // DOI (LID に "doi " などが含まれうる)
     if (r["LID"]) {
       const mdoi = r["LID"].match(/10\.\S+/);
       if (mdoi) e.doi = mdoi[0].replace(/[.;]$/, "");
     }
 
-    // PMID / PMCID
     e.pmid = r["PMID"] || e.pmid;
     if (r["PMC"]) e.pmcid = r["PMC"];
-
-    // URL (ない場合が多いので空)
     e.url = "";
 
-    // DP から year / month
     const dp = r["DP"] || "";
     const dObj = parseDateToYearMonth(dp);
     e.year = dObj.year;
     e.month = dObj.month;
 
-    // note に PMID / PMCID
     const notes = [];
     if (e.pmid) notes.push(`PMID: ${e.pmid}`);
     if (e.pmcid) notes.push(`PMCID: ${e.pmcid}`);
     e.note = notes.join("; ");
   }
 
-  stackedEntries = stackedEntries.concat(entries);
-return stackedEntries;
+  return entries;
 }
 
 // ========= RIS パーサ =========
-
 function parseRis(text) {
   const lines = text.replace(/\r\n/g, "\n").split("\n");
   const entries = [];
@@ -423,17 +401,14 @@ function parseRis(text) {
   }
   if (current) entries.push(current);
 
-  // マッピング
   for (const e of entries) {
     const r = e.raw;
 
-    // 参照タイプ
     const ty = (r["TY"] || [""])[0].toUpperCase();
     if (ty === "JOUR") e.type = "article";
     else if (ty === "BOOK") e.type = "book";
     else e.type = "article";
 
-    // 著者: AU
     const au = r["AU"] || [];
     e.authors = au.map(a => {
       const parts = a.split(",");
@@ -448,17 +423,11 @@ function parseRis(text) {
       }
     });
 
-    // タイトル: TI / T1
     e.title = (r["TI"] && r["TI"][0]) || (r["T1"] && r["T1"][0]) || "";
-
-    // ジャーナル名: T2 / JO
     e.journal = (r["T2"] && r["T2"][0]) || (r["JO"] && r["JO"][0]) || "";
-
-    // volume / issue
     e.volume = (r["VL"] && r["VL"][0]) || "";
     e.number = (r["IS"] && r["IS"][0]) || "";
 
-    // pages: SP / EP
     const sp = (r["SP"] && r["SP"][0]) || "";
     const ep = (r["EP"] && r["EP"][0]) || "";
     let pages = "";
@@ -466,29 +435,21 @@ function parseRis(text) {
     else if (sp) pages = sp;
     e.pages = normalizePages(pages);
 
-    // DOI
     e.doi = (r["DO"] && r["DO"][0]) || "";
-
-    // URL
     e.url = (r["UR"] && r["UR"][0]) || "";
-
-    // publisher, address
     e.publisher = (r["PB"] && r["PB"][0]) || "";
     e.address = (r["CY"] && r["CY"][0]) || "";
 
-    // 日付: DA(なければY1)
     const da = (r["DA"] && r["DA"][0]) || (r["Y1"] && r["Y1"][0]) || "";
     const dObj = parseDateToYearMonth(da);
     e.year = dObj.year;
     e.month = dObj.month;
   }
 
-  stackedEntries = stackedEntries.concat(entries);
-return stackedEntries;
+  return entries;
 }
 
-// ========= BibTeX パーサ(最低限) =========
-
+// ========= BibTeX パーサ =========
 function parseBibtex(text) {
   const entries = [];
   const re = /@(\w+)\s*\{\s*([^,]+),([\s\S]*?)}\s*(?=@|$)/g;
@@ -516,7 +477,6 @@ function parseBibtex(text) {
       }
     }
 
-    // 共通構造に詰め替え
     const authors = parseAuthorString(fields["author"] || "");
     const dObj = parseDateToYearMonth(fields["year"] || "");
 
@@ -539,48 +499,34 @@ function parseBibtex(text) {
       note: fields["note"] || ""
     });
   }
-  stackedEntries = stackedEntries.concat(entries);
-return stackedEntries;
+  
+  return entries;
 }
 
-/**
- * bblパーサ 完全版
- * - LaTeXコマンド(\em, \it等)の除去
- * - 重複するピリオド・カンマの自動修正
- * - 末尾の不要な記号のクリーンアップ
- */
+// ========= bbl パーサ =========
 function parseBbl(text) {
   const entries = [];
-  // \bibitem で分割（最初の空要素は削除）
   const items = text.split(/\\bibitem\s*(?:\[[^\]]*\])?\s*\{/).slice(1);
 
-  /**
-   * 補助関数: 文字列からゴミを取り除く
-   */
   const clean = (str) => {
     if (!str) return "";
     return str
-      .replace(/\\em\s+|\\it\s+|\\bf\s+|\\newblock/g, "") // LaTeXコマンド削除
-      .replace(/\{|\}/g, "")                            // 中括弧 {} 削除
-      .replace(/\s+/g, " ")                             // 連続空白を1つに
-      .replace(/,\s*,/g, ",")                           // カンマの重複を1つに
-      .replace(/\.\s*\./g, ".")                         // ピリオドの重複を1つに
-      .replace(/[.,\s]+$/, "")                          // 文末のカンマ・ピリオド・空白を削除
+      .replace(/\\em\s+|\\it\s+|\\bf\s+|\\newblock/g, "")
+      .replace(/\{|\}/g, "")
+      .replace(/\s+/g, " ")
+      .replace(/,\s*,/g, ",")
+      .replace(/\.\s*\./g, ".")
+      .replace(/[.,\s]+$/, "")
       .trim();
   };
 
-  /**
-   * 補助関数: ページ番号のハイフンを正規化
-   */
   const normalizePages = (p) => p.replace(/[-–—]+/g, "-");
 
   for (const item of items) {
     const braceIndex = item.indexOf('}');
     if (braceIndex === -1) continue;
 
-    // キー（ラベル）と本文を分離
     let body = item.substring(braceIndex + 1).trim();
-    // 改行をスペースに置換
     body = body.replace(/\r?\n/g, " ");
 
     const common = { 
@@ -594,18 +540,15 @@ function parseBbl(text) {
       hasEtAl: false 
     };
 
-    // 1. 著者と発行年の抽出: "Authors (Year)" のパターンを探す
     const yearMatch = body.match(/(.*?)\s*\((\d{4})\)/);
     if (yearMatch) {
       common.year = yearMatch[2];
       const rawAuthors = yearMatch[1];
       
-      // et al. のチェック
       if (rawAuthors.includes("et al.")) {
         common.hasEtAl = true;
       }
 
-      // 著者を分割してリスト化
       const authorList = rawAuthors
         .split(/\s+and\s+|,\s+and\s+|,/)
         .map(a => a.trim())
@@ -619,25 +562,20 @@ function parseBbl(text) {
       });
     }
 
-    // 2. タイトルと雑誌情報の抽出 (\newblock で区切られている前提)
     const blocks = body.split(/\\newblock\s*/i).map(b => b.trim());
 
-    // 第2ブロック: タイトル
     if (blocks[1]) {
       common.title = clean(blocks[1]);
     }
 
-    // 第3ブロック: 雑誌名・巻・ページ
     if (blocks[2]) {
       const journalPart = blocks[2];
-      // 雑誌名 巻:ページ のパターン (例: Nature 500: 123-125)
       const jm = journalPart.match(/(.*?)\s*(\d+)\s*:\s*([\d\-–—]+)/);
       if (jm) {
         common.journal = clean(jm[1]);
         common.volume = jm[2];
         common.pages = normalizePages(jm[3]);
       } else {
-        // パターンに一致しない場合は文字列全体を掃除して格納
         common.journal = clean(journalPart);
       }
     }
@@ -645,35 +583,8 @@ function parseBbl(text) {
     entries.push(common);
   }
 
-  stackedEntries = stackedEntries.concat(entries);
-return stackedEntries;
+  return entries;
 }
-
-/**
- * 使い方例: 表示用文字列の組み立て
- */
-function formatEntry(entry) {
-  // 著者名を結合 (Last First)
-  const authorNames = entry.authors
-    .map(a => `${a.last} ${a.first}`.trim())
-    .join(", ");
-  
-  const etAl = entry.hasEtAl ? " et al." : "";
-
-  // 存在する項目だけをカンマで繋ぐ（カンマ重複防止）
-  const parts = [
-    authorNames + etAl,
-    entry.title,
-    entry.journal,
-    entry.volume ? `Vol. ${entry.volume}` : "",
-    entry.pages ? `pp. ${entry.pages}` : "",
-    entry.year
-  ].filter(p => p && p.length > 0); // 空の項目を無視
-
-  // 最後に一括で ", " で結合し、末尾にピリオドを1つだけ打つ
-  return parts.join(", ") + ".";
-}
-
 // ========= 共通 → BibTeX 変換 =========
 
 function toBibtex(entries) {
@@ -702,10 +613,14 @@ function toBibtex(entries) {
       ["eprint", e.eprint]
     ];
 
+    // 最長のフィールド名の長さを取得
+    const maxLen = Math.max(...fields.map(([name]) => name.length));
+
     let body = "";
     fields.forEach(([name, value], i) => {
       const safeVal = value || "";
-      body += `  ${name} = {${safeVal}}`;
+      const padding = " ".repeat(maxLen - name.length);
+      body += `  ${name}${padding} = {${safeVal}}`;
       if (i < fields.length - 1) body += ",\n";
     });
 
@@ -942,31 +857,101 @@ function renderStack() {
   unifiedOutputEl.innerHTML = htmlBuffer.join("");
 }
 
-// ========= 変換・追加処理 =========
+// ========= 1. データの追加処理 (1件ずつバラバラに保存するように修正) =========
 function addEntriesToStack(mode) {
   const text = inputEl.value;
   if (!text.trim()) return;
 
   const fmt = detectFormat(text);
-  
-  // 既存のパーサーを呼び出し
   let entries = [];
-  // グローバルな stackedEntries を一度クリアしてからパース
-  if (typeof clearStack === "function") clearStack();
   
+  // フォーマットに合わせてパース
   if (fmt === "nbib") entries = parseNbib(text);
   else if (fmt === "ris") entries = parseRis(text);
   else if (fmt === "bibtex") entries = parseBibtex(text);
   else if (fmt === "bbl") entries = parseBbl(text);
 
   if (entries && entries.length > 0) {
-    // 成功したらスタックに追加
-    rawEntriesStack.push({ type: mode, data: JSON.parse(JSON.stringify(entries)) });
+    // 【重要】ここで1件ずつループしてスタックに追加する
+    entries.forEach((singleEntry) => {
+      rawEntriesStack.push({ 
+        type: mode, 
+        data: [JSON.parse(JSON.stringify(singleEntry))] // 独立した1件の配列として保存
+      });
+    });
+    inputEl.value = ""; // 追加後に入力欄をクリア（スマホで連続作業しやすい）
     renderStack();
-    logOutputEl.value = `[${fmt}] から追加しました。現在のブロック数: ${rawEntriesStack.length}`;
+    logOutputEl.value = `${entries.length} 件追加しました。合計: ${rawEntriesStack.length} 件`;
   } else {
-    alert("文献データを検出できませんでした。形式を確認してください。");
+    alert("文献データを検出できませんでした。");
   }
+}
+
+// ========= 2. 特定のインデックスを削除する関数 (新規追加) =========
+function removeEntryAt(index) {
+  if (confirm(`エントリー #${index + 1} を削除しますか？`)) {
+    rawEntriesStack.splice(index, 1);
+    renderStack();
+    logOutputEl.value = `削除しました。現在の合計: ${rawEntriesStack.length} 件`;
+  }
+}
+
+// ========= 3. 描画処理 (カード形式 & 個別コメント & 個別削除対応に書き換え) =========
+function renderStack() {
+  const currentStyle = styleSelectEl.value;
+  let htmlBuffer = [];
+  let globalIndex = 1;
+
+  rawEntriesStack.forEach((item, stackIndex) => {
+    const entriesCopy = item.data;
+    
+    // スマホで見やすいカード形式のコンテナ
+    let cardHtml = `
+      <div class="entry-card" style="
+        position: relative;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      ">
+        <div style="
+          display: flex; 
+          justify-content: space-between; 
+          align-items: center;
+          margin-bottom: 10px;
+          border-bottom: 1px solid #eee;
+          padding-bottom: 5px;
+        ">
+          <span style="font-weight: bold; color: #666; font-size: 0.8rem;">#${stackIndex + 1} [${item.type.toUpperCase()}]</span>
+          <button onclick="removeEntryAt(${stackIndex})" style="
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 12px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+          ">削除</button>
+        </div>
+    `;
+
+if (item.type === "bib") {
+  const bibText = item.rawText || toBibtex(entriesCopy);
+  cardHtml += `<div contenteditable="true" class="bib-content" style="font-family: monospace; font-size: 13px; white-space: pre-wrap; background: #f9f9f9; padding: 10px; border-radius: 4px;">${escHtml(bibText)}</div>`;
+} else {
+  const formatted = toReferenceList(entriesCopy, currentStyle, globalIndex);
+  cardHtml += `<div contenteditable="true" style="font-family: serif; line-height: 1.6; font-size: 15px; padding: 5px;">${formatted.replace(/\n/g, "<br>")}</div>`;
+  globalIndex += entriesCopy.length;
+}
+
+    cardHtml += `</div>`;
+    htmlBuffer.push(cardHtml);
+  });
+
+  unifiedOutputEl.innerHTML = htmlBuffer.join("");
 }
 
 // ========= ダウンロード機能 =========
