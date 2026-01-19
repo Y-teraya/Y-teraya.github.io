@@ -944,28 +944,31 @@ function renderStack() {
 
 // ========= 変換・追加処理 =========
 function addEntriesToStack(mode) {
-  const text = inputEl.value;
-  if (!text.trim()) return;
-
+  const text = document.getElementById("input").value;
   const fmt = detectFormat(text);
   
-  // 既存のパーサーを呼び出し
   let entries = [];
-  // グローバルな stackedEntries を一度クリアしてからパース
-  if (typeof clearStack === "function") clearStack();
-  
   if (fmt === "nbib") entries = parseNbib(text);
   else if (fmt === "ris") entries = parseRis(text);
   else if (fmt === "bibtex") entries = parseBibtex(text);
   else if (fmt === "bbl") entries = parseBbl(text);
 
-  if (entries && entries.length > 0) {
-    // 成功したらスタックに追加
-    rawEntriesStack.push({ type: mode, data: JSON.parse(JSON.stringify(entries)) });
+  if (entries.length > 0) {
+    // 【ここを修正】一括ではなく、1件ずつ個別のスタックアイテムとして追加
+    entries.forEach((singleEntry, i) => {
+      rawEntriesStack.push({ 
+        type: mode, 
+        // 1件だけの配列にする
+        data: [JSON.parse(JSON.stringify(singleEntry))],
+        // BibTeXモードの場合は、各エントリを再生成して保持（コメント等は全体のものなので、ここでは再生成が安全）
+        rawText: mode === "bib" ? toBibtex([singleEntry]) : null 
+      });
+    });
+
+    addLog(`${fmt.toUpperCase()}形式から ${entries.length} 件の文献を個別にスタックしました。`);
     renderStack();
-    logOutputEl.value = `[${fmt}] から追加しました。現在のブロック数: ${rawEntriesStack.length}`;
   } else {
-    alert("文献データを検出できませんでした。形式を確認してください。");
+    addLog("エラー: 文献が見つかりませんでした。");
   }
 }
 
@@ -983,11 +986,14 @@ function downloadFile(content, fileName, contentType) {
 }
 
 // .bib (BibTeXのみ抽出)
-document.getElementById("downloadBibBtn").addEventListener("click", () => {
-    const bibItems = rawEntriesStack.filter(i => i.type === "bib");
-    const content = bibItems.map(i => i.rawText || toBibtex(i.data)).join("\n\n");
-    downloadFile(content, "references.bib", "text/plain");
-});
+document.getElementById("downloadBibBtn").onclick = () => {
+  const bibItems = rawEntriesStack.filter(i => i.type === "bib");
+  if (bibItems.length === 0) return alert("BibTeXデータがありません。");
+  
+  // 各スタック（1件ずつ入っている）を結合
+  const content = bibItems.map(i => i.rawText || toBibtex(i.data)).join("\n\n");
+  downloadFile(content, "references.bib", "text/plain;charset=utf-8");
+};
 
 // .rtf (リストのみ抽出、斜体維持)
 document.getElementById("downloadRtfBtn").onclick = () => {
