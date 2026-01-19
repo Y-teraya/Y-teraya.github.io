@@ -600,7 +600,7 @@ function toBibtex(entries) {
 
     const fields = [
       ["author", authorStr],
-      ["title", convertAccentsToLatex(e.title)],
+      ["title",  (e.title || "").replace(/<em>(.*?)<\/em>/gi, "\\textit{$1}")],
       ["publisher", convertAccentsToLatex(e.publisher)],
       ["journal", convertAccentsToLatex(e.journal)],
       ["volume", e.volume],
@@ -624,7 +624,7 @@ function toBibtex(entries) {
       if (i < fields.length - 1) body += ",\n";
     });
 
-    lines.push(`\n@${e.type || "article"}{${key},\n${body}\n}`);
+    lines.push(`@${e.type || "article"}{${key},\n${body}\n}`);
   });
 
   return lines.join("\n");
@@ -656,11 +656,11 @@ function formatAuthorsForStyle_all(authors, limit, etAlText) {
   return `${head}, ${etAlText}`; // etAlText (et al.など) はプログラム定数なのでそのまま
 }
 
-// -- 個別スタイル（ざっくり。細かいところは必要に応じて調整用） --
+// -- 個別スタイル（ざっくり．細かいところは必要に応じて調整用） --
 
 function formatRefNogyokagaku(e, index) {
   // 日本農芸化学会
-  // 著者全員: 姓, 名イニシャル。10人超なら5人+et al.
+  // 著者全員: 姓, 名イニシャル．10人超なら5人+et al.
   let authors = e.authors.map(a => {
     const initials = (a.first || "")
       .split(/\s+/)
@@ -702,7 +702,7 @@ function formatAuthorList(authors, style = "default") {
       return `${last}${initials ? ", " + initials : ""}`;
     } else {
       // 日本の学会誌向け: "姓, 名" または "姓 名"
-      // カンマ区切りだと著者間の区切りと混同するため、姓名間はスペースにするのが一般的
+      // カンマ区切りだと著者間の区切りと混同するため，姓名間はスペースにするのが一般的
       return `${last} ${first}`.trim();
     }
   });
@@ -760,7 +760,7 @@ function formatRefShokubutsu(e) {
 
 function formatRefDojo(e) {
   // 日本土壌肥料学会 風（かなり単純化）
-  // 日本語著者が混ざるときもあるので、名字だけ / イニシャルはここでは凝らない
+  // 日本語著者が混ざるときもあるので，名字だけ / イニシャルはここでは凝らない
   const authors = e.authors.map(a => `${a.last} ${a.first}`.trim()).join("・");
   const year = e.year ? ` ${escHtml(e.year)}.` : "";
   const title = e.title ? ` ${e.title}.` : "";
@@ -771,25 +771,32 @@ function formatRefDojo(e) {
 }
 
 function toReferenceList(entries, style, startIndex = 1) {
-  // LaTeXアクセントのデコード処理
+  // LaTeXアクセントおよびtextitのデコード処理
   entries = entries.map(e => {
+    // textit を i タグに変換してから、アクセント記号を復元する
+    const decodeAll = (str) => {
+      if (!str) return "";
+      // 1. \textit{text} -> <i>text</i>
+      let res = str.replace(/\\textit\{(.*?)\}/g, "<i>$1</i>");
+      // 2. アクセント記号の復元 (decodeLatexAccents 内で \ を消さない前提)
+      return decodeLatexAccents(res);
+    };
+
     return {
       ...e,
-      title: decodeLatexAccents(e.title),
-      journal: decodeLatexAccents(e.journal),
-      publisher: decodeLatexAccents(e.publisher),
+      title: decodeAll(e.title),
+      journal: decodeAll(e.journal),
+      publisher: decodeAll(e.publisher),
       authors: e.authors.map(a => ({
-        last: decodeLatexAccents(a.last),
-        first: decodeLatexAccents(a.first)
+        last: decodeAll(a.last),
+        first: decodeAll(a.first)
       }))
     };
   });
 
   let out = [];
   entries.forEach((e, i) => {
-    // 重要な変更点：startIndex を加算して全体の通し番号を作る
     const currentIndex = startIndex + i;
-    
     let line = "";
     switch (style) {
       case "nogyokagaku":
@@ -799,7 +806,6 @@ function toReferenceList(entries, style, startIndex = 1) {
         line = formatRefSeibutsu(e, currentIndex);
         break;
       case "shokubutsu":
-        // 個別関数側が index を受け取れるように修正されている前提
         line = formatRefShokubutsu(e, currentIndex);
         break;
       case "dojofeiryo":
@@ -829,30 +835,32 @@ function renderStack() {
   const currentStyle = document.getElementById("styleSelect").value;
   const unifiedOutputEl = document.getElementById("unifiedOutput");
   let htmlBuffer = [];
-  let globalIndex = 1; // ここで全体の通し番号を管理
+  let globalIndex = 1;
 
   rawEntriesStack.forEach((item, stackIndex) => {
     const entriesCopy = JSON.parse(JSON.stringify(item.data));
 
+    // 【重要】ここで let cardHtml を宣言し、かつバッククォート直後の改行とインデントを完全に排除します
+    let cardHtml = `<div class="entry-card" style="position: relative; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;"><span style="font-weight: bold; color: #666; font-size: 1.5rem;">#${stackIndex + 1} [${item.type.toUpperCase()}]</span><button onclick="removeEntryAt(${stackIndex})" style="background: #ff4d4d; color: white; border: none; border-radius: 4px; padding: 4px 12px; cursor: pointer; font-size: 12px; font-weight: bold;">削除</button></div>`;
+
     if (item.type === "bib") {
       const bibText = item.rawText || toBibtex(entriesCopy);
-      htmlBuffer.push(`<div data-index="${stackIndex}" style="font-family: monospace; background: #f4f4f4; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; white-space: pre-wrap;">${escHtml(bibText)}</div>`);
+      // 【重要】` の直後に改行を入れず、直接 <div を開始することで上の空白を消します
+      cardHtml += `<div contenteditable="true" class="bib-content" style="font-family: monospace; font-size: 13px; white-space: pre-wrap; background: #f9f9f9; padding: 10px; border-radius: 4px; outline: none;">${escHtml(bibText)}</div>`;
     } else {
-      // 編集済みHTMLがある場合はそれを優先（番号も固定されている可能性あり）
+      let refContent = "";
       if (item.editedHtml) {
-        htmlBuffer.push(`<div data-index="${stackIndex}" style="margin-bottom: 12px;">${item.editedHtml}</div>`);
-        // 編集済みの場合も、その中の文献数分 globalIndex を進める必要がある
-        globalIndex += entriesCopy.length;
+        refContent = item.editedHtml;
       } else {
-        // --- ここで通し番号を渡して変換 ---
-        // toReferenceListに現在のglobalIndexを渡せるように改修
         const formatted = toReferenceList(entriesCopy, currentStyle, globalIndex);
-        htmlBuffer.push(`<div data-index="${stackIndex}" style="margin-bottom: 12px; font-family: serif;">${formatted.replace(/\n/g, "<br>")}</div>`);
-        
-        // 次のスタックのためにインデックスを更新
-        globalIndex += entriesCopy.length;
+        refContent = formatted.replace(/\n/g, "<br>");
       }
+      cardHtml += `<div contenteditable="true" style="font-family: serif; line-height: 1.6; font-size: 15px; padding: 5px; outline: none;">${refContent}</div>`;
+      globalIndex += entriesCopy.length;
     }
+
+    cardHtml += `</div>`;
+    htmlBuffer.push(cardHtml);
   });
   unifiedOutputEl.innerHTML = htmlBuffer.join("");
 }
@@ -881,9 +889,9 @@ function addEntriesToStack(mode) {
     });
     inputEl.value = ""; // 追加後に入力欄をクリア（スマホで連続作業しやすい）
     renderStack();
-    logOutputEl.value = `${entries.length} 件追加しました。合計: ${rawEntriesStack.length} 件`;
+    logOutputEl.value = `${entries.length} 件追加しました．合計: ${rawEntriesStack.length} 件`;
   } else {
-    alert("文献データを検出できませんでした。");
+    alert("文献データを検出できませんでした．");
   }
 }
 
@@ -892,7 +900,7 @@ function removeEntryAt(index) {
   if (confirm(`エントリー #${index + 1} を削除しますか？`)) {
     rawEntriesStack.splice(index, 1);
     renderStack();
-    logOutputEl.value = `削除しました。現在の合計: ${rawEntriesStack.length} 件`;
+    logOutputEl.value = `削除しました．現在の合計: ${rawEntriesStack.length} 件`;
   }
 }
 
@@ -912,7 +920,7 @@ function renderStack() {
         background: #fff;
         border: 1px solid #ddd;
         border-radius: 8px;
-        padding: 15px;
+        padding: 10px;
         margin-bottom: 15px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
       ">
@@ -924,7 +932,7 @@ function renderStack() {
           border-bottom: 1px solid #eee;
           padding-bottom: 5px;
         ">
-          <span style="font-weight: bold; color: #666; font-size: 0.8rem;">#${stackIndex + 1} [${item.type.toUpperCase()}]</span>
+          <span style="font-weight: bold; color: #666; font-size: 1.5rem;">#${stackIndex + 1} [${item.type.toUpperCase()}]</span>
           <button onclick="removeEntryAt(${stackIndex})" style="
             background: #ff4d4d;
             color: white;
@@ -974,7 +982,7 @@ document.getElementById("downloadBibBtn").addEventListener("click", () => {
     downloadFile(content, "references.bib", "text/plain");
 });
 
-// .rtf (リストのみ抽出、斜体維持)
+// .rtf (リストのみ抽出，斜体維持)
 document.getElementById("downloadRtfBtn").onclick = () => {
   let globalIndex = 1;
   const content = rawEntriesStack.filter(i => i.type === "ref").map(item => {
@@ -1000,14 +1008,14 @@ document.getElementById("downloadRtfBtn").onclick = () => {
     .replace(/\n/g, "\\line\n"); // 改行
 
   // 3. アクセント付き文字 (Stéphanie等) の文字化け対策
-  // RTFは本来ASCIIベースなので、UnicodeをRTF形式( \uN? )に変換する
+  // RTFは本来ASCIIベースなので，UnicodeをRTF形式( \uN? )に変換する
   rtfBody = rtfBody.replace(/[^\x00-\x7F]/g, (c) => {
     return "\\u" + c.charCodeAt(0).toString() + "?";
   });
 
   const rtfHeader = "{\\rtf1\\ansi\\ansicpg932\\deff0 {\\fonttbl{\\f0 Times New Roman;}{\\f1 MS Mincho;}}\\f0\\fs24 ";
   
-  // 保存 (Blobの時点でUTF-8を指定し、中身は上記でRTF用Unicode変換済み)
+  // 保存 (Blobの時点でUTF-8を指定し，中身は上記でRTF用Unicode変換済み)
   downloadFile(rtfHeader + rtfBody + "}", "reference_list.rtf", "application/rtf");
 };
 
@@ -1054,19 +1062,24 @@ document.getElementById("fileInput").onchange = (e) => {
   }
 };
 
-// unifiedOutput の中身が編集されたら、rawEntriesStack の該当データを更新する
+// unifiedOutput の中身が編集された時の同期処理
 document.getElementById("unifiedOutput").addEventListener("input", () => {
-    const blocks = document.querySelectorAll("#unifiedOutput > div");
-    blocks.forEach((block, index) => {
-        if (rawEntriesStack[index]) {
-            if (rawEntriesStack[index].type === "bib") {
-                // BibTeXの場合、HTMLタグを除去して生テキストとして保存
-                rawEntriesStack[index].rawText = block.innerText;
-            } else {
-                // 参考文献リストの場合、innerHTMLのまま（emタグ等込みで）保存
-                // ただし、この場合はオブジェクト構造(data)との同期が難しいため
-                // 編集済みフラグを立てて、再描画時にこれを優先するようにします
-                rawEntriesStack[index].editedHtml = block.innerHTML;
+    const cards = document.querySelectorAll("#unifiedOutput > .entry-card");
+    cards.forEach((card, index) => {
+        if (!rawEntriesStack[index]) return;
+
+        if (rawEntriesStack[index].type === "bib") {
+            // 【重要】カード全体(innerText)ではなく，エディタ部分(.bib-content)だけを取得
+            const bibEditor = card.querySelector(".bib-content");
+            if (bibEditor) {
+                // これにより「#15 [BIB] 削除」などの外側の文字が混入しなくなります
+                rawEntriesStack[index].rawText = bibEditor.innerText;
+            }
+        } else {
+            // 参考文献リストの場合も，編集用の div からのみ取得
+            const refEditor = card.querySelector("div[contenteditable='true']");
+            if (refEditor) {
+                rawEntriesStack[index].editedHtml = refEditor.innerHTML;
             }
         }
     });

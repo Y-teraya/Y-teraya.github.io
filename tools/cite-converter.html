@@ -1,69 +1,70 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>参考文献コンバータ</title>
-<link rel="stylesheet" href="./style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cite converter</title>
+    <link rel="stylesheet" href="./style.css">
 </head>
 <body>
 
-<h1>参考文献コンバータ</h1>
+<header>
+    <h1>Cite converter</h1>
+    <p>NBIB, RIS, BibTeX, BBL を一括整形・変換</p>
+</header>
 
-<div>
-  <label for="fileInput">ファイル入力（.nbib / .ris / .bib / .bbl / .txt）</label><br>
-  <input id="fileInput" type="file" accept=".nbib,.ris,.bib,.bbl,.txt">
-</div>
+<main class="container">
+    <section class="input-section">
+        <div class="section-header">
+            <label for="input">文献データを入力してください</label>
+            <div class="file-controls">
+                <input type="file" id="fileInput" accept=".nbib,.bib,.ris,.txt,.tex,.bbl,text/plain,application/x-bibtex,text/comma-separated-values" style="display:none;">
+                <button type="button" class="btn-outline" onclick="document.getElementById('fileInput').click()">ファイル選択</button>
+                <button type="button" class="btn-outline" id="clearInputBtn">クリア</button>
+            </div>
+        </div>
+        <textarea id="input" placeholder="ここに PMID-xxxx, TY - JOUR, @article{...} などを貼り付けてください..."></textarea>
+        
+        <div class="action-bar">
+            <button id="removeComment" class="btn-secondary">LaTeX/Comment削除</button>
+            <div class="spacer"></div>
+            <button id="convertBibtexBtn" class="btn-primary">スタックに追加 (BibTeX)</button>
+            <button id="convertRefBtn" class="btn-primary">スタックに追加 (リスト)</button>
+        </div>
+    </section>
 
-<div style="margin-top:0.5rem;">
-  <label for="input">入力テキスト</label><br>
-  <textarea id="input" placeholder="ここにテキストを入力" rows="10" cols="60"></textarea>
-</div>
+    <section class="control-section">
+        <div class="control-group">
+            <label for="styleSelect">引用スタイル:</label>
+            <select id="styleSelect">
+                <option value="apa">APA Style (General)</option>
+                <option value="nogyokagaku">日本農芸化学会</option>
+                <option value="seibutsu">日本生物工学会</option>
+                <option value="shokubutsu">日本植物生理学会</option>
+                <option value="dojofeiryo">日本土壌肥料学会</option>
+            </select>
+        </div>
+        <div class="bulk-actions">
+            <button id="copyAllBtn" class="btn-success">すべてコピー</button>
+            <button id="downloadBibBtn" class="btn-download">.bib 保存</button>
+            <button id="downloadRtfBtn" class="btn-download">.rtf 保存</button>
+        </div>
+    </section>
 
-<button id="removeComment"> comment/thebibliography を削除 </button>
-<button id="clearInputBtn">入力削除</button>
-
-<div class="row">
-  <div class="col" style="width: 100%;">
-    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
-  <label for="styleSelect">参考文献スタイル:</label>
-  <select id="styleSelect">
-    <option value="apa">APA</option>
-    <option value="nogyokagaku">日本農芸化学会</option>
-    <option value="shokubutsu">日本植物生理学会</option>
-    <option value="dojofeiryo">日本土壌肥料学会</option>
-    <option value="seibutsu">日本生物工学会</option>
-  </select>
-  <button id="convertRefBtn">参考文献リストとして追加</button>
-  <button id="convertBibtexBtn">BibTeX として追加</button>
-</div>
-
-<div id="unifiedOutput" contenteditable="true" style="
-    width:100%;
-    height:400px;
-    border:1px solid #ccc;
-    padding:8px;
-    overflow:auto;
-    white-space: pre-wrap;
-    font-family: 'Times New Roman', serif;
-    background: #fff;">
-</div>
-
-<div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
-  <button id="copyAllBtn">すべてコピー</button>
-  <button id="downloadBibBtn">.bib で保存</button>
-  <button id="downloadRtfBtn">.rtf で保存</button> <button id="removeLastBtn" style="color: brown;">最後の一つを削除</button>
-  <button id="clearAllBtn" style="color: red;">すべて削除</button>
-</div>
-
-  </div>
-</div>
+    <section class="output-section">
+        <div class="output-header">
+            <h2>スタックされた文献</h2>
+            <input type="text" id="logOutput" readonly placeholder="ログがここに表示されます">
+        </div>
+        
+        <div id="unifiedOutput"></div>
+        
+        <div class="footer-actions">
+            <button id="clearAllBtn" class="btn-danger">全削除</button>
+        </div>
+    </section>
+</main>
 
 <script src="./script.js"></script>
 </body>
-
-<footer>
-  Copyright © 2025 by Y-teraya is licensed under 
-  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a><br>
-  [最終更新日：2026年1月19日]
-</footer>
 </html>

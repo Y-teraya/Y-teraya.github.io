@@ -1,11 +1,157 @@
-body { monospace; margin: 1.5rem; }
-textarea { width: 100%; box-sizing: border-box; font-family: inherit; }
-#input { height: 250px; }
-#bibtexOutput, #refOutput, #logOutput { height: 220px; }
-.row { display: flex; gap: 1rem; margin-top: 1rem; }
-.col { flex: 1; display: flex; flex-direction: column; }
-label { font-weight: bold; }
-button { margin-right: 0.5rem; margin-top: 0.3rem; }
-select { margin-top: 0.3rem; }
-.small { font-size: 0.85rem; color: #555; }
-pre { white-space: pre-wrap; }
+:root {
+    --primary-color: #4a90e2;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --bg-color: #f4f7f6;
+    --card-bg: #ffffff;
+    --border-color: #ddd;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background: #333;
+    color: white;
+    text-align: center;
+    padding: 1.5rem 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+header h1 { margin: 0; font-size: 1.8rem; }
+header p { margin: 5px 0 0; opacity: 0.8; font-size: 0.9rem; }
+
+.container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 0 15px;
+}
+
+section {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* 入力エリア */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+textarea {
+    width: 100%;
+    height: 180px;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-family: monospace;
+    resize: vertical;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+.action-bar {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+/* ボタン基本設定 */
+button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: opacity 0.2s, transform 0.1s;
+    font-size: 14px;
+}
+
+button:active { transform: scale(0.98); }
+.spacer { flex: 1; }
+
+.btn-primary { background: var(--primary-color); color: white; }
+.btn-secondary { background: var(--secondary-color); color: white; }
+.btn-success { background: var(--success-color); color: white; }
+.btn-danger { background: var(--danger-color); color: white; }
+.btn-outline { background: transparent; border: 1px solid var(--border-color); color: #666; }
+.btn-outline-danger { background: transparent; border: 1px solid var(--danger-color); color: var(--danger-color); }
+.btn-download { background: #6f42c1; color: white; }
+
+/* コントロールセクション */
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    flex: 1;
+}
+
+.bulk-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* ログ表示 */
+#logOutput {
+    border: none;
+    background: transparent;
+    color: #666;
+    font-size: 0.9rem;
+    text-align: right;
+    width: 250px;
+}
+
+/* 出力カード (script.js 内で生成される要素用) */
+.entry-card {
+    transition: border-color 0.3s;
+}
+
+.entry-card:focus-within {
+    border-color: var(--primary-color) !important;
+}
+
+/* contenteditable エリアの調整 */
+[contenteditable="true"] {
+    transition: background 0.2s;
+}
+
+[contenteditable="true"]:hover {
+    background: #fffdf0 !important; /* 編集可能であることを示す薄い黄色 */
+}
+
+/* レスポンシブ */
+@media (max-width: 600px) {
+    .action-bar button, .bulk-actions button {
+        flex: 1 1 calc(50% - 10px);
+    }
+    #logOutput {
+        width: 100%;
+        text-align: left;
+        margin-top: 5px;
+    }
+    .output-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
