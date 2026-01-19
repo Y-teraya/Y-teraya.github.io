@@ -773,7 +773,7 @@ function formatRefDojo(e) {
 function toReferenceList(entries, style, startIndex = 1) {
   // LaTeXアクセントおよびtextitのデコード処理
   entries = entries.map(e => {
-    // textit を i タグに変換してから、アクセント記号を復元する
+    // textit を i タグに変換してから，アクセント記号を復元する
     const decodeAll = (str) => {
       if (!str) return "";
       // 1. \textit{text} -> <i>text</i>
@@ -947,7 +947,7 @@ document.getElementById("downloadBibBtn").onclick = () => {
 
     // データが1つもない場合は中断
     if (bibItems.length === 0) {
-        alert("スタックに BibTeX 形式の文献がありません。");
+        alert("スタックに BibTeX 形式の文献がありません．");
         return;
     }
 
@@ -962,7 +962,7 @@ document.getElementById("downloadRtfBtn").onclick = () => {
 
     // データが1つもない場合は中断
     if (refItems.length === 0) {
-        alert("スタックに参考文献リストのデータがありません。");
+        alert("スタックに参考文献リストのデータがありません．");
         return;
     }
 
@@ -1097,9 +1097,9 @@ function renderStack() {
   // 1. まず画面に文献を表示させる
   unifiedOutputEl.innerHTML = htmlBuffer.length > 0 
     ? htmlBuffer.join("") 
-    : "<p style='color:#999; padding:20px;'>スタックは空です。</p>";
+    : "<p style='color:#999; padding:20px;'>スタックは空です．</p>";
 
-  // 2. 表示が終わった直後に、ボタンの有効/無効を切り替える
+  // 2. 表示が終わった直後に，ボタンの有効/無効を切り替える
   const hasBib = rawEntriesStack.some(e => e.type === 'bib');
   const hasRef = rawEntriesStack.some(e => e.type === 'ref');
 
@@ -1113,8 +1113,8 @@ function renderStack() {
   if (btnCopy) btnCopy.disabled = (rawEntriesStack.length === 0);
 }
 
-// ページが読み込まれた時に、一度だけ renderStack を実行する
-// これにより、起動直後（スタックが空の状態）でもボタンが灰色になります
+// ページが読み込まれた時に，一度だけ renderStack を実行する
+// これにより，起動直後（スタックが空の状態）でもボタンが灰色になります
 document.addEventListener("DOMContentLoaded", () => {
     renderStack();
 });
@@ -1126,7 +1126,7 @@ function initApp() {
     }
 }
 
-// ページ読み込み完了時、および「戻る」でページが表示された時にも実行
+// ページ読み込み完了時，および「戻る」でページが表示された時にも実行
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initApp);
 } else {
