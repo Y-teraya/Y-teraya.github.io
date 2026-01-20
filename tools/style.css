@@ -1,196 +1,348 @@
-:root {
-    --primary-color: #4a90e2;
-    --secondary-color: #6c757d;
-    --success-color: #28a745;
-    --danger-color: #dc3545;
-    --bg-color: #f4f7f6;
-    --card-bg: #ffffff;
-    --border-color: #ddd;
+/* cite-converter.html用のスタイルシート */
+
+/* ===== リセット & ベース ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background-color: var(--bg-color);
-    color: #333;
+    font-family: 'Segoe UI', 'Yu Gothic', YuGothic, 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
     line-height: 1.6;
-    margin: 0;
-    padding: 0;
+    color: #333;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
+/* ===== ヘッダー ===== */
 header {
-    background: #333;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
+    padding: 2rem 1rem;
     text-align: center;
-    padding: 1.5rem 0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-header h1 { margin: 0; font-size: 1.8rem; }
-header p { margin: 5px 0 0; opacity: 0.8; font-size: 0.9rem; }
-
-.container {
-    max-width: 900px;
-    margin: 20px auto;
-    padding: 0 15px;
+header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-section {
-    background: var(--card-bg);
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+header p {
+    font-size: 1.1rem;
+    opacity: 0.95;
+    font-weight: 300;
 }
 
-/* 入力エリア */
+/* ===== メインコンテナ ===== */
+main.container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 2rem auto;
+    padding: 0 1rem 2rem;
+    flex: 1;
+}
+
+/* ===== セクション共通 ===== */
+.input-section,
+.output-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== 入力セクション ===== */
 .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
-}
-
-textarea {
-    width: 100%;
-    height: 180px;
-    padding: 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    font-family: monospace;
-    resize: vertical;
-    box-sizing: border-box;
-    font-size: 14px;
-}
-
-.action-bar {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
+    margin-bottom: 1rem;
     flex-wrap: wrap;
+    gap: 1rem;
 }
 
-/* ボタン基本設定 */
-button {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+.section-header label {
+    font-size: 1.1rem;
     font-weight: 600;
-    transition: opacity 0.2s, transform 0.1s;
-    font-size: 14px;
+    color: #444;
 }
 
-button:active { transform: scale(0.98); }
-.spacer { flex: 1; }
-
-.btn-primary { background: var(--primary-color); color: white; }
-.btn-secondary { background: var(--secondary-color); color: white; }
-.btn-success { background: var(--success-color); color: white; }
-.btn-danger { background: var(--danger-color); color: white; }
-.btn-outline { background: transparent; border: 1px solid var(--border-color); color: #666; }
-.btn-outline-danger { background: transparent; border: 1px solid var(--danger-color); color: var(--danger-color); }
-.btn-download { background: #6f42c1; color: white; }
-
-/* コントロールセクション */
-.control-group {
+.file-controls {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
+    gap: 0.5rem;
 }
 
-select {
-    padding: 8px;
-    border-radius: 4px;
-    border: 1px solid var(--border-color);
-    flex: 1;
-}
-
-.bulk-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-/* ログ表示 */
-#logOutput {
-    border: none;
-    background: transparent;
-    color: #666;
-    font-size: 0.9rem;
-    text-align: right;
-    width: 250px;
-}
-
-/* 出力カード (script.js 内で生成される要素用) */
-.entry-card {
+textarea#input {
+    width: 100%;
+    min-height: 200px;
+    padding: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.95rem;
+    resize: vertical;
     transition: border-color 0.3s;
 }
 
-.entry-card:focus-within {
-    border-color: var(--primary-color) !important;
+textarea#input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* contenteditable エリアの調整 */
-[contenteditable="true"] {
-    transition: background 0.2s;
+/* ===== アクションバー ===== */
+.action-bar {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    align-items: center;
 }
 
-[contenteditable="true"]:hover {
-    background: #fffdf0 !important; /* 編集可能であることを示す薄い黄色 */
+.spacer {
+    flex: 1;
 }
 
-/* レスポンシブ */
-@media (max-width: 600px) {
-    .action-bar button, .bulk-actions button {
-        flex: 1 1 calc(50% - 10px);
-    }
-    #logOutput {
-        width: 100%;
-        text-align: left;
-        margin-top: 5px;
-    }
-    .output-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+/* ===== コントロールセクション ===== */
+.control-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
-/* 既存のスタイルに追加、または上書きしてください */
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.control-group label {
+    font-weight: 600;
+    color: #555;
+}
+
+select#styleSelect {
+    padding: 0.6rem 1rem;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-width: 200px;
+}
+
+select#styleSelect:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
 
 .bulk-actions {
     display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
-.footer-actions {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 40px; /* 画面最下部との余白 */
+/* ===== 出力セクション ===== */
+.output-header {
+    margin-bottom: 1.5rem;
 }
 
-/* 取り消しボタン（枠線のみのスタイル） */
-.btn-outline-danger {
-    background: transparent;
-    border: 1px solid #dc3545;
-    color: #dc3545;
+.output-header h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 1rem;
 }
 
-.btn-outline-danger:hover {
-    background: #fff5f5;
+#logOutput {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    background: #f9f9f9;
+    font-size: 0.9rem;
+    color: #666;
 }
 
-/* 全削除ボタン（注意を促すスタイル） */
+#unifiedOutput {
+    margin-top: 1.5rem;
+}
+
+/* ===== ボタンスタイル ===== */
+button {
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+.btn-success {
+    background: #28a745;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #218838;
+    transform: translateY(-2px);
+}
+
+.btn-download {
+    background: #17a2b8;
+    color: white;
+}
+
+.btn-download:hover {
+    background: #138496;
+    transform: translateY(-2px);
+}
+
 .btn-danger {
     background: #dc3545;
     color: white;
-    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
 }
 
 .btn-danger:hover {
     background: #c82333;
-    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+}
+
+.btn-outline:hover {
+    background: #667eea;
+    color: white;
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* ===== フッター ===== */
+footer {
+    background: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 1.5rem;
+    margin-top: auto;
+    font-size: 0.9rem;
+}
+
+footer a {
+    color: #667eea;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+footer a:hover {
+    color: #8899ff;
+    text-decoration: underline;
+}
+
+/* ===== レスポンシブ ===== */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+
+    header p {
+        font-size: 1rem;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .control-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .control-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    select#styleSelect {
+        width: 100%;
+    }
+
+    .bulk-actions {
+        width: 100%;
+    }
+
+    .bulk-actions button {
+        flex: 1;
+    }
+
+    .action-bar {
+        flex-direction: column;
+    }
+
+    .action-bar button {
+        width: 100%;
+    }
+
+    .spacer {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .input-section,
+    .output-section {
+        padding: 1.5rem;
+    }
+
+    header {
+        padding: 1.5rem 1rem;
+    }
+
+    button {
+        padding: 0.6rem 1rem;
+        font-size: 0.95rem;
+    }
 }
 
 /* ボタンが無効（disabled）の時のスタイル */
