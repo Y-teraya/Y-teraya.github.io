@@ -25,32 +25,30 @@
         </div>
         <textarea id="input" placeholder="ここに PMID-xxxx, TY - JOUR, @article{...} などを貼り付けてください..."></textarea>
         
-        <div class="action-bar">
-            <button id="removeComment" class="btn-secondary">LaTeX/Comment削除</button>
-            <div class="spacer"></div>
-            <button id="convertBibtexBtn" class="btn-primary">スタックに追加 (BibTeX)</button>
-            <button id="convertRefBtn" class="btn-primary">スタックに追加 (リスト)</button>
-        </div>
-    </section>
+<div class="action-bar">
+    <button id="removeComment" class="btn-secondary">LaTeX/Comment削除</button>
+    <div class="spacer"></div>
+    <button id="convertGenericBtn" class="btn-primary">スタックに追加</button>
+</div>
 
-    <section class="control-section">
-        <div class="control-group">
-            <label for="styleSelect">引用スタイル:</label>
-            <select id="styleSelect">
-                <option value="apa">APA Style (General)</option>
-                <option value="nogyokagaku">日本農芸化学会</option>
-                <option value="shokubutsu">日本植物生理学会</option>
-                <option value="dojofeiryo">日本土壌肥料学会</option>
-                <option value="seibutsu">日本生物工学会</option>
-                <option value="seibutsu">日本醸造学会</option>
-            </select>
-        </div>
-        <div class="bulk-actions">
-            <button id="copyAllBtn" class="btn-success">すべてコピー</button>
-            <button id="downloadBibBtn" class="btn-download">.bib 保存</button>
-            <button id="downloadRtfBtn" class="btn-download">.rtf 保存</button>
-        </div>
-    </section>
+<section class="control-section">
+    <div class="control-group">
+        <label for="styleSelect">表示・引用スタイル:</label>
+        <select id="styleSelect">
+            <option value="bibtex_mode">【変換】BibTeX 形式</option>
+            <hr>
+            <option value="apa">APA Style (General)</option>
+            <option value="nogyokagaku">日本農芸化学会</option>
+            <option value="shokubutsu">日本植物生理学会</option>
+            <option value="dojofeiryo">日本土壌肥料学会</option>
+            <option value="seibutsu">日本生物工学会</option>
+        </select>
+    </div>
+    <div class="bulk-actions">
+        <button id="copyAllBtn" class="btn-success">すべてコピー</button>
+        <button id="mainDownloadBtn" class="btn-download">保存</button>
+    </div>
+</section>
 
     <section class="output-section">
         <div class="output-header">

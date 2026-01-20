@@ -1,1135 +1,325 @@
-document.getElementById("removeComment").addEventListener("click", () => {
-  const textarea = document.getElementById("input");
-  const text = textarea.value;
-
-  // @comment{...} を削除
-  let cleaned = text.replace(/@comment\{.*?\}/g, "");
-
-  // \begin{thebibliography}{...} を削除
-  cleaned = cleaned.replace(/\\begin\{thebibliography\}\{.*?\}/g, "");
-
-  // \end{thebibliography} を削除
-  cleaned = cleaned.replace(/\\end\{thebibliography\}/g, "");
-
-  textarea.value = cleaned;
-});
-
-// ========= ユーティリティ =========
-
-// 文字列トリム(null セーフ)
-function sTrim(s) {
-  return (s || "").replace(/^\s+|\s+$/g, "");
-}
-
-// アクセント付き文字 → LaTeX アクセント
-function convertAccentsToLatex(str) {
-  if (!str) return "";
-  const map = {
-    "á": "\\'{a}", "Á": "\\'{A}",
-    "é": "\\'{e}", "É": "\\'{E}",
-    "í": "\\'{i}", "Í": "\\'{I}",
-    "ó": "\\'{o}", "Ó": "\\'{O}",
-    "ú": "\\'{u}", "Ú": "\\'{U}",
-    "à": "\\`{a}", "À": "\\`{A}",
-    "è": "\\`{e}", "È": "\\`{E}",
-    "ì": "\\`{i}", "Ì": "\\`{I}",
-    "ò": "\\`{o}", "Ò": "\\`{O}",
-    "ù": "\\`{u}", "Ù": "\\`{U}",
-    "ä": "\\\"{a}", "Ä": "\\\"{A}",
-    "ë": "\\\"{e}", "Ë": "\\\"{E}",
-    "ï": "\\\"{i}", "Ï": "\\\"{I}",
-    "ö": "\\\"{o}", "Ö": "\\\"{O}",
-    "ü": "\\\"{u}", "Ü": "\\\"{U}",
-    "â": "\\^{a}", "Â": "\\^{A}",
-    "ê": "\\^{e}", "Ê": "\\^{E}",
-    "î": "\\^{i}", "Î": "\\^{I}",
-    "ô": "\\^{o}", "Ô": "\\^{O}",
-    "û": "\\^{u}", "Û": "\\^{U}",
-    "ñ": "\\~{n}", "Ñ": "\\~{N}",
-    "ç": "\\c{c}", "Ç": "\\c{C}",
-    "ø": "\\o{}", "Ø": "\\O{}",
-    "å": "\\aa{}", "Å": "\\AA{}"
-  };
-  return str.replace(/[^ -~]/g, function(ch) {
-    return map[ch] || ch;
-  });
-}
-
-// LaTeX アクセント → 元のアクセント文字に戻す
-function decodeLatexAccents(str) {
-  if (!str) return "";
-
-  // 1. 宣言と同時にチルダを置換
-  let out = str.replace(/~/g, " ");
-
-  const map = {
-    "\\'{a}": "á", "\\'{A}": "Á",
-    "\\'{e}": "é", "\\'{E}": "É",
-    "\\'{i}": "í", "\\'{I}": "Í",
-    "\\'{o}": "ó", "\\'{O}": "Ó",
-    "\\'{u}": "ú", "\\'{U}": "Ú",
-    "\\`{a}": "à", "\\`{A}": "À",
-    "\\`{e}": "è", "\\`{E}": "È",
-    "\\`{i}": "ì", "\\`{I}": "Ì",
-    "\\`{o}": "ò", "\\`{O}": "Ò",
-    "\\`{u}": "ù", "\\`{U}": "Ù",
-    "\\\"{a}": "ä", "\\\"{A}": "Ä",
-    "\\\"{e}": "ë", "\\\"{E}": "Ë",
-    "\\\"{i}": "ï", "\\\"{I}": "Ï",
-    "\\\"{o}": "ö", "\\\"{O}": "Ö",
-    "\\\"{u}": "ü", "\\\"{U}": "Ü",
-    "\\^{a}": "â", "\\^{A}": "Â",
-    "\\^{e}": "ê", "\\^{E}": "Ê",
-    "\\^{i}": "î", "\\^{I}": "Î",
-    "\\^{o}": "ô", "\\^{O}": "Ô",
-    "\\^{u}": "û", "\\^{U}": "Û",
-    "\\~{n}": "ñ", "\\~{N}": "Ñ",
-    "\\c{c}": "ç", "\\c{C}": "Ç",
-    "\\o{}": "ø", "\\O{}": "Ø",
-    "\\aa{}": "å", "\\AA{}": "Å"
-  };
-
-  // 2. 既存の「let out = str;」の行は削除してください
-
-  const keys = Object.keys(map).sort((a, b) => b.length - a.length);
-  for (const k of keys) {
-    out = out.replace(new RegExp(k.replace(/\\/g, "\\\\"), "g"), map[k]);
-  }
-
-  // 3. 残ったバックスラッシュを削除
-  out = out.replace(/\\/g, "");
-
-  return out;
-}
-
-// 月文字列 → 算用数字(先頭 0 なし)
-function monthToNumber(mstr) {
-  if (!mstr) return "";
-  const lower = mstr.toLowerCase();
-  const map = {
-    jan: 1, january: 1,
-    feb: 2, february: 2,
-    mar: 3, march: 3,
-    apr: 4, april: 4,
-    may: 5,
-    jun: 6, june: 6,
-    jul: 7, july: 7,
-    aug: 8, august: 8,
-    sep: 9, sept: 9, september: 9,
-    oct: 10, october: 10,
-    nov: 11, november: 11,
-    dec: 12, december: 12
-  };
-  return map[lower] ? String(map[lower]) : "";
-}
-
-// DP/DA など日付文字列 → {year, month}
-function parseDateToYearMonth(datestr) {
-  if (!datestr) return { year: "", month: "" };
-  const s = datestr.trim();
-
-  // 年-月-日, 年/月/日 など
-  const ymddash = s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
-  if (ymddash) {
-    return { year: ymddash[1], month: String(parseInt(ymddash[2], 10)) };
-  }
-
-  // "2024 Jan 15" / "2024 Jan"
-  const yMon = s.match(/^(\d{4})\s+([A-Za-z]+)/);
-  if (yMon) {
-    return { year: yMon[1], month: monthToNumber(yMon[2]) };
-  }
-
-  // "Jan 2024"
-  const monY = s.match(/^([A-Za-z]+)\s+(\d{4})/);
-  if (monY) {
-    return { year: monY[2], month: monthToNumber(monY[1]) };
-  }
-
-  // "2024"
-  const y = s.match(/^(\d{4})/);
-  if (y) {
-    return { year: y[1], month: "" };
-  }
-
-  return { year: "", month: "" };
-}
-
-// ページ 123–130, 123--130, 123 – 130 → 123-130
-function normalizePages(pages) {
-  if (!pages) return "";
-  // 全角/ダッシュ類を普通の "-" に
-  return pages.replace(/[–—−―‐–]+/g, "-").replace(/--+/g, "-");
-}
-
-// 著者文字列 → {last, first} の配列
-function parseAuthorString(authorStr) {
-  if (!authorStr) return [];
-  // 改行や " and " で分割
-  const parts = authorStr
-    .replace(/\r\n/g, "\n")
-    .split(/\n| and /)
-    .map(sTrim)
-    .filter(a => a.length > 0);
-
-  return parts.map(p => {
-    // "Last, First Middle" 想定
-    const m = p.split(",");
-    if (m.length >= 2) {
-      const last = sTrim(m[0]);
-      const given = sTrim(m.slice(1).join(","));
-      return { last, first: given };
-    } else {
-      // "First Last" 形式
-      const toks = p.trim().split(/\s+/);
-      if (toks.length === 1) {
-        return { last: toks[0], first: "" };
-      } else {
-        return {
-          last: toks[toks.length - 1],
-          first: toks.slice(0, -1).join(" ")
-        };
-      }
-    }
-  });
-}
-
-// 著者配列 → BibTeX author 文字列(アクセント変換＋改行and)
-function formatAuthorsForBibtex(authors) {
-  if (!authors || authors.length === 0) return "";
-
-  const parts = authors.map(a => {
-    const last = convertAccentsToLatex(a.last || "");
-    const first = convertAccentsToLatex(a.first || "");
-    return first ? `${last}, ${first}` : last;
-  });
-
-  return parts.join("\n      and ");
-}
-
-// 著者配列 → 引用用 "名前:年" の「名前」部分
-function formatAuthorsForCitation(authors) {
-  if (!authors || authors.length === 0) return "";
-  if (authors.length === 1) return authors[0].last;
-  if (authors.length === 2) return `${authors[0].last} & ${authors[1].last}`;
-  return `${authors[0].last}`;
-}
-
-// ========= フォーマット判定 =========
-
-function detectFormat(text) {
-  const s = text.trim();
-  if (!s) return "unknown";
-
-  const firstLine = s.split(/\r?\n/)[0];
-
-  if (/^PMID-/.test(firstLine)) return "nbib";
-  if (/^TY\s+-/.test(firstLine)) return "ris";
-  if (/^@/.test(firstLine)) return "bibtex";
-  if (/\\bibitem\[/i.test(s)) return "bbl";
-
-  return "txt";
-}
-
-// 全てのパーサーで共通して使うスタック（関数の外に置く）
-let stackedEntries = [];
-function clearStack() {
-  stackedEntries = [];
-}
-
-// ========= nbib パーサ =========
-function parseNbib(text) {
-  const lines = text.replace(/\r\n/g, "\n").split("\n");
-  const entries = [];
-  let current = null;
-
-  function pushCurrent() {
-    if (current) entries.push(current);
-    current = {
-      type: "article",
-      raw: {},
-      authors: [],
-      title: "",
-      journal: "",
-      volume: "",
-      number: "",
-      pages: "",
-      year: "",
-      month: "",
-      issn: "",
-      doi: "",
-      url: "",
-      eprint: "",
-      publisher: "",
-      address: "",
-      note: "",
-      pmid: "",
-      pmcid: ""
-    };
-  }
-
-  for (let line of lines) {
-    if (!line.trim()) {
-      continue;
-    }
-    const m = line.match(/^([A-Z0-9]{2,4})\s*-\s*(.*)$/);
-    if (!m) {
-      if (current && current._lastTag) {
-        current.raw[current._lastTag] =
-          (current.raw[current._lastTag] || "") + " " + line.trim();
-      }
-      continue;
-    }
-    const tag = m[1];
-    const val = m[2].trim();
-
-    if (tag === "PMID") {
-      if (current) pushCurrent();
-      pushCurrent();
-      current.pmid = val;
-    }
-    current._lastTag = tag;
-    current.raw[tag] = (current.raw[tag] || "");
-    if (current.raw[tag]) current.raw[tag] += " ";
-    current.raw[tag] += val;
-  }
-  if (current) entries.push(current);
-
-  for (const e of entries) {
-    const r = e.raw;
-
-    const auList = [];
-    if (r["FAU"]) {
-      const lines = text.match(/^FAU\s*-\s*(.*)$/gm) || [];
-      for (const l of lines) {
-        const v = l.split("-")[1].trim();
-        auList.push(v);
-      }
-    }
-    
-    e.authors = auList.map(a => {
-      const parts = a.split(",");
-      if (parts.length >= 2) {
-        return { last: sTrim(parts[0]), first: sTrim(parts.slice(1).join(",")) };
-      } else {
-        const toks = a.trim().split(/\s+/);
-        return {
-          last: toks[toks.length - 1],
-          first: toks.slice(0, -1).join(" ")
-        };
-      }
-    });
-
-    e.title = r["TI"] || "";
-    e.journal = r["JT"] || r["TA"] || "";
-    e.volume = r["VI"] || "";
-    e.number = r["IP"] || "";
-    e.pages = normalizePages(r["PG"] || "");
-
-    if (r["LID"]) {
-      const mdoi = r["LID"].match(/10\.\S+/);
-      if (mdoi) e.doi = mdoi[0].replace(/[.;]$/, "");
-    }
-
-    e.pmid = r["PMID"] || e.pmid;
-    if (r["PMC"]) e.pmcid = r["PMC"];
-    e.url = "";
-
-    const dp = r["DP"] || "";
-    const dObj = parseDateToYearMonth(dp);
-    e.year = dObj.year;
-    e.month = dObj.month;
-
-    const notes = [];
-    if (e.pmid) notes.push(`PMID: ${e.pmid}`);
-    if (e.pmcid) notes.push(`PMCID: ${e.pmcid}`);
-    e.note = notes.join("; ");
-  }
-
-  return entries;
-}
-
-// ========= RIS パーサ =========
-function parseRis(text) {
-  const lines = text.replace(/\r\n/g, "\n").split("\n");
-  const entries = [];
-  let current = null;
-
-  function pushCurrent() {
-    if (current) entries.push(current);
-    current = {
-      type: "article",
-      raw: {},
-      authors: [],
-      title: "",
-      journal: "",
-      volume: "",
-      number: "",
-      pages: "",
-      year: "",
-      month: "",
-      issn: "",
-      doi: "",
-      url: "",
-      eprint: "",
-      publisher: "",
-      address: "",
-      note: ""
-    };
-  }
-
-  for (let line of lines) {
-    const m = line.match(/^([A-Z0-9]{2})\s*-\s*(.*)$/);
-    if (!m) continue;
-    const tag = m[1];
-    const val = m[2].trim();
-
-    if (tag === "TY") {
-      pushCurrent();
-      current.raw["TY"] = val;
-      current._lastTag = tag;
-      continue;
-    }
-    if (!current) continue;
-
-    if (tag === "ER") {
-      continue;
-    }
-    current.raw[tag] = current.raw[tag] || [];
-    current.raw[tag].push(val);
-    current._lastTag = tag;
-  }
-  if (current) entries.push(current);
-
-  for (const e of entries) {
-    const r = e.raw;
-
-    const ty = (r["TY"] || [""])[0].toUpperCase();
-    if (ty === "JOUR") e.type = "article";
-    else if (ty === "BOOK") e.type = "book";
-    else e.type = "article";
-
-    const au = r["AU"] || [];
-    e.authors = au.map(a => {
-      const parts = a.split(",");
-      if (parts.length >= 2) {
-        return { last: sTrim(parts[0]), first: sTrim(parts.slice(1).join(",")) };
-      } else {
-        const toks = a.trim().split(/\s+/);
-        return {
-          last: toks[toks.length - 1],
-          first: toks.slice(0, -1).join(" ")
-        };
-      }
-    });
-
-    e.title = (r["TI"] && r["TI"][0]) || (r["T1"] && r["T1"][0]) || "";
-    e.journal = (r["T2"] && r["T2"][0]) || (r["JO"] && r["JO"][0]) || "";
-    e.volume = (r["VL"] && r["VL"][0]) || "";
-    e.number = (r["IS"] && r["IS"][0]) || "";
-
-    const sp = (r["SP"] && r["SP"][0]) || "";
-    const ep = (r["EP"] && r["EP"][0]) || "";
-    let pages = "";
-    if (sp && ep) pages = `${sp}-${ep}`;
-    else if (sp) pages = sp;
-    e.pages = normalizePages(pages);
-
-    e.doi = (r["DO"] && r["DO"][0]) || "";
-    e.url = (r["UR"] && r["UR"][0]) || "";
-    e.publisher = (r["PB"] && r["PB"][0]) || "";
-    e.address = (r["CY"] && r["CY"][0]) || "";
-
-    const da = (r["DA"] && r["DA"][0]) || (r["Y1"] && r["Y1"][0]) || "";
-    const dObj = parseDateToYearMonth(da);
-    e.year = dObj.year;
-    e.month = dObj.month;
-  }
-
-  return entries;
-}
-
-// ========= BibTeX パーサ =========
-function parseBibtex(text) {
-  const entries = [];
-  const re = /@(\w+)\s*\{\s*([^,]+),([\s\S]*?)}\s*(?=@|$)/g;
-  let m;
-  while ((m = re.exec(text)) != null) {
-    const type = m[1].toLowerCase();
-    const key = m[2].trim();
-    const body = m[3];
-
-    const fields = {};
-    const fRe = /(\w+)\s*=\s*({([^{}]*|{[^{}]*})*}|\"[^\"]*\"|[^,\n]+)\s*,?/g;
-    let fm;
-    while ((fm = fRe.exec(body)) != null) {
-      const fname = fm[1].toLowerCase();
-      let fval = fm[2].trim();
-      if ((fval[0] === "{" && fval[fval.length-1] === "}") ||
-          (fval[0] === "\"" && fval[fval.length-1] === "\"")) {
-        fval = fval.substring(1, fval.length-1);
-      }
-      if (fname === "month") {
-        const monthNum = monthToNumber(fval);
-        fields[fname] = monthNum || fval;
-      } else {
-        fields[fname] = fval;
-      }
-    }
-
-    const authors = parseAuthorString(fields["author"] || "");
-    const dObj = parseDateToYearMonth(fields["year"] || "");
-
-    entries.push({
-      type: type,
-      key: key,
-      authors: authors,
-      title: fields["title"] || "",
-      journal: fields["journal"] || "",
-      volume: fields["volume"] || "",
-      number: fields["number"] || "",
-      pages: normalizePages(fields["pages"] || ""),
-      year: dObj.year || fields["year"] || "",
-      month: fields["month"] || "",
-      doi: fields["doi"] || "",
-      url: fields["url"] || "",
-      eprint: fields["eprint"] || "",
-      publisher: fields["publisher"] || "",
-      address: fields["address"] || "",
-      note: fields["note"] || ""
-    });
-  }
-  
-  return entries;
-}
-
-// ========= bbl パーサ =========
-function parseBbl(text) {
-  const entries = [];
-  const items = text.split(/\\bibitem\s*(?:\[[^\]]*\])?\s*\{/).slice(1);
-
-  const clean = (str) => {
-    if (!str) return "";
-    return str
-      .replace(/\\em\s+|\\it\s+|\\bf\s+|\\newblock/g, "")
-      .replace(/\{|\}/g, "")
-      .replace(/\s+/g, " ")
-      .replace(/,\s*,/g, ",")
-      .replace(/\.\s*\./g, ".")
-      .replace(/[.,\s]+$/, "")
-      .trim();
-  };
-
-  const normalizePages = (p) => p.replace(/[-–—]+/g, "-");
-
-  for (const item of items) {
-    const braceIndex = item.indexOf('}');
-    if (braceIndex === -1) continue;
-
-    let body = item.substring(braceIndex + 1).trim();
-    body = body.replace(/\r?\n/g, " ");
-
-    const common = { 
-      type: "article", 
-      authors: [], 
-      title: "", 
-      journal: "", 
-      year: "", 
-      volume: "", 
-      pages: "",
-      hasEtAl: false 
-    };
-
-    const yearMatch = body.match(/(.*?)\s*\((\d{4})\)/);
-    if (yearMatch) {
-      common.year = yearMatch[2];
-      const rawAuthors = yearMatch[1];
-      
-      if (rawAuthors.includes("et al.")) {
-        common.hasEtAl = true;
-      }
-
-      const authorList = rawAuthors
-        .split(/\s+and\s+|,\s+and\s+|,/)
-        .map(a => a.trim())
-        .filter(a => a.length > 0 && a !== "et al.");
-
-      common.authors = authorList.map(a => {
-        const parts = a.split(",");
-        return parts.length >= 2 
-          ? { last: clean(parts[0]), first: clean(parts.slice(1).join(" ")) }
-          : { last: clean(a), first: "" };
-      });
-    }
-
-    const blocks = body.split(/\\newblock\s*/i).map(b => b.trim());
-
-    if (blocks[1]) {
-      common.title = clean(blocks[1]);
-    }
-
-    if (blocks[2]) {
-      const journalPart = blocks[2];
-      const jm = journalPart.match(/(.*?)\s*(\d+)\s*:\s*([\d\-–—]+)/);
-      if (jm) {
-        common.journal = clean(jm[1]);
-        common.volume = jm[2];
-        common.pages = normalizePages(jm[3]);
-      } else {
-        common.journal = clean(journalPart);
-      }
-    }
-    
-    entries.push(common);
-  }
-
-  return entries;
-}
-// ========= 共通 → BibTeX 変換 =========
-
-function toBibtex(entries) {
-  const lines = [];
-  lines.push("@comment{}");
-
-  entries.forEach((e, idx) => {
-    const keyBase = formatAuthorsForCitation(e.authors) || `ref${idx+1}`;
-    const keyYear = e.year || "xxxx";
-    const key = (keyBase.replace(/\s+/g, "") + keyYear).toLowerCase();
-
-    const authorStr = formatAuthorsForBibtex(e.authors);
-
-    const fields = [
-      ["author", authorStr],
-      ["title",  (e.title || "").replace(/<em>(.*?)<\/em>/gi, "\\textit{$1}")],
-      ["publisher", convertAccentsToLatex(e.publisher)],
-      ["journal", convertAccentsToLatex(e.journal)],
-      ["volume", e.volume],
-      ["number", e.number],
-      ["pages", e.pages],
-      ["year", e.year],
-      ["month", e.month],
-      ["doi", e.doi],
-      ["url", e.url],
-      ["eprint", e.eprint]
-    ];
-
-    // 最長のフィールド名の長さを取得
-    const maxLen = Math.max(...fields.map(([name]) => name.length));
-
-    let body = "";
-    fields.forEach(([name, value], i) => {
-      const safeVal = value || "";
-      const padding = " ".repeat(maxLen - name.length);
-      body += `  ${name}${padding} = {${safeVal}}`;
-      if (i < fields.length - 1) body += ",\n";
-    });
-
-    lines.push(`@${e.type || "article"}{${key},\n${body}\n}`);
-  });
-
-  return lines.join("\n");
-}
-
-// ========= 共通 → 参考文献リスト（各スタイル） =========
-
-// エスケープ関数自体
-function escHtml(s) {
-  return (s || "").replace(/[&<>]/g, c => {
-    return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c] || c;
-  });
-}
-
-// 著者リスト作成（中身だけをエスケープする）
-function formatAuthorsForStyle_all(authors, limit, etAlText) {
-  if (!authors || authors.length === 0) return "";
-
-  // 姓名をエスケープしてから配列にする
-  const safeNames = authors.map(a => {
-    const fullName = `${a.last} ${a.first}`.trim();
-    return escHtml(fullName); // ここで名前を安全な文字列にする
-  });
-
-  if (!limit || safeNames.length <= limit) {
-    return safeNames.join(", ");
-  }
-  const head = safeNames.slice(0, limit).join(", ");
-  return `${head}, ${etAlText}`; // etAlText (et al.など) はプログラム定数なのでそのまま
-}
-
-// -- 個別スタイル（ざっくり．細かいところは必要に応じて調整用） --
-
-function formatRefNogyokagaku(e, index) {
-  // 日本農芸化学会
-  // 著者全員: 姓, 名イニシャル．10人超なら5人+et al.
-  let authors = e.authors.map(a => {
-    const initials = (a.first || "")
-      .split(/\s+/)
-      .filter(x => x)
-      .map(x => x[0] + ".")
-      .join("");
-    return `${a.last} ${initials}`;
-  });
-  if (authors.length > 10) {
-    authors = authors.slice(0, 5);
-    authors.push("et al.");
-  }
-  const authorsStr = authors.join(", ");
-
-  const title = e.title ? `${e.title}.` : "";
-  const journal = e.journal ? `<i>${escHtml(e.journal)}</i>` : "";
-  const vol = e.volume ? ` <b>${escHtml(e.volume)}</b>` : "";
-  const pages = e.pages ? `, ${escHtml(e.pages)}` : "";
-  const yearBlock = e.year ? ` (${escHtml(e.year)}).` : "";
-
-  return `${index}) ${escHtml(authorsStr)}, ${title} ${journal},${vol}${pages}${yearBlock}`;
-}
-
-// ヘルパー：著者リストをきれいに整形する
-function formatAuthorList(authors, style = "default") {
-  if (!authors || authors.length === 0) return "";
-
-  const formatted = authors.map(a => {
-    const first = a.first ? a.first.trim() : "";
-    const last = a.last ? a.last.trim() : "";
-
-    if (style === "APA") {
-      // 名前の頭文字を取得 (e.g., Taro -> T.)
-      const initials = first
-        .split(/\s+/)
-        .filter(x => x)
-        .map(x => x[0].toUpperCase() + ".")
-        .join(" ");
-      return `${last}${initials ? ", " + initials : ""}`;
-    } else {
-      // 日本の学会誌向け: "姓, 名" または "姓 名"
-      // カンマ区切りだと著者間の区切りと混同するため，姓名間はスペースにするのが一般的
-      return `${last} ${first}`.trim();
-    }
-  });
-
-  if (style === "APA") {
-    if (formatted.length === 1) return formatted[0];
-    const lastAuthor = formatted.pop();
-    return formatted.join(", ") + ", & " + lastAuthor;
-  } else {
-    // 日本語誌: 著者間を「, 」で繋ぐ
-    return formatted.join(", ");
-  }
-}
-
-function formatRefAPA(e) {
-  const authors = formatAuthorList(e.authors, "APA");
-  const year = e.year ? ` (${escHtml(e.year)}).` : " (n.d.).";
-  const title = e.title ? ` ${e.title}.` : "";
-  const journal = e.journal ? ` <i>${escHtml(e.journal)}</i>` : "";
-  const vol = e.volume ? `, <i>${escHtml(e.volume)}</i>` : "";
-  const num = e.number ? `(${escHtml(e.number)})` : "";
-  const pages = e.pages ? `, ${escHtml(e.pages)}` : "";
-  const doi = e.doi ? ` https://doi.org/${escHtml(e.doi)}` : "";
-  
-  return `${escHtml(authors)}${year}${title}${journal}${vol}${num}${pages}.${doi}`;
-}
-
-function formatRefSeibutsu(e, index) {
-  // 日本生物工学会: 著者名1, 著者名2: 雑誌名, 巻, 頁 (年).
-  const authors = formatAuthorList(e.authors, "default");
-  const journal = e.journal ? `<i>${escHtml(e.journal)}</i>` : "";
-  const vol = e.volume ? `, <b>${escHtml(e.volume)}</b>` : "";
-  const pages = e.pages ? `, ${escHtml(e.pages)}` : "";
-  const year = e.year ? ` (${escHtml(e.year)})` : "";
-  
-  return `${index}) ${escHtml(authors)}: ${journal}${vol}${pages}${year}.`;
-}
-
-function formatRefShokubutsu(e) {
-  // 著者 6名超で et al.
-  let authors = e.authors.map(a => `${a.last}, ${a.first}`.trim().replace(/,$/, "")).join(", ");
-  if (e.authors.length > 6 || e.hasEtAl) {
-    const firstLimit = e.authors.slice(0, 6).map(a => `${a.last}, ${a.first}`.trim().replace(/,$/, "")).join(", ");
-    authors = `${firstLimit} et al.`;
-  }
-
-  const year = e.year ? ` (${escHtml(e.year)})` : "";
-  const title = e.title ? ` ${e.title}.` : "";
-  const journal = e.journal ? ` <i>${escHtml(e.journal)}</i>` : "";
-  const vol = e.volume ? ` <b>${escHtml(e.volume)}</b>` : "";
-  const pages = e.pages ? `: ${escHtml(e.pages)}` : "";
-
-  return `${escHtml(authors)}${year}${title}${journal}${vol}${pages}.`;
-}
-
-function formatRefDojo(e) {
-  // 日本土壌肥料学会 風（かなり単純化）
-  // 日本語著者が混ざるときもあるので，名字だけ / イニシャルはここでは凝らない
-  const authors = e.authors.map(a => `${a.last} ${a.first}`.trim()).join("・");
-  const year = e.year ? ` ${escHtml(e.year)}.` : "";
-  const title = e.title ? ` ${e.title}.` : "";
-  const journal = e.journal ? ` <i>${escHtml(e.journal)}</i>` : "";
-  const vol = e.volume ? `, <b>${escHtml(e.volume)}</b>` : "";
-  const pages = e.pages ? `, ${escHtml(e.pages)}` : "";
-  return `${escHtml(authors)}${year}${title}${journal}${vol}${pages}.`;
-}
-
-function toReferenceList(entries, style, startIndex = 1) {
-  // LaTeXアクセントおよびtextitのデコード処理
-  entries = entries.map(e => {
-    // textit を i タグに変換してから，アクセント記号を復元する
-    const decodeAll = (str) => {
-      if (!str) return "";
-      // 1. \textit{text} -> <i>text</i>
-      let res = str.replace(/\\textit\{(.*?)\}/g, "<i>$1</i>");
-      // 2. アクセント記号の復元 (decodeLatexAccents 内で \ を消さない前提)
-      return decodeLatexAccents(res);
-    };
-
-    return {
-      ...e,
-      title: decodeAll(e.title),
-      journal: decodeAll(e.journal),
-      publisher: decodeAll(e.publisher),
-      authors: e.authors.map(a => ({
-        last: decodeAll(a.last),
-        first: decodeAll(a.first)
-      }))
-    };
-  });
-
-  let out = [];
-  entries.forEach((e, i) => {
-    const currentIndex = startIndex + i;
-    let line = "";
-    switch (style) {
-      case "nogyokagaku":
-        line = formatRefNogyokagaku(e, currentIndex);
-        break;
-      case "seibutsu":
-        line = formatRefSeibutsu(e, currentIndex);
-        break;
-      case "shokubutsu":
-        line = formatRefShokubutsu(e, currentIndex);
-        break;
-      case "dojofeiryo":
-        line = formatRefDojo(e, currentIndex);
-        break;
-      case "apa":
-      default:
-        line = formatRefAPA(e, currentIndex);
-        break;
-    }
-    out.push(line);
-  });
-  
-  return out.join("\n");
-}
-
-// ========= 状態管理 =========
-let rawEntriesStack = []; 
-
+// ========= グローバル状態管理 =========
+let rawEntriesStack = [];
 const inputEl = document.getElementById("input");
-const unifiedOutputEl = document.getElementById("unifiedOutput");
 const logOutputEl = document.getElementById("logOutput");
 const styleSelectEl = document.getElementById("styleSelect");
+const unifiedOutputEl = document.getElementById("unifiedOutput");
 
-// ========= 1. データの追加処理 (1件ずつバラバラに保存するように修正) =========
-function addEntriesToStack(mode) {
-  const text = inputEl.value;
-  if (!text.trim()) return;
+// ========= ユーティリティ =========
+function sTrim(s) { return (s || "").replace(/^\s+|\s+$/g, ""); }
 
-  const fmt = detectFormat(text);
-  let entries = [];
-  
-  // フォーマットに合わせてパース
-  if (fmt === "nbib") entries = parseNbib(text);
-  else if (fmt === "ris") entries = parseRis(text);
-  else if (fmt === "bibtex") entries = parseBibtex(text);
-  else if (fmt === "bbl") entries = parseBbl(text);
+function convertAccentsToLatex(str) {
+    if (!str) return "";
+    const map = {
+        "á": "\\'{a}", "Á": "\\'{A}", "é": "\\'{e}", "É": "\\'{E}", "í": "\\'{i}", "Í": "\\'{I}",
+        "ó": "\\'{o}", "Ó": "\\'{O}", "ú": "\\'{u}", "Ú": "\\'{U}", "à": "\\`{a}", "À": "\\`{A}",
+        "è": "\\`{e}", "È": "\\`{E}", "ì": "\\`{i}", "Ì": "\\`{I}", "ò": "\\`{o}", "Ò": "\\`{O}",
+        "ù": "\\`{u}", "Ù": "\\`{U}", "ä": "\\\"{a}", "Ä": "\\\"{A}", "ë": "\\\"{e}", "Ë": "\\\"{E}",
+        "ï": "\\\"{i}", "Ï": "\\\"{I}", "ö": "\\\"{o}", "Ö": "\\\"{O}", "ü": "\\\"{u}", "Ü": "\\\"{U}",
+        "â": "\\^{a}", "Â": "\\^{A}", "ê": "\\^{e}", "Ê": "\\^{E}", "î": "\\^{i}", "Î": "\\^{I}",
+        "ô": "\\^{o}", "Ô": "\\^{O}", "û": "\\^{u}", "Û": "\\^{U}", "ñ": "\\~{n}", "Ñ": "\\~{N}",
+        "ç": "\\c{c}", "Ç": "\\c{C}", "ø": "\\o{}", "Ø": "\\O{}", "å": "\\aa{}", "Å": "\\AA{}"
+    };
+    return str.replace(/[^ -~]/g, ch => map[ch] || ch);
+}
 
-  if (entries && entries.length > 0) {
-    // 【重要】ここで1件ずつループしてスタックに追加する
-    entries.forEach((singleEntry) => {
-      rawEntriesStack.push({ 
-        type: mode, 
-        data: [JSON.parse(JSON.stringify(singleEntry))] // 独立した1件の配列として保存
-      });
+function decodeLatexAccents(str) {
+    if (!str) return "";
+    let out = str.replace(/~/g, " ");
+    const map = {
+        "\\'{a}": "á", "\\'{A}": "Á", "\\'{e}": "é", "\\'{E}": "É", "\\'{i}": "í", "\\'{I}": "Í",
+        "\\'{o}": "ó", "\\'{O}": "Ó", "\\'{u}": "ú", "\\'{U}": "Ú", "\\`{a}": "à", "\\`{A}": "À",
+        "\\`{e}": "è", "\\`{E}": "È", "\\`{i}": "ì", "\\`{I}": "Ì", "\\`{o}": "ò", "\\`{O}": "Ò",
+        "\\`{u}": "ù", "\\`{U}": "Ù", "\\\"{a}": "ä", "\\\"{A}": "Ä", "\\\"{e}": "ë", "\\\"{E}": "Ë",
+        "\\\"{i}": "ï", "\\\"{I}": "Ï", "\\\"{o}": "ö", "\\\"{O}": "Ö", "\\\"{u}": "ü", "\\\"{U}": "Ü",
+        "\\^{a}": "â", "\\^{A}": "Â", "\\^{e}": "ê", "\\^{E}": "Ê", "\\^{i}": "î", "\\^{I}": "Î",
+        "\\^{o}": "ô", "\\^{O}": "Ô", "\\^{u}": "û", "\\^{U}": "Û", "\\~{n}": "ñ", "\\~{N}": "Ñ",
+        "\\c{c}": "ç", "\\c{C}": "Ç", "\\o{}": "ø", "\\O{}": "Ø", "\\aa{}": "å", "\\AA{}": "Å"
+    };
+    const keys = Object.keys(map).sort((a, b) => b.length - a.length);
+    for (const k of keys) { out = out.replace(new RegExp(k.replace(/\\/g, "\\\\"), "g"), map[k]); }
+    return out.replace(/\\/g, "");
+}
+
+function monthToNumber(mstr) {
+    if (!mstr) return "";
+    const map = { jan:1, january:1, feb:2, february:2, mar:3, march:3, apr:4, april:4, may:5, jun:6, june:6, jul:7, july:7, aug:8, august:8, sep:9, september:9, oct:10, october:10, nov:11, november:11, dec:12, december:12 };
+    return map[mstr.toLowerCase().substring(0,3)] ? String(map[mstr.toLowerCase().substring(0,3)]) : "";
+}
+
+function parseDateToYearMonth(datestr) {
+    if (!datestr) return { year: "", month: "" };
+    const s = datestr.trim();
+    const ymddash = s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+    if (ymddash) return { year: ymddash[1], month: String(parseInt(ymddash[2], 10)) };
+    const yMon = s.match(/^(\d{4})\s+([A-Za-z]+)/);
+    if (yMon) return { year: yMon[1], month: monthToNumber(yMon[2]) };
+    const y = s.match(/^(\d{4})/);
+    return y ? { year: y[1], month: "" } : { year: "", month: "" };
+}
+
+function normalizePages(pages) {
+    return pages ? pages.replace(/[–—−―‐–]+/g, "-").replace(/--+/g, "-") : "";
+}
+
+function parseAuthorString(authorStr) {
+    if (!authorStr) return [];
+    return authorStr.replace(/\r\n/g, "\n").split(/\n| and /).map(sTrim).filter(a => a.length > 0).map(p => {
+        const m = p.split(",");
+        if (m.length >= 2) return { last: sTrim(m[0]), first: sTrim(m.slice(1).join(",")) };
+        const toks = p.trim().split(/\s+/);
+        return toks.length === 1 ? { last: toks[0], first: "" } : { last: toks.pop(), first: toks.join(" ") };
     });
-    inputEl.value = ""; // 追加後に入力欄をクリア（スマホで連続作業しやすい）
-    renderStack();
-    logOutputEl.value = `${entries.length} 件追加しました．合計: ${rawEntriesStack.length} 件`;
-  } else {
-    alert("文献データを検出できませんでした．");
-  }
 }
 
-// ========= 2. 特定のインデックスを削除する関数 (新規追加) =========
-function removeEntryAt(index) {
-  if (confirm(`エントリー #${index + 1} を削除しますか？`)) {
-    rawEntriesStack.splice(index, 1);
-    renderStack();
-    logOutputEl.value = `削除しました．現在の合計: ${rawEntriesStack.length} 件`;
-  }
+function formatAuthorsForBibtex(authors) {
+    return (authors || []).map(a => {
+        const last = convertAccentsToLatex(a.last || "");
+        const first = convertAccentsToLatex(a.first || "");
+        return first ? `${last}, ${first}` : last;
+    }).join("\n      and ");
 }
 
-// ========= 3. 描画処理 (カード形式 & 個別コメント & 個別削除対応に書き換え) =========
-function renderStack() {
-  const currentStyle = styleSelectEl.value;
-  let htmlBuffer = [];
-  let globalIndex = 1;
-
-  rawEntriesStack.forEach((item, stackIndex) => {
-    const entriesCopy = item.data;
-    
-    // スマホで見やすいカード形式のコンテナ
-    let cardHtml = `
-      <div class="entry-card" style="
-        position: relative;
-        background: #fff;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 10px;
-        margin-bottom: 15px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      ">
-        <div style="
-          display: flex; 
-          justify-content: space-between; 
-          align-items: center;
-          margin-bottom: 10px;
-          border-bottom: 1px solid #eee;
-          padding-bottom: 5px;
-        ">
-          <span style="font-weight: bold; color: #666; font-size: 1.5rem;">#${stackIndex + 1} [${item.type.toUpperCase()}]</span>
-          <button onclick="removeEntryAt(${stackIndex})" style="
-            background: #ff4d4d;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 4px 12px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-          ">削除</button>
-        </div>
-    `;
-
-if (item.type === "bib") {
-  const bibText = item.rawText || toBibtex(entriesCopy);
-  cardHtml += `<div contenteditable="true" class="bib-content" style="font-family: monospace; font-size: 13px; white-space: pre-wrap; background: #f9f9f9; padding: 10px; border-radius: 4px;">${escHtml(bibText)}</div>`;
-} else {
-  const formatted = toReferenceList(entriesCopy, currentStyle, globalIndex);
-  cardHtml += `<div contenteditable="true" style="font-family: serif; line-height: 1.6; font-size: 15px; padding: 5px;">${formatted.replace(/\n/g, "<br>")}</div>`;
-  globalIndex += entriesCopy.length;
+function formatAuthorsForCitation(authors) {
+    if (!authors || authors.length === 0) return "";
+    if (authors.length === 1) return authors[0].last;
+    if (authors.length === 2) return `${authors[0].last} & ${authors[1].last}`;
+    return authors[0].last;
 }
 
-    cardHtml += `</div>`;
-    htmlBuffer.push(cardHtml);
-  });
-
-  unifiedOutputEl.innerHTML = htmlBuffer.join("");
+// ========= フォーマット判定 & パース =========
+function detectFormat(text) {
+    const s = text.trim();
+    if (!s) return "unknown";
+    if (/^PMID-/.test(s)) return "nbib";
+    if (/^TY\s+-/.test(s)) return "ris";
+    if (/^@/.test(s)) return "bibtex";
+    if (/\\bibitem/i.test(s)) return "bbl";
+    return "txt";
 }
 
-// ========= ダウンロード機能 =========
-function downloadFile(content, fileName, contentType) {
-  const blob = new Blob([content], { type: contentType });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = fileName;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-// .bib (BibTeXのみ抽出・空チェック付き)
-document.getElementById("downloadBibBtn").onclick = () => {
-    // BibTeX 形式のデータのみを抽出
-    const bibItems = rawEntriesStack.filter(i => i.type === "bib");
-
-    // データが1つもない場合は中断
-    if (bibItems.length === 0) {
-        alert("スタックに BibTeX 形式の文献がありません．");
-        return;
-    }
-
-    const content = bibItems.map(i => i.rawText || toBibtex(i.data)).join("\n\n");
-    downloadFile(content, "references.bib", "text/plain");
-};
-
-// .rtf (リストのみ抽出，斜体維持・空チェック付き)
-document.getElementById("downloadRtfBtn").onclick = () => {
-    // リスト形式のデータのみを抽出
-    const refItems = rawEntriesStack.filter(i => i.type === "ref");
-
-    // データが1つもない場合は中断
-    if (refItems.length === 0) {
-        alert("スタックに参考文献リストのデータがありません．");
-        return;
-    }
-
-    let globalIndex = 1;
-    const content = refItems.map(item => {
-        if (item.editedHtml) {
-            globalIndex += item.data.length;
-            return item.editedHtml.replace(/<br\s*\/?>/gi, "\n");
+function parseNbib(text) {
+    const entries = [];
+    let current = null;
+    text.split(/\n/).forEach(line => {
+        const m = line.match(/^([A-Z0-9]{2,4})\s*-\s*(.*)$/);
+        if (m) {
+            const tag = m[1], val = m[2].trim();
+            if (tag === "PMID") { if(current) entries.push(current); current = { type:"article", authors:[], raw:{} }; }
+            if (current) { current.raw[tag] = (current.raw[tag] || "") + (current.raw[tag] ? " " : "") + val; current._lt = tag; }
+        } else if (current && current._lt) {
+            current.raw[current._lt] += " " + line.trim();
         }
-        const res = toReferenceList(item.data, styleSelectEl.value, globalIndex);
-        globalIndex += item.data.length;
-        return res;
-    }).join("\n\n");
-
-    // 1. HTMLエスケープを戻す
-    let decoded = content
-        .replace(/&lt;/g, "<").replace(/&gt;/g, ">")
-        .replace(/&amp;/g, "&").replace(/&quot;/g, '"')
-        .replace(/&#39;/g, "'");
-
-    // 2. HTMLタグを RTF命令に変換
-    let rtfBody = decoded
-        .replace(/<(?:i|em)>(.*?)<\/(?:i|em)>/gi, "{\\i $1}") 
-        .replace(/<(?:b|strong)>(.*?)<\/(?:b|strong)>/gi, "{\\b $1}") 
-        .replace(/\n/g, "\\line\n"); 
-
-    // 3. 文字化け対策
-    rtfBody = rtfBody.replace(/[^\x00-\x7F]/g, (c) => {
-        return "\\u" + c.charCodeAt(0).toString() + "?";
     });
+    if (current) entries.push(current);
+    return entries.map(e => {
+        const r = e.raw;
+        const fau = text.match(/^FAU\s*-\s*(.*)$/gm) || []; // 簡易取得
+        e.authors = fau.map(l => { const p = l.split("-")[1].split(","); return { last: sTrim(p[0]), first: sTrim(p[1]) }; });
+        e.title = r["TI"] || ""; e.journal = r["JT"] || r["TA"] || ""; e.volume = r["VI"] || ""; e.pages = normalizePages(r["PG"] || "");
+        const d = parseDateToYearMonth(r["DP"] || ""); e.year = d.year; e.month = d.month; e.doi = (r["LID"] || "").match(/10\.\S+/)?.[0] || "";
+        return e;
+    });
+}
 
-    const rtfHeader = "{\\rtf1\\ansi\\ansicpg932\\deff0 {\\fonttbl{\\f0 Times New Roman;}{\\f1 MS Mincho;}}\\f0\\fs24 ";
+function parseRis(text) {
+    const entries = []; let current = null;
+    text.split(/\n/).forEach(line => {
+        const m = line.match(/^([A-Z0-9]{2})\s*-\s*(.*)$/);
+        if (!m) return;
+        const tag = m[1], val = m[2].trim();
+        if (tag === "TY") { if(current) entries.push(current); current = { type:"article", authors:[], raw:{} }; }
+        if (!current) return;
+        if (tag === "AU") current.authors.push(...parseAuthorString(val));
+        else current.raw[tag] = val;
+    });
+    if (current) entries.push(current);
+    return entries.map(e => {
+        e.title = e.raw["TI"] || e.raw["T1"] || ""; e.journal = e.raw["T2"] || e.raw["JO"] || "";
+        e.volume = e.raw["VL"] || ""; e.pages = normalizePages(`${e.raw["SP"] || ""}-${e.raw["EP"] || ""}`);
+        const d = parseDateToYearMonth(e.raw["DA"] || e.raw["Y1"] || ""); e.year = d.year; e.doi = e.raw["DO"] || "";
+        return e;
+    });
+}
+
+function parseBibtex(text) {
+    const entries = [];
+    const re = /@(\w+)\s*\{\s*([^,]+),([\s\S]*?)}\s*(?=@|$)/g;
+    let m;
+    while ((m = re.exec(text)) !== null) {
+        const type = m[1].toLowerCase(), key = m[2].trim(), body = m[3];
+        const fields = {};
+        const fRe = /(\w+)\s*=\s*({(?:[^{}]*|{[^{}]*})*}|"[^"]*"|[^,\n]+)/g;
+        let fm;
+        while ((fm = fRe.exec(body)) !== null) {
+            let val = fm[2].trim();
+            if ((val[0]==='{' && val.slice(-1)==='}') || (val[0]==='"' && val.slice(-1)==='"')) val = val.slice(1, -1);
+            fields[fm[1].toLowerCase()] = val;
+        }
+        entries.push({ type, key, authors: parseAuthorString(fields.author), title: fields.title, journal: fields.journal, volume: fields.volume, pages: normalizePages(fields.pages), year: fields.year, doi: fields.doi });
+    }
+    return entries;
+}
+
+function parseBbl(text) {
+    return text.split(/\\bibitem/).slice(1).map(item => {
+        const body = item.replace(/\r?\n/g, " ").trim();
+        const yearM = body.match(/\((\d{4})\)/);
+        return { type: "article", authors: parseAuthorString(body.split("(")[0]), title: body.match(/\\newblock\s+(.*?)\\newblock/)?.[1] || "", year: yearM?.[1] || "" };
+    });
+}
+
+// ========= 変換 & 出力 =========
+function toBibtex(entries) {
+    return entries.map((e, i) => {
+        const key = (formatAuthorsForCitation(e.authors).replace(/\s+/g, "") + (e.year || "xxxx")).toLowerCase();
+        const f = [["author", formatAuthorsForBibtex(e.authors)], ["title", e.title], ["journal", convertAccentsToLatex(e.journal)], ["volume", e.volume], ["pages", e.pages], ["year", e.year], ["doi", e.doi]];
+        const body = f.map(([n, v]) => `  ${n.padEnd(9)} = {${v || ""}}`).join(",\n");
+        return `@${e.type || "article"}{${key},\n${body}\n}`;
+    }).join("\n\n");
+}
+
+function escHtml(s) { return (s || "").replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])); }
+
+function formatAuthorList(authors, style) {
+    if (!authors || authors.length === 0) return "";
+    const fmt = authors.map(a => {
+        if (style === "APA") {
+            const init = (a.first || "").split(/\s+/).filter(x => x).map(x => x[0].toUpperCase() + ".").join(" ");
+            return `${a.last}${init ? ", " + init : ""}`;
+        }
+        return `${a.last} ${a.first}`.trim();
+    });
+    return style === "APA" && fmt.length > 1 ? fmt.slice(0, -1).join(", ") + ", & " + fmt.slice(-1) : fmt.join(", ");
+}
+
+function toReferenceList(entries, style, startIndex) {
+    return entries.map((e, i) => {
+        const idx = startIndex + i;
+        const au = formatAuthorList(e.authors, style === "apa" ? "APA" : "default");
+        const title = e.title ? ` ${decodeLatexAccents(e.title)}.` : "";
+        const jr = e.journal ? ` <i>${escHtml(decodeLatexAccents(e.journal))}</i>` : "";
+        const vol = e.volume ? ` <b>${escHtml(e.volume)}</b>` : "";
+        const pg = e.pages ? `, ${escHtml(e.pages)}` : "";
+        const yr = e.year ? ` (${escHtml(e.year)})` : "";
+
+        if (style === "nogyokagaku") return `${idx}) ${escHtml(au)}, ${title}${jr},${vol}${pg}${yr}.`;
+        if (style === "seibutsu") return `${idx}) ${escHtml(au)}: ${jr}${vol}${pg}${yr}.`;
+        if (style === "apa") return `${escHtml(au)}${yr}.${title}${jr}${vol}${pg}.`;
+        return `${escHtml(au)}${yr}.${title}${jr}${vol}${pg}.`;
+    }).join("\n");
+}
+
+// ========= UI 制御 =========
+function renderStack() {
+    const style = styleSelectEl.value;
+    unifiedOutputEl.innerHTML = rawEntriesStack.length ? "" : "<p style='color:#999; padding:20px;'>スタックは空です．</p>";
     
-    downloadFile(rtfHeader + rtfBody + "}", "reference_list.rtf", "application/rtf");
+    rawEntriesStack.forEach((item, idx) => {
+        const card = document.createElement("div");
+        card.className = "entry-card";
+        card.style = "background:#fff; border:1px solid #ddd; border-radius:8px; padding:10px; margin-bottom:15px;";
+        
+        let content = "";
+        if (style === "bibtex_mode") {
+            content = item.editedBib || toBibtex([item.data]);
+            card.innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="font-weight:bold;">#${idx+1} [BibTeX]</span><button onclick="removeEntryAt(${idx})" class="btn-danger" style="padding:2px 8px;">削除</button></div>
+                              <div contenteditable="true" class="bib-editor" style="font-family:monospace; font-size:13px; background:#f9f9f9; padding:8px; outline:none;">${escHtml(content)}</div>`;
+        } else {
+            content = item.editedRef || toReferenceList([item.data], style, idx + 1).replace(/\n/g, "<br>");
+            card.innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="font-weight:bold;">#${idx+1}</span><button onclick="removeEntryAt(${idx})" class="btn-danger" style="padding:2px 8px;">削除</button></div>
+                              <div contenteditable="true" class="ref-editor" style="font-family:serif; line-height:1.6; outline:none;">${content}</div>`;
+        }
+        
+        // 編集時の保存処理
+        const editor = card.querySelector('[contenteditable="true"]');
+        editor.addEventListener("input", () => {
+            if (style === "bibtex_mode") item.editedBib = editor.innerText;
+            else item.editedRef = editor.innerHTML;
+        });
+
+        unifiedOutputEl.appendChild(card);
+    });
+    updateDownloadButtonState();
+}
+
+function removeEntryAt(index) {
+    if (confirm(`エントリー #${index + 1} を削除しますか？`)) {
+        rawEntriesStack.splice(index, 1);
+        renderStack();
+        logOutputEl.value = `削除しました．合計: ${rawEntriesStack.length} 件`;
+    }
+}
+
+function updateDownloadButtonState() {
+    const btn = document.getElementById("mainDownloadBtn");
+    btn.disabled = rawEntriesStack.length === 0;
+    btn.innerText = styleSelectEl.value === "bibtex_mode" ? ".bib で一括保存" : ".rtf でリスト保存";
+}
+
+// ========= イベントリスナー登録 =========
+document.getElementById("convertGenericBtn").onclick = () => {
+    const text = inputEl.value.trim();
+    if (!text) return;
+    const fmt = detectFormat(text);
+    let entries = [];
+    if (fmt === "nbib") entries = parseNbib(text);
+    else if (fmt === "ris") entries = parseRis(text);
+    else if (fmt === "bibtex") entries = parseBibtex(text);
+    else if (fmt === "bbl") entries = parseBbl(text);
+    
+    if (entries.length) {
+        entries.forEach(e => rawEntriesStack.push({ data: e, editedBib: null, editedRef: null }));
+        inputEl.value = "";
+        renderStack();
+        logOutputEl.value = `${entries.length} 件追加．合計: ${rawEntriesStack.length} 件`;
+    } else alert("文献データを検出できませんでした．");
 };
 
+document.getElementById("removeComment").onclick = () => {
+    inputEl.value = inputEl.value.replace(/@comment\{.*?\}/g, "").replace(/\\begin\{thebibliography\}\{.*?\}/g, "").replace(/\\end\{thebibliography\}/g, "");
+};
 
-
-// ========= 各種ボタン・イベント =========
-styleSelectEl.onchange = renderStack; // 学会を変えた瞬間に全部変わる
-
-document.getElementById("convertBibtexBtn").onclick = () => addEntriesToStack("bib");
-document.getElementById("convertRefBtn").onclick = () => addEntriesToStack("ref");
+document.getElementById("clearInputBtn").onclick = () => inputEl.value = "";
 
 document.getElementById("clearAllBtn").onclick = () => {
-  if (confirm("スタックをすべて削除しますか？")) {
-    rawEntriesStack = [];
-    renderStack();
-  }
+    if (confirm("スタックをすべて削除しますか？")) { rawEntriesStack = []; renderStack(); logOutputEl.value = ""; }
 };
 
 document.getElementById("copyAllBtn").onclick = () => {
-  const range = document.createRange();
-  range.selectNodeContents(unifiedOutputEl);
-  const sel = window.getSelection();
-  sel.removeAllRanges();
-  sel.addRange(range);
-  document.execCommand("copy");
-  alert("すべてコピーしました");
+    const range = document.createRange();
+    range.selectNodeContents(unifiedOutputEl);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    document.execCommand("copy");
+    alert("コピーしました");
 };
 
-// (既存のファイル読み込みやコメント削除処理は維持)
-document.getElementById("clearInputBtn").onclick = () => { inputEl.value = ""; };
-document.getElementById("removeComment").onclick = () => {
-  let cleaned = inputEl.value.replace(/@comment\{.*?\}/g, "").replace(/\\begin\{thebibliography\}\{.*?\}/g, "").replace(/\\end\{thebibliography\}/g, "");
-  inputEl.value = cleaned;
-};
 document.getElementById("fileInput").onchange = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    const r = new FileReader();
-    r.onload = (ev) => { inputEl.value = ev.target.result; };
-    r.readAsText(file, "UTF-8");
-  }
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => inputEl.value = ev.target.result;
+        reader.readAsText(file, "UTF-8");
+    }
 };
 
-// unifiedOutput の中身が編集された時の同期処理
-document.getElementById("unifiedOutput").addEventListener("input", () => {
-    const cards = document.querySelectorAll("#unifiedOutput > .entry-card");
-    cards.forEach((card, index) => {
-        if (!rawEntriesStack[index]) return;
+styleSelectEl.onchange = renderStack;
 
-        if (rawEntriesStack[index].type === "bib") {
-            // 【重要】カード全体(innerText)ではなく，エディタ部分(.bib-content)だけを取得
-            const bibEditor = card.querySelector(".bib-content");
-            if (bibEditor) {
-                // これにより「#15 [BIB] 削除」などの外側の文字が混入しなくなります
-                rawEntriesStack[index].rawText = bibEditor.innerText;
-            }
-        } else {
-            // 参考文献リストの場合も，編集用の div からのみ取得
-            const refEditor = card.querySelector("div[contenteditable='true']");
-            if (refEditor) {
-                rawEntriesStack[index].editedHtml = refEditor.innerHTML;
-            }
-        }
-    });
-});
-
-// ========= 表示更新関数 =========
-function renderStack() {
-  const currentStyle = document.getElementById("styleSelect").value;
-  const unifiedOutputEl = document.getElementById("unifiedOutput");
-  let htmlBuffer = [];
-  let globalIndex = 1;
-
-  rawEntriesStack.forEach((item, stackIndex) => {
-    const entriesCopy = JSON.parse(JSON.stringify(item.data));
-
-    // カードのヘッダー部分
-    let cardHtml = `<div class="entry-card" style="position: relative; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;"><span style="font-weight: bold; color: #666; font-size: 1.5rem;">#${stackIndex + 1} [${item.type.toUpperCase()}]</span><button onclick="removeEntryAt(${stackIndex})" style="background: #ff4d4d; color: white; border: none; border-radius: 4px; padding: 4px 12px; cursor: pointer; font-size: 12px; font-weight: bold;">削除</button></div>`;
-
-    if (item.type === "bib") {
-      const bibText = item.rawText || toBibtex(entriesCopy);
-      cardHtml += `<div contenteditable="true" class="bib-content" style="font-family: monospace; font-size: 13px; white-space: pre-wrap; background: #f9f9f9; padding: 10px; border-radius: 4px; outline: none;">${escHtml(bibText)}</div>`;
+document.getElementById("mainDownloadBtn").onclick = () => {
+    const style = styleSelectEl.value;
+    let content = "";
+    if (style === "bibtex_mode") {
+        content = rawEntriesStack.map(item => item.editedBib || toBibtex([item.data])).join("\n\n");
+        const blob = new Blob([content], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "references.bib";
+        a.click();
     } else {
-      let refContent = "";
-      if (item.editedHtml) {
-        refContent = item.editedHtml;
-      } else {
-        const formatted = toReferenceList(entriesCopy, currentStyle, globalIndex);
-        refContent = formatted.replace(/\n/g, "<br>");
-      }
-      cardHtml += `<div contenteditable="true" style="font-family: serif; line-height: 1.6; font-size: 15px; padding: 5px; outline: none;">${refContent}</div>`;
-      globalIndex += entriesCopy.length;
+        alert("リスト保存機能（RTF/TXT）は現在プレビュー版です。画面からコピーしてご利用ください。");
     }
+};
 
-    cardHtml += `</div>`;
-    htmlBuffer.push(cardHtml);
-  });
-
-  // 1. まず画面に文献を表示させる
-  unifiedOutputEl.innerHTML = htmlBuffer.length > 0 
-    ? htmlBuffer.join("") 
-    : "<p style='color:#999; padding:20px;'>スタックは空です．</p>";
-
-  // 2. 表示が終わった直後に，ボタンの有効/無効を切り替える
-  const hasBib = rawEntriesStack.some(e => e.type === 'bib');
-  const hasRef = rawEntriesStack.some(e => e.type === 'ref');
-
-  // ボタンが存在する場合のみ実行（エラー防止）
-  const btnBib = document.getElementById("downloadBibBtn");
-  const btnRef = document.getElementById("downloadRtfBtn");
-  const btnCopy = document.getElementById("copyAllBtn");
-
-  if (btnBib) btnBib.disabled = !hasBib;
-  if (btnRef) btnRef.disabled = !hasRef;
-  if (btnCopy) btnCopy.disabled = (rawEntriesStack.length === 0);
-}
-
-// ページが読み込まれた時に，一度だけ renderStack を実行する
-// これにより，起動直後（スタックが空の状態）でもボタンが灰色になります
-document.addEventListener("DOMContentLoaded", () => {
-    renderStack();
-});
-
-// 全ての関数の外（ファイルの一番下）に記述
-function initApp() {
-    if (typeof renderStack === "function") {
-        renderStack();
-    }
-}
-
-// ページ読み込み完了時，および「戻る」でページが表示された時にも実行
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initApp);
-} else {
-    initApp();
-}
-window.addEventListener("pageshow", initApp);
+// 初期化
+window.addEventListener("pageshow", renderStack);
