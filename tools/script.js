@@ -53,7 +53,7 @@ function decodeLatexAccents(str) {
         out = out.split(k).join(map[k]);   // ← 正規表現を使わない
     }
 
-    return out.replace(/\\/g, "");
+    return out;
 }
 
 function monthToNumber(mstr) {
@@ -530,7 +530,7 @@ function toReferenceList(entries, style, startIndex) {
         // デフォルト（APA風）
         return formatRefAPA(e);
     }
-  }).join("\n");
+  }).join("\n").replace(/\\textit\{([^}]*)\}/g, "<i>$1</i>");
 }
 
 // --- 以下、提供された各フォーマット関数 ---
