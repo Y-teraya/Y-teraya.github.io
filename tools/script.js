@@ -474,7 +474,7 @@ function toBibtex(entries) {
             ["volume",  e.volume],
             ["pages",   e.pages],
             ["year",    e.year],
-            ["doi",     e.doi]
+            ["doi",     e.doi],
         ];
         
         const body = f.map(([n, v]) => `  ${n.padEnd(9)} = {${v || ""}}`).join(",\n");
@@ -513,25 +513,13 @@ function escHtml(s) {
   return s;
 }
 
-function formatAuthorList(authors, style = "default") {
+function formatAuthorList(authors) {
   if (!authors || authors.length === 0) return "";
-  const formatted = authors.map(a => {
+  return authors.map(a => {
     const first = a.first ? a.first.trim() : "";
     const last = a.last ? a.last.trim() : "";
-    if (style === "APA") {
-      const initials = first.split(/\s+/).filter(x => x).map(x => x[0].toUpperCase() + ".").join(" ");
-      return `${last}${initials ? ", " + initials : ""}`;
-    } else {
-      return `${last} ${first}`.trim();
-    }
+    return `${last} ${first}`.trim();
   });
-  if (style === "APA") {
-    if (formatted.length === 1) return formatted[0];
-    const lastAuthor = formatted.pop();
-    return formatted.join(", ") + ", & " + lastAuthor;
-  } else {
-    return formatted.join(", ");
-  }
 }
 
 /**
@@ -557,6 +545,9 @@ function toReferenceList(entries, style, startIndex) {
       
       case "shokubutsu":
         return formatRefShokubutsu(e);
+
+      case "dojo":
+        return formatRefdojo(e, idx);
       
       default:
         // デフォルト（APA風）
@@ -568,37 +559,38 @@ function toReferenceList(entries, style, startIndex) {
 // --- 以下、提供された各フォーマット関数 ---
 
 function formatRefNogyokagaku(e, index) {
-let authors = e.authors.map(a => {
-  const initials = (a.first || "")
-    .split(/\s+/)
-    .filter(x => x)
-    .map(x => x[0] + ".")
-    .join("");
-  return `${a.last} ${initials}`;
-});
-
-if (authors.length === 1) {
-  // 1人 → そのまま
-  authors = [authors[0]];
-} else if (authors.length === 2) {
-  // 2人 → A and B
-  authors = [`${authors[0]} and ${authors[1]}`];
-} else if (authors.length < 10) {
-  // 3〜9人 → A, B, C and D
-  const last = authors.pop();
-  authors = [`${authors.join(", ")} and ${last}`];
-} else {
-  // 10人以上 → 5人 + et al.
-  authors = authors.slice(0, 5);
-  authors.push("<i>et al.</i>");
-}
+  let rawAuthors = formatAuthorList(e.authors);
+  let authors = rawAuthors.map(name => {
+    const parts = name.split(/\s+/);
+    const last = parts[0];
+    const firstParts = parts.slice(1);
+    const initials = firstParts
+      .filter(x => x)
+      .map(x => x[0] + ".")
+      .join("");
+    return `${last} ${initials}`;
+  });
+  if (authors.length === 1) {
+    // 1人 → そのまま
+    authors = [authors[0]];
+  } else if (authors.length === 2) {
+    // 2人 → A and B
+    authors = [`${authors[0]} and ${authors[1]}`];
+  } else if (authors.length < 10) {
+    // 3〜9人 → A, B, C and D
+    const last = authors.pop();
+    authors = [`${authors.join(", ")} and ${last}`];
+  } else {
+    // 10人以上 → 5人 + et al.
+    authors = authors.slice(0, 5);
+    authors.push("<i>et al.</i>");
+  }
   const authorsStr = authors.join(", ");
   const title = e.title ? `${e.title}.` : "";
   const journal = e.journal ? `<i>${escHtml(e.journal)}</i>` : "";
   const vol = e.volume ? ` <b>${escHtml(e.volume)}</b>` : "";
   const pages = e.pages ? `, ${escHtml(e.pages)}` : "";
   const yearBlock = e.year ? ` (${escHtml(e.year)}).` : "";
-
   return `${index}) ${escHtml(authorsStr)}, ${title} ${journal},${vol}${pages}${yearBlock}`;
 }
 
@@ -611,17 +603,15 @@ function formatRefSeibutsu(e, index) {
     .join("");
   return `${a.last} ${initials}`;
 });
-
 if (authors.length === 1) {
-  // 1人 → そのまま
   authors = [authors[0]];
 } else if (authors.length === 2) {
-  // 2人 → A and B
   authors = [`${authors[0]} and ${authors[1]}`];
 } else {
-  authors
+  const last = authors.pop();
+  authors = [`${authors.join(", ")} and ${last}`];
 }
-  const authorsStr = formatAuthorList(e.authors, "APA");
+  const authorsStr = authors.join(", ");
   const journal = e.journal ? `<i>${escHtml(e.journal)}</i>` : "";
   const vol = e.volume ? `, <b>${escHtml(e.volume)}</b>` : "";
   const pages = e.pages ? `, ${escHtml(e.pages)}` : "";
@@ -630,7 +620,21 @@ if (authors.length === 1) {
 }
 
 function formatRefAPA(e) {
-  const authors = formatAuthorList(e.authors, "APA");
+  const rawAuthors = formatAuthorList(e.authors);
+  const authors = (() => {
+    if (!rawAuthors || rawAuthors.length === 0) return "";
+    const apaAuthors = rawAuthors.map(name => {
+      const [last, ...firstParts] = name.split(/\s+/);
+      const initials = firstParts
+        .filter(x => x)
+        .map(x => x[0].toUpperCase() + ".")
+        .join(" ");
+      return `${last}${initials ? ", " + initials : ""}`;
+    });
+    if (apaAuthors.length === 1) return apaAuthors[0];
+    const lastAuthor = apaAuthors.pop();
+    return apaAuthors.join(", ") + ", & " + lastAuthor;
+  })();
   const year = e.year ? ` (${escHtml(e.year)}).` : " (n.d.).";
   const title = e.title ? ` ${e.title}.` : "";
   const journal = e.journal ? ` <i>${escHtml(e.journal)}</i>` : "";
@@ -672,6 +676,57 @@ if (authors.length === 1) {
   const vol = e.volume ? ` <b>${escHtml(e.volume)}</b>` : "";
   const pages = e.pages ? `: ${escHtml(e.pages)}` : "";
   return `${escHtml(authorsStr)}${year}${title}${journal}${vol}${pages}.`;
+}
+
+function formatRefdojo(e) {
+  // formatAuthorList で基本形（"Last First"）を取得
+  let rawAuthors = formatAuthorList(e.authors);
+
+  // 欧文イニシャル化 + 和文対応
+  let authors = rawAuthors.map(name => {
+    const parts = name.split(/\s+/);
+    const last = parts[0];
+    const firstParts = parts.slice(1);
+
+    // 和文判定（非ASCIIが含まれる場合）
+    const isJapanese = /[^\x00-\x7F]/.test(last);
+
+    if (isJapanese) {
+      // 和文 → 姓・名
+      return `${last}・${firstParts.join("")}`;
+    }
+
+    // 欧文 → Last, Initials
+    const initials = firstParts
+      .filter(x => x)
+      .map(x => x[0].toUpperCase() + ".")
+      .join("");
+    return initials ? `${last}, ${initials}` : last;
+  });
+
+  if (authors.length === 1) {
+    authors = [authors[0]];
+  } else if (authors.length === 2) {
+    authors = [`${authors[0]} and ${authors[1]}`];
+  } else if (authors.length < 10) {
+    const last = authors.pop();
+    authors = [`${authors.join(", ")} and ${last}`];
+  } else {
+    authors = authors.slice(0, 5);
+    authors.push("et al.");
+  }
+
+  const authorsStr = authors.join(", ");
+
+  // 各フィールド
+  const title = e.title ? `${e.title}.` : "";
+  const journal = e.journal ? `<i>${escHtml(e.journal)}</i>` : "";
+  const vol = e.volume ? ` <b>${escHtml(e.volume)}</b>` : "";
+  const pages = e.pages ? `, ${escHtml(e.pages)}` : "";
+  const yearBlock = e.year ? ` ${escHtml(e.year)}.` : "";
+
+  // 最終整形
+  return `${escHtml(authorsStr)} ${yearBlock} ${title} ${journal},${vol}${pages}`;
 }
 
 // ========= UI 制御 =========
