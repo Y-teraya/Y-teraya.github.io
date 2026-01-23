@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>LabCalc - 溶液調製・濃度変換</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; max-width: 800px; margin: 20px auto; padding: 20px; background: #f4f7f6; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        h2 { border-left: 5px solid #2c3e50; padding-left: 10px; color: #2c3e50; }
+        .input-group { margin-bottom: 10px; display: flex; align-items: center; }
+        label { width: 180px; font-weight: bold; }
+        input { padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100px; }
+        .result { margin-top: 15px; padding: 10px; background: #e8f4fd; border-radius: 4px; font-weight: bold; color: #0056b3; }
+    </style>
+</head>
+<body>
+
+<h1>🧪 Lab Solution Calculator</h1>
+
+<div class="card">
+    <h2>1. Stock溶液の希釈 (C1V1 = C2V2)</h2>
+    <div class="input-group">
+        <label>Stock濃度 (C1):</label>
+        <input type="number" id="c1" placeholder="10" oninput="calcDilution()"> <span id="u1">mM</span>
+    </div>
+    <div class="input-group">
+        <label>作成したい濃度 (C2):</label>
+        <input type="number" id="c2" placeholder="1" oninput="calcDilution()"> <span>と同じ単位</span>
+    </div>
+    <div class="input-group">
+        <label>作成したい液量 (V2):</label>
+        <input type="number" id="v2" placeholder="100" oninput="calcDilution()"> <span>mL</span>
+    </div>
+    <div class="result" id="dilutionResult">必要なStock量 (V1): --- mL</div>
+</div>
+
+<div class="card">
+    <h2>2. 規定度(N) と モル濃度(M)</h2>
+    <div class="input-group">
+        <label>モル濃度 (M):</label>
+        <input type="number" id="molar" placeholder="0.1" oninput="calcNormality(0)"> <span>mol/L</span>
+    </div>
+    <div class="input-group">
+        <label>価数 (z):</label>
+        <input type="number" id="valence" value="1" oninput="calcNormality(0)">
+    </div>
+    <div class="input-group">
+        <label>規定度 (N):</label>
+        <input type="number" id="normal" placeholder="0.1" oninput="calcNormality(1)"> <span>eq/L</span>
+    </div>
+    <p style="font-size: 0.8em; color: #666;">※ N = M × 価数</p>
+</div>
+
+<div class="card">
+    <h2>3. pH ↔ [H+] 変換</h2>
+    <div class="input-group">
+        <label>pH値:</label>
+        <input type="number" id="phVal" step="0.1" placeholder="7.0" oninput="calcPH(0)">
+    </div>
+    <div class="input-group">
+        <label>水素イオン濃度 [H+]:</label>
+        <input type="text" id="hConc" placeholder="1.0e-7" oninput="calcPH(1)"> <span>mol/L</span>
+    </div>
+</div>
+
+<script>
+    function calcDilution() {
+        const c1 = document.getElementById('c1').value;
+        const c2 = document.getElementById('c2').value;
+        const v2 = document.getElementById('v2').value;
+        if (c1 && c2 && v2) {
+            const v1 = (c2 * v2) / c1;
+            document.getElementById('dilutionResult').innerText = `必要なStock量 (V1): ${v1.toFixed(4)} mL`;
+        }
+    }
+
+    function calcNormality(mode) {
+        const m = document.getElementById('molar');
+        const n = document.getElementById('normal');
+        const z = document.getElementById('valence').value || 1;
+        if (mode === 0 && m.value) {
+            n.value = (m.value * z).toFixed(4);
+        } else if (mode === 1 && n.value) {
+            m.value = (n.value / z).toFixed(4);
+        }
+    }
+
+    function calcPH(mode) {
+        const ph = document.getElementById('phVal');
+        const h = document.getElementById('hConc');
+        if (mode === 0 && ph.value) {
+            h.value = Math.pow(10, -ph.value).toExponential(4);
+        } else if (mode === 1 && h.value) {
+            ph.value = (-Math.log10(h.value)).toFixed(2);
+        }
+    }
+</script>
+
+</body>
+</html>

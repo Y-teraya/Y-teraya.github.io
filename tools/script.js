@@ -862,7 +862,15 @@ document.getElementById("mainDownloadBtn").onclick = () => {
 function convertToRTF(html) {
     if (!html) return "";
 
-    let rtf = html
+    // --- 追加: HTML特殊文字をデコードする処理 ---
+    let decodedHtml = html
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, '"')
+        .replace(/&#039;/g, "'");
+
+    let rtf = decodedHtml
         // emタグとiタグの両方を斜体に
         .replace(/<(i|em)>(.*?)<\/\1>/g, "{\\i $2}")
         // bタグを太字に
@@ -872,12 +880,11 @@ function convertToRTF(html) {
         .replace(/\n/g, "\\line ");
 
     // アクセント付き文字などのUnicode文字をRTFエスケープ形式に変換
-    // これにより Bouché が Bouch\'e9 のように変換され文字化けを防ぎます
     rtf = rtf.replace(/[^\x00-\x7F]/g, function(c) {
         return "\\u" + c.charCodeAt(0).toString() + "?";
     });
 
-    // RTFヘッダー（日本語対応のため \fchars を含めるのが安全です）
+    // RTFヘッダー
     const header = "{\\rtf1\\ansi\\ansicpg932\\deff0{\\fonttbl{\\f0\\fnil\\fcharset128 MS Mincho;}{\\f1\\fnil\\fcharset0 Times New Roman;}}\n";
     const footer = "\n}";
 
