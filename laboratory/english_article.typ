@@ -3,9 +3,12 @@
 #set text(font: ("New Computer Modern", "Noto Serif JP"), weight: 450)
 #show heading: set text(font: ("Inter 18pt", "Noto Sans JP"), weight: 450)
 #show strong: set text(font: ("Inter 18pt", "Noto Sans JP"), weight: 300)
-#set par(first-line-indent: 1em, spacing: 1em, leading: 0.8em)
+#set par(first-line-indent: 1em, spacing: 0.5em, leading: 0.5em)
 #set heading(numbering: "1.")
-#set par(leading: 1em)
+#show heading: it => {
+    it
+    par(text(size: 0em, ""))
+}
 
 #set page(
   paper: "a4",
@@ -19,17 +22,13 @@
 
 #v(-3.5em)
 
-#show heading: it => {
-    it
-    par(text(size: 0em, ""))
-}
-
 #maketitle(
   title: "Shoot-synthesized nodulation-restricting substances of wild-type soybean present in two different high-performance liquid chromatography peaks of the ethanol-soluble medium-polarity fraction",
   authors: (
     "Takashi Kenjo, Hiroko Yamaya & Yasuhiro Arima",
   ),
 )
+
 
 #v(-3.5em)
 
@@ -74,7 +73,7 @@
 NOD1-3の発根葉植物体（REL-N）に試料を8日間投与し，根粒菌接種7日後の成熟根粒数で抑制活性を評価した．
 
 == 分析・統計
-逆相HPLCで分画・精製し，UV/VIS分光光度計（195–450 nm）で6種の候補標準物質と比較した．統計はTukey-Kramer検定（$P < 0.05$）を用いた．
+逆相HPLCで分画・精製し，UV/VIS分光光度計（195 – 450 nm）で6種の候補標準物質と比較した．統計はTukey-Kramer検定（$P < 0.05$）を用いた．
 
 = 結果
 
@@ -86,23 +85,23 @@ NOD1-3の発根葉植物体（REL-N）に試料を8日間投与し，根粒菌�
 == Figure 2 & 3
 F1・F2をさらに細分化した結果，活性が特定のサブ画分に集中していることが確認され，活性物質の絞り込みに成功した．
 
-#figure(image("./Fig2.png", height: 18%), caption: [F1のサブ画分のバイオアッセイ結果])
-#figure(image("./Fig3.png", height: 18%), caption: [F2のサブ画分のバイオアッセイ結果])
+#figure(image("./Fig2.png", height: 18%), caption: [F1, F2サブ画分のHPLCクロマトグラムとバイオアッセイ結果])
+#figure(image("./Fig3.png", height: 18%), caption: [F1A1, F2B1分画後のHPLCクロマトグラムとバイオアッセイ結果])
+
+== Figure 4
+F1A1由来のS3画分をS3A・S3B・S3Cに分離した結果，抑制活性はS3Bに明確に集中し，隣接画分と比較して根粒数が顕著に減少した．S3Bの主要ピークが，本研究で特定された抑制物質「P-1」である．
+
+#figure(image("./Fig4.png", height: 18%), caption: [S3サブ画分のHPLCクロマトグラムとバイオアッセイ結果])
 
 == Figure 5
 精製したP-1およびP-2はいずれも単独で強力な抑制活性を示し，対称的なピーク形状から高純度で単離されたことが確認された．
 
 #figure(image("./Fig5.png", height: 18%), caption: [P-1・P-2のバイオアッセイ結果])
 
-== Figure 4
-F1A1由来のS3画分をS3A・S3B・S3Cに分離した結果，抑制活性はS3Bに明確に集中し，隣接画分と比較して根粒数が顕著に減少した．S3Bの主要ピークが，本研究で特定された抑制物質「P-1」である．
-
-#figure(image("./Fig4.png", height: 18%), caption: [F1A1のサブサブ画分のバイオアッセイ結果])
-
 == Figure 6
 P-1・P-2は野生型（Williams82）の篩管液から検出されたが，変異体（NOD1-3）からは検出されず，SNRSが篩管を経由して輸送されることを示す初めての直接的証拠となった．
 
-#figure(image("./Fig6.png", height: 18%), caption: [P-1・P-2の篩管液中への存在の確認])
+#figure(image("./Fig6.png", height: 18%), caption: [P-1・P-2の篩管液中への存在確認])
 
 == Figure 7
 P-1・P-2のUVスペクトルは，既存の6種の候補物質（サリチル酸等）のいずれとも一致せず，未知の物質である可能性が強く示唆された．
@@ -114,7 +113,7 @@ P-1・P-2のUVスペクトルは，既存の6種の候補物質（サリチル�
 == 結論
 + P-1とP-2という2つの活性ピークの特定
 + 篩管液における存在の初めての直接的証明
-+ 既存の一般的植物ホルモンとの非一致
++ 既存の一般的植物ホルモン・ポリアミンとの非一致
 
 #h(1fr)の3点が新たに明らかになった．
 
