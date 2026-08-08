@@ -15,7 +15,7 @@
   numbering: "1",
 )
 
-#align(right, [2026.06.04. 寺谷優輝])
+#align(right, [2026.06.05. 寺谷優輝])
 #block(inset: (left: -0.3em))[
   英語論文紹介 Journal Name: _Soil Science and Plant Nutrition_, Vol: 56, Pages: 399 – 406.
 ]
