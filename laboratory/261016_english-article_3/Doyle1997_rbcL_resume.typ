@@ -139,7 +139,7 @@
 
 #v(1fr)
 
-#figure(image("Fig1.png", width: 95%))
+#figure(image("Fig1.png", width: 100%))
 
 #v(1fr)
 
@@ -147,10 +147,10 @@
 
 #v(1fr)
 
-#figure(image("Fig2-5.png", width: 95%))
+#figure(image("Fig2-5.png", width: 98%))
 
 #v(1fr)
 
-#figure(image("Fig6-7.png", width: 95%))
+#figure(image("Fig6-7.png", width: 98%))
 
 #v(1fr)
