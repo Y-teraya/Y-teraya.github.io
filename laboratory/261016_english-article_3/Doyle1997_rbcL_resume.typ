@@ -7,6 +7,9 @@
   size: 9.5pt,
   lang: "ja",
 )
+#set text(font: ("New Computer Modern", "Noto Serif JP"), weight: 450)
+#show heading: set text(font: ("Inter 18pt", "Noto Sans JP"), weight: 450)
+#show strong: set text(font: ("Inter 18pt", "Noto Sans JP"), weight: 300)
 #set par(justify: true, leading: 0.65em, spacing: 0.6em)
 #set list(indent: 0.4em, body-indent: 0.5em, spacing: 0.45em)
 #set heading(numbering: "1.1")
@@ -29,10 +32,17 @@
   ..args,
 )
 
+#align(right, [2026.10.16 寺谷優輝])
+#block(inset: (left: -0.3em))[
+  英語論文紹介 Journal name: _American Journal of Botany_ 84(4): 541--554.
+]
+
+#v(1.5em)
+
 #align(center)[
-  #text(size: 14pt, weight: "bold", fill: green)[マメ科における #emph[rbcL] 系統と根粒形成の進化]
+  #text(size: 14pt, weight: "bold", fill: green)[A PHYLOGENY OF THE CHLOROPLAST GENE RBCL IN THE LEGUMINOSAE: TAXONOMIC CORRELATIONS AND INSIGHTS INTO THE EVOLUTION OF NODULATION]
   #v(0.1em)
-  #text(size: 10pt)[レジュメ ― Doyle et al. (1997) ―]
+  #text(size: 10pt)[― Doyle et al. (1997) ―]
 ]
 #v(0.4em)
 
@@ -124,3 +134,23 @@
 - #strong[rbcL の限界]：基部の関係や，科の初期の放散については，解像も支持も不十分であった．#strong[他の遺伝子，とくに独立な核遺伝子]のデータが必要である．
 - #strong[根粒の相同性]：ノデュリン遺伝子ファミリーのオルソロジーと発現パターンの解析で検証すべきである．
 - #strong[未調査の群]：根粒形成の状態や窒素の輸送様式（ウレイドなど）が不明な分類群が多い．Indigofereae や Psoraleeae などは，調べる価値がある．
+
+#pagebreak()
+
+#v(1fr)
+
+#figure(image("Fig1.png", width: 95%))
+
+#v(1fr)
+
+#pagebreak()
+
+#v(1fr)
+
+#figure(image("Fig2-5.png", width: 95%))
+
+#v(1fr)
+
+#figure(image("Fig6-7.png", width: 95%))
+
+#v(1fr)
