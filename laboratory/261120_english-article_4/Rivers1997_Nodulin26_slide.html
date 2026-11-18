@@ -108,12 +108,12 @@
     <text x="24" y="208" class="lb a">リンゴ酸</text>
     <path d="M382 230 L 540 230" class="ar"/>
     <text x="550" y="208" class="lb a" text-anchor="end">アンモニア</text>
-    <text x="280" y="390" class="lb s" text-anchor="middle">植物 ⇄ 菌の交換はすべてこの膜を通る</text>
+    <text x="280" y="390" class="lb s" text-anchor="middle">植物 ⇄ 菌の物質交換はすべてこの膜を通る</text>
    </svg>
   </div>
   <div>
    <ul class="b">
-    <li>バクテロイド: 根粒細胞内で窒素固定を行う器官．共生している根粒菌の形態が変化したもの．</li>
+    <li>バクテロイド: 根粒細胞内で窒素固定を行う器官．共生している根粒菌の形態が変化したもの</li>
     <li>植物 → 菌: <b class="a">リンゴ酸</b>などのエネルギー源</li>
     <li>菌 → 植物: <b class="a">固定した窒素</b>（アンモニア）</li>
     <li>膜が<b class="a">選んで通す</b>ことで共生が成り立つ</li>
@@ -152,7 +152,7 @@
   <li>働く時期で2つに分けられる</li>
  </ul>
  <div class="cols" style="margin-top:12px">
-  <div class="card"><h3>早期ノジュリン</h3><p>感染や根粒の形づくりに関わる<br>例: Enod40</p></div>
+  <div class="card"><h3>早期ノジュリン</h3><p>感染や根粒の形づくりに関わる<br>例: Enod12</p></div>
   <div class="card"><h3>後期ノジュリン</h3><p>できあがった根粒の<b class="a">働き</b>を支える<br>例: レグヘモグロビン，NOD 26</p></div>
  </div>
  <aside class="notes">ノジュリンは，根粒ができるときに植物が新たにつくるタンパク質の総称です．名前の数字はたいてい分子量に由来します．感染や根粒づくりに関わる初期ノジュリンと，できあがった根粒の働きを支える後期ノジュリンがあります．根粒が赤いのは後期ノジュリンのレグヘモグロビンのためで，NOD 26 も後期ノジュリンです．</aside>
@@ -433,7 +433,7 @@
     <div><b>解析</b>P<sub>f</sub>，水銀阻害と回復</div>
    </div>
   </div>
-  <div class="card"><h3>② シンビオソーム膜小胞（天然）</h3>
+  <div class="card"><h3>② シンビオソーム膜小胞（天然発現）</h3>
    <div class="vflow">
     <div><b>調製</b>根粒 → SM 小胞（色素入り）</div>
     <div><b>測定</b>ストップトフロー蛍光法</div>
@@ -556,7 +556,7 @@
  <aside class="notes">流れを止めるまでの手順はこの4段階です．混ぜた瞬間から観測点に着くまでの時間をデッドタイムと呼び，この間に起きた変化は見えません．デッドタイムは混合器の性能，混合器とセルの距離，流速で決まり，最近の装置では約0.5から1ミリ秒です．今回の論文の装置は0.7ミリ秒でした．</aside>
 </section>
 
-<section>
+<section class="hid">
  <div class="toc"><span>論文情報</span><span>用語と背景</span><span class="on">材料と方法</span><span>結果</span><span>結論</span><span>考察</span><span>質疑応答</span></div>
  <div class="top"><span class="tag">②</span><h2>膜小胞の水透過性をどう測るか</h2></div>
  <div class="cols">
@@ -836,7 +836,7 @@ section.stat table.t.pc tr:nth-child(even) td{background:#fff}
 </section>
 
 <section class="dense hid">
- <div class="toc"><span class="on">結果</span><i>›</i><span class="on">アレニウスの式</span><span>図4</span></div>
+ <div class="toc"><span class="on">アレニウスの式</span><i>›</i><span class="on">図4</span></div>
  <div class="top"><span class="tag">式</span><h2>温度を変えた速さから活性化エネルギーを出す</h2></div>
  <div class="row">
   <div>
@@ -880,7 +880,7 @@ section.stat table.t.pc tr:nth-child(even) td{background:#fff}
  <aside class="notes">図4です．活性化エネルギーは3本の平均で 3.3 kcal/mol と低く，これはアクアポリンを通る水の流れに特徴的な値です．</aside>
 </section>
 
-<section class="dense">
+<section class="dense hid">
  <div class="toc"><span class="on">式4</span><i>›</i><span class="on">数値</span></div>
  <div class="top"><span class="tag">式4</span><h2>膜全体の P<sub>f</sub> を，チャネル1個あたりの値に直す</h2></div>
  <div class="row">
@@ -1039,20 +1039,16 @@ section.stat table.t.pc tr:nth-child(even) td{background:#fff}
   <div class="card"><h3>A. シンビオソーム膜での NOD 26 の役割</h3>
    <ul class="b c">
     <li>A-1　NOD 26 は共生に重要なタンパク質</li>
-    <li>A-2　水を速く通す意味 ― 浸透圧の調節</li>
-    <li>A-3　溶質も NOD 26 が通す3つの根拠</li>
+    <li>A-2　溶質も NOD 26 が通す3つの根拠</li>
     <li>A-4　溶質輸送の意味と残る疑問</li>
    </ul>
   </div>
   <div class="card"><h3>B. アクアポリンとしての NOD 26</h3>
    <ul class="b c">
-    <li>B-1　水晶体の AQP0 とよく似ている</li>
-    <li>B-2　AQP0 は実験系で性質が違って見える</li>
-    <li>B-3　天然の膜で NOD 26 を測った意義</li>
-    <li>B-4　選択性は大きさだけで決まらない</li>
-    <li>B-5　P<sub>f</sub>/P<sub>d</sub> 比と孔の長さ</li>
-    <li>B-6　水と溶質は別の経路？</li>
-    <li>B-7　まとめと今後</li>
+    <li>B-1　選択性は大きさだけで決まらない</li>
+    <li>B-2　P<sub>f</sub>/P<sub>d</sub> 比と孔の長さ</li>
+    <li>B-3　水と溶質は別の経路？</li>
+    <li>B-4　まとめと今後</li>
    </ul>
   </div>
  </div>
@@ -1085,7 +1081,7 @@ section.stat table.t.pc tr:nth-child(even) td{background:#fff}
  <aside class="notes">NOD 26 が共生に重要だと考えられる理由は，もともと3つありました．根粒特異的であること，シンビオソーム膜にだけあって総タンパク質の約10%を占めること，アクアポリンの仲間であることです．本研究では，卵母細胞で水を運ぶこと，そして NOD 26 に富む膜が水を速く，水銀感受性に，低い活性化エネルギーで，一列に運ぶことが分かりました．これらはすべてアクアポリンによる水輸送の特徴です．</aside>
 </section>
 
-<section class="dense">
+<section class="dense hid">
  <div class="toc"><span class="on">考察</span><i>›</i><span class="on">A</span><span>B</span></div>
  <div class="top"><span class="tag">考察 A-2</span><h2>水を速く通す意味 ― 浸透圧の調節</h2></div>
  <div class="proc">
@@ -1104,7 +1100,7 @@ section.stat table.t.pc tr:nth-child(even) td{background:#fff}
 
 <section class="dense">
  <div class="toc"><span class="on">考察</span><i>›</i><span class="on">A</span><span>B</span></div>
- <div class="top"><span class="tag">考察 A-3</span><h2>溶質も NOD 26 が通していると考える3つの根拠</h2></div>
+ <div class="top"><span class="tag">考察 A-2</span><h2>溶質も NOD 26 が通していると考える3つの根拠</h2></div>
  <p style="font-size:23px;margin:0 0 16px">観察: シンビオソーム膜はホルムアミド・グリセロールを速く通す（尿素は通さない）．この輸送も<b class="a">水銀で阻害</b>される</p>
  <div class="cols3">
   <div class="card"><h3>① 仲間の性質</h3><p>アクアポリンファミリーには<b class="a">グリセロールや尿素を運ぶ</b>ものがいくつかある → 有力な候補</p></div>
@@ -1117,7 +1113,7 @@ section.stat table.t.pc tr:nth-child(even) td{background:#fff}
 
 <section class="dense">
  <div class="toc"><span class="on">考察</span><i>›</i><span class="on">A</span><span>B</span></div>
- <div class="top"><span class="tag">考察 A-4</span><h2>溶質輸送の意味と残る疑問</h2></div>
+ <div class="top"><span class="tag">考察 A-3</span><h2>溶質輸送の意味と残る疑問</h2></div>
  <ul class="b d">
   <li>小さな溶質の流れも，ほかの溶質やイオンの動きと<b class="a">釣り合い</b>をとることで，<b class="a">浸透圧調節</b>に役立つかもしれない</li>
   <li>先行研究: NOD 26 の <b class="a">Ser-262 のリン酸化</b>は，シンビオソーム膜を通る<b class="a">リンゴ酸輸送の増加</b>と相関していた</li>
@@ -1129,7 +1125,7 @@ section.stat table.t.pc tr:nth-child(even) td{background:#fff}
  <aside class="notes">溶質の流れも，ほかの溶質やイオンとの釣り合いをとることで浸透圧調節に役立つかもしれません．また先行研究では，NOD 26 の Ser-262 のリン酸化が，リンゴ酸の膜輸送の増加と相関していました．NOD 26 が代謝上重要な物質の輸送にも関わるのか，リン酸化が水や溶質の輸送にどう影響するのかは，今後の課題です．</aside>
 </section>
 
-<section class="dense">
+<section class="dense hid">
  <div class="toc"><span class="on">考察</span><i>›</i><span>A</span><span class="on">B</span></div>
  <div class="top"><span class="tag">考察 B-1</span><h2>NOD 26 と水晶体の AQP0 はよく似ている</h2></div>
  <table class="t">
@@ -1145,7 +1141,7 @@ section.stat table.t.pc tr:nth-child(even) td{background:#fff}
  <aside class="notes">ここからは，アクアポリンとしての NOD 26 です．NOD 26 は水晶体の AQP0 と機能がよく似ています．どちらも卵母細胞で水透過性を上げ，水の伝導度も比較的近く，人工の平面膜では非選択的なイオンチャネルになり，C末端がリン酸化されると電圧で開閉するようになります．そのため，中程度の水伝導度とリン酸化による調節をもつ，アクアポリンのサブクラスかもしれないと述べています．</aside>
 </section>
 
-<section class="dense">
+<section class="dense hid">
  <div class="toc"><span class="on">考察</span><i>›</i><span>A</span><span class="on">B</span></div>
  <div class="top"><span class="tag">考察 B-2</span><h2>AQP0 は実験系によって性質が違って見える</h2></div>
  <div class="cols3">
@@ -1157,7 +1153,7 @@ section.stat table.t.pc tr:nth-child(even) td{background:#fff}
  <aside class="notes">ところが AQP0 は，実験系によって性質が違って見えます．プロテオリポソームではデキストランのような大きな分子まで通しますが，卵母細胞では水だけを通すようです．本来の水晶体膜は単離しても小胞になりにくく，調べられていません．そのため，AQP0 が本来どれだけ水を通し，溶質を通すのかは分かっていませんでした．</aside>
 </section>
 
-<section class="dense">
+<section class="dense hid">
  <div class="toc"><span class="on">考察</span><i>›</i><span>A</span><span class="on">B</span></div>
  <div class="top"><span class="tag">考察 B-3</span><h2>天然の膜で NOD 26 を測った意義</h2></div>
  <ul class="b d">
@@ -1171,7 +1167,7 @@ section.stat table.t.pc tr:nth-child(even) td{background:#fff}
 
 <section class="dense">
  <div class="toc"><span class="on">考察</span><i>›</i><span>A</span><span class="on">B</span></div>
- <div class="top"><span class="tag">考察 B-4</span><h2>溶質の選択性は大きさだけでは決まらない</h2></div>
+ <div class="top"><span class="tag">考察 B-1</span><h2>溶質の選択性は大きさだけでは決まらない</h2></div>
  <div class="row" style="grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)">
   <table class="t">
    <thead><tr><th>分子</th><th>ファンデルワールス体積</th><th>通りやすさ</th></tr></thead>
@@ -1196,7 +1192,7 @@ section.stat table.t.pc tr:nth-child(even) td{background:#fff}
 
 <section class="dense">
  <div class="toc"><span class="on">考察</span><i>›</i><span>A</span><span class="on">B</span></div>
- <div class="top"><span class="tag">考察 B-5</span><h2>P<sub>f</sub>/P<sub>d</sub> 比から孔の長さを考える</h2></div>
+ <div class="top"><span class="tag">考察 B-2</span><h2>P<sub>f</sub>/P<sub>d</sub> 比から孔の長さを考える</h2></div>
  <table class="t" style="max-width:900px">
   <thead><tr><th></th><th>P<sub>f</sub>/P<sub>d</sub> 比</th><th>水の伝導度</th></tr></thead>
   <tbody>
@@ -1214,7 +1210,7 @@ section.stat table.t.pc tr:nth-child(even) td{background:#fff}
 
 <section class="dense">
  <div class="toc"><span class="on">考察</span><i>›</i><span>A</span><span class="on">B</span></div>
- <div class="top"><span class="tag">考察 B-6</span><h2>水と溶質は別の経路を通る？</h2></div>
+ <div class="top"><span class="tag">考察 B-3</span><h2>水と溶質は別の経路を通る？</h2></div>
  <div class="proc" style="grid-template-columns:repeat(3,minmax(0,1fr))">
   <div><b>水</b>P<sub>f</sub>/P<sub>d</sub> が高い → 水は孔を<b class="a">一列</b>で流れる</div>
   <div><b>溶質</b>ホルムアミド・アセトアミド・グリセロールを通す → <b class="a">水分子2個を横に並べた幅</b>よりずっと大きい分子を通す場所がある</div>
@@ -1226,7 +1222,7 @@ section.stat table.t.pc tr:nth-child(even) td{background:#fff}
 
 <section class="dense">
  <div class="toc"><span class="on">考察</span><i>›</i><span>A</span><span class="on">B</span></div>
- <div class="top"><span class="tag">考察 B-7</span><h2>まとめと今後</h2></div>
+ <div class="top"><span class="tag">考察 B-4</span><h2>まとめと今後</h2></div>
  <ul class="b d">
   <li>NOD 26 の性質への<b class="a">決定的な答え</b>は，精製タンパク質の<b class="a">再構成</b>を待つ必要がある</li>
   <li>それでも，<b class="a">天然の膜での透過性プロファイル</b>が分かったことで，再構成系や異種発現系の結果を<b class="a">曖昧さなく解釈</b>できるようになる</li>
