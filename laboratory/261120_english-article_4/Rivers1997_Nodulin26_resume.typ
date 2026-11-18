@@ -46,7 +46,7 @@
 // 主要な式（スライドの式3・式4）
 #let eq3 = $ (dif V(t)) / (dif t) = P_f dot "SAV" dot "MVW" dot lr(\{ C_"in" / V(t) - C_"out" \}) $
 #let eq4 = $ p_f = P_f / "SuD" $
-#let eqR = $ P_f / P_d cases(= 1 & ": 膜に溶けて通る", > 1 & ": 孔の中を一列で通る") $
+#let eqR = $ P_f / P_d cases(= 1 & #text[: 膜に溶けて通る], > 1 & #text[: 孔の中を一列で通る]) $
 
 #align(right, [2026.11.20 寺谷優輝])
 #block(inset: (left: -0.3em))[
