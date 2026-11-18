@@ -137,6 +137,8 @@
 
 #heading(numbering: none)[Figures]
 
+#v(1fr)
+
 #grid(
   columns: (1fr, 1fr),
   column-gutter: 0.8cm,
@@ -155,7 +157,11 @@
   ],
 )
 
+#v(1fr)
+
 #pagebreak()
+
+#v(1fr)
 
 // ---- 2ページ目：図5・図7（横並び）＋ 図6（全幅）----
 #grid(
@@ -174,3 +180,5 @@
 #fig("fig6.png", 10.5cm)[
   #strong[溶質の流出に伴う小胞の縮み（20 °C）．]ホルムアミド・グリセロール・アセトアミド・尿素，HgCl#sub[2] なし／あり．溶質ごとに時間軸が異なる．
 ]
+
+#v(1fr)
