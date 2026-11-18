@@ -11,7 +11,7 @@
 #set text(font: ("New Computer Modern", "Noto Serif JP"), weight: 450)
 #show heading: set text(font: ("Inter 18pt", "Noto Sans JP"), weight: 450)
 #show strong: set text(font: ("Inter 18pt", "Noto Sans JP"), weight: 300)
-#let lh = 1em
+#let lh = 1.1em
 #set par(justify: true, leading: lh, spacing: lh + 0.15em)
 #set list(indent: 0.4em, body-indent: 0.5em, spacing: lh)
 #set heading(numbering: "1.1")
