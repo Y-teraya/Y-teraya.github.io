@@ -11,8 +11,9 @@
 #set text(font: ("New Computer Modern", "Noto Serif JP"), weight: 450)
 #show heading: set text(font: ("Inter 18pt", "Noto Sans JP"), weight: 450)
 #show strong: set text(font: ("Inter 18pt", "Noto Sans JP"), weight: 300)
-#set par(justify: true, leading: 0.65em, spacing: 0.6em)
-#set list(indent: 0.4em, body-indent: 0.5em, spacing: 0.45em)
+#let lh = 0.84em
+#set par(justify: true, leading: lh, spacing: lh + 0.15em)
+#set list(indent: 0.4em, body-indent: 0.5em, spacing: lh)
 #set heading(numbering: "1.1")
 #show heading.where(level: 1): it => [
   #v(0.6em)
