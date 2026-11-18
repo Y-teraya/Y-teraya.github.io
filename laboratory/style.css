@@ -1,0 +1,239 @@
+/*
+VOICE: 落ち着いた論文紹介．遠くの席からも読める大きな文字，1枚に言うことは少なく．
+IDEA: 背景 → 論文 → 現在の定説とたどる冊子．結果の章は「式 → グラフ → 分かること」の見開き．
+PICTURE: 原図と大きな数式．材料と方法は工程図，考察は論点ごとに1枚．
+COLOUR and TYPE: 白地を基調に，グレーと植物の緑 #3d7a3a．本文 26px 以上（1280×720 基準）．
+LAYOUT: 常に 16:9 のスライド．画面に合わせて縮小・拡大する．
+*/
+:root{color-scheme:light;--bg:#ffffff;--ink:#1f2326;--sub:#5f656b;--acc:#3d7a3a;--leaf:#7d9378;--rule:#d9ddd9;--card:#f1f3f1}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:500 16px/1.5 "Noto Sans JP",system-ui,sans-serif}
+
+/* ---------- reveal.js core（最小限） ---------- */
+.reveal-viewport{height:100%;overflow:hidden;position:relative}
+.reveal{position:relative;width:100%;height:100%;overflow:hidden;touch-action:pinch-zoom}
+.reveal .slides{position:absolute;width:100%;height:100%;inset:0;margin:auto;pointer-events:none;overflow:visible;z-index:1;text-align:left}
+.reveal .slides>section{display:block;position:absolute;width:100%;pointer-events:auto;z-index:10;transition:transform .45s ease,opacity .45s ease,visibility .45s}
+.reveal .slides>section.present{z-index:11;opacity:1;visibility:visible}
+.reveal .slides>section.past{transform:translateX(-40px);opacity:0;visibility:hidden}
+.reveal .slides>section.future{transform:translateX(40px);opacity:0;visibility:hidden}
+.reveal .backgrounds{position:absolute;inset:0;pointer-events:none}
+.reveal .progress{position:absolute;left:0;right:0;bottom:0;height:6px;z-index:20;background:var(--rule)}
+.reveal .progress span{display:block;height:100%;width:0;background:var(--acc);transition:width .45s ease}
+.reveal .slide-number{position:absolute;right:18px;bottom:16px;z-index:30;font-size:18px;color:var(--sub);background:none}
+.reveal .slide-number a{color:inherit;text-decoration:none}
+.reveal .controls{display:none!important}
+aside.notes{display:none!important}
+@media (prefers-reduced-motion:reduce){.reveal .slides>section{transition:none}}
+.pre .reveal .slides>section{visibility:hidden}
+.pre .reveal .slides>section:first-child{visibility:visible}
+
+/* ---------- スライド（1280×720 基準） ---------- */
+section{padding:26px 56px 44px;height:720px}
+.toc{display:flex;gap:6px;flex-wrap:wrap;font-size:16px;color:var(--sub);margin-bottom:12px}
+.toc span{border:2px solid var(--rule);border-radius:999px;padding:2px 14px;white-space:nowrap}
+.toc span.on{border-color:var(--acc);background:var(--acc);color:#fff;font-weight:700}
+.toc i{font-style:normal;color:var(--acc);font-weight:700;align-self:center}
+.top{display:flex;align-items:baseline;gap:16px;border-bottom:3px solid var(--ink);padding-bottom:10px;margin-bottom:22px}
+.tag{font:700 26px/1 "Noto Sans JP",sans-serif;color:#fff;background:var(--acc);padding:8px 14px;border-radius:4px;white-space:nowrap}
+.tag.g{background:var(--leaf)}
+h2{font:700 40px/1.2 "Noto Serif JP",serif;margin:0;text-wrap:balance}
+.top small{font-size:22px;color:var(--sub);white-space:nowrap}
+ul.b{margin:0;padding:0;list-style:none}
+ul.b li{position:relative;padding-left:30px;margin:0 0 16px;font-size:28px;line-height:1.45}
+ul.b li::before{content:"";position:absolute;left:3px;top:.55em;width:13px;height:13px;border-radius:50%;background:var(--acc)}
+b.a,.a{color:var(--acc);font-weight:700}
+.num{white-space:nowrap}
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.cols3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.card{background:var(--card);border-radius:10px;padding:20px 24px;font-size:26px;line-height:1.45}
+.card h3{font:700 26px/1.3 "Noto Sans JP",sans-serif;color:var(--acc);margin:0 0 10px}
+.card p{margin:0}
+.key{margin-top:18px;border-left:7px solid var(--acc);background:var(--card);padding:12px 18px;font-size:26px;line-height:1.45;border-radius:0 8px 8px 0}
+.note{font-size:20px;color:var(--sub);margin-top:10px}
+.row{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:36px;align-items:start}
+.memo h3{font:700 22px/1 "Noto Sans JP",sans-serif;color:var(--acc);margin:2px 0 14px}
+/* 数式 */
+.eq{background:var(--card);border-radius:10px;padding:26px 18px;text-align:center;font-size:42px;overflow-x:auto}
+.eq.m{font-size:34px}
+dl.sym{margin:16px 0 0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 18px;font-size:24px;line-height:1.4}
+dl.sym dt{text-align:right;white-space:nowrap}
+dl.sym dd{margin:0;color:var(--sub)}
+/* 図 */
+.fig{background:#fff;border:2px solid var(--rule);border-radius:8px;padding:10px;display:flex;flex-direction:column;align-items:center}
+.fig img{display:block;width:100%;max-height:470px;object-fit:contain}
+.fig .cap{color:var(--sub);font-size:19px;margin-top:6px;align-self:stretch;line-height:1.4}
+/* 要旨 */
+ol.ab{margin:0;padding:0;list-style:none}
+ol.ab li{position:relative;padding-left:58px;margin:0 0 18px;font-size:28px;line-height:1.5}
+ol.ab li span.n{position:absolute;left:0;top:3px;width:40px;height:40px;border-radius:50%;background:var(--acc);color:#fff;font:700 21px/40px "Noto Sans JP",sans-serif;text-align:center}
+/* 論文情報 */
+dl.info{display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px 26px;margin:0;font-size:27px;line-height:1.45}
+dl.info dt{font-weight:700;color:var(--acc)}
+dl.info dd{margin:0}
+/* 工程図 */
+.proc{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:30px;margin-bottom:24px}
+.proc div{background:var(--card);border-radius:8px;padding:16px 18px;font-size:26px;line-height:1.4;position:relative}
+.proc div:not(:last-child)::after{content:"→";position:absolute;right:-26px;top:50%;transform:translateY(-50%);color:var(--acc);font-weight:700;font-size:24px}
+.proc b{display:block;color:var(--acc);font-size:24px}
+.vflow{display:flex;flex-direction:column;gap:26px}
+.vflow div{background:#fff;border-radius:8px;padding:12px 16px;font-size:25px;line-height:1.4;position:relative}
+.vflow div:not(:last-child)::after{content:"↓";position:absolute;left:50%;bottom:-27px;transform:translateX(-50%);color:var(--acc);font-weight:700}
+.vflow b{color:var(--acc);margin-right:10px}
+/* 結果の全体像 */
+.ov{display:flex;flex-direction:column;gap:10px}
+.ovr{display:grid;grid-template-columns:minmax(0,1.1fr) 30px minmax(0,.55fr) 30px minmax(0,1.8fr);align-items:stretch;font-size:23px;line-height:1.35}
+.ovr>div{border-radius:6px;padding:8px 14px;display:flex;align-items:center}
+.ovr .e{background:var(--card)}
+.ovr .f{border:2px solid var(--acc);color:var(--acc);font-weight:700;justify-content:center}
+.ovr .r{border-left:6px solid var(--acc)}
+.ovr .ar{color:var(--acc);font-weight:700;justify-content:center;padding:0}
+/* 表紙・最終 */
+.title{display:flex;flex-direction:column;justify-content:center;height:100%}
+.title .jr{color:var(--sub);font-size:24px;margin:0 0 18px}
+.title h1{font:700 58px/1.2 "Noto Serif JP",serif;margin:0 0 20px;text-wrap:balance}
+.title .en{font-size:26px;margin:0 0 30px;color:var(--sub)}
+.title .hint{color:var(--sub);font-size:20px;margin-top:22px}
+
+/* 図 */
+.fig{background:#fff;border:2px solid var(--rule);border-radius:8px;padding:10px;display:flex;flex-direction:column;align-items:center}
+.fig img{display:block;width:100%;max-height:470px;object-fit:contain}
+.fig .cap{color:var(--sub);font-size:19px;margin-top:6px;align-self:stretch;line-height:1.4}
+/* 要旨 */
+ol.ab{margin:0;padding:0;list-style:none}
+ol.ab li{position:relative;padding-left:58px;margin:0 0 18px;font-size:28px;line-height:1.5}
+ol.ab li span.n{position:absolute;left:0;top:3px;width:40px;height:40px;border-radius:50%;background:var(--acc);color:#fff;font:700 21px/40px "Noto Sans JP",sans-serif;text-align:center}
+/* 論文情報 */
+dl.info{display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px 26px;margin:0;font-size:27px;line-height:1.45}
+dl.info dt{font-weight:700;color:var(--acc)}
+dl.info dd{margin:0}
+/* 工程図 */
+.proc{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:30px;margin-bottom:24px}
+.proc div{background:var(--card);border-radius:8px;padding:16px 18px;font-size:26px;line-height:1.4;position:relative}
+.proc div:not(:last-child)::after{content:"→";position:absolute;right:-26px;top:50%;transform:translateY(-50%);color:var(--acc);font-weight:700;font-size:24px}
+.proc b{display:block;color:var(--acc);font-size:24px}
+.vflow{display:flex;flex-direction:column;gap:26px}
+.vflow div{background:#fff;border-radius:8px;padding:12px 16px;font-size:25px;line-height:1.4;position:relative}
+.vflow div:not(:last-child)::after{content:"↓";position:absolute;left:50%;bottom:-27px;transform:translateX(-50%);color:var(--acc);font-weight:700}
+.vflow b{color:var(--acc);margin-right:10px}
+/* 結果の全体像 */
+.ov{display:flex;flex-direction:column;gap:10px}
+.ovr{display:grid;grid-template-columns:minmax(0,1.1fr) 30px minmax(0,.55fr) 30px minmax(0,1.8fr);align-items:stretch;font-size:23px;line-height:1.35}
+.ovr>div{border-radius:6px;padding:8px 14px;display:flex;align-items:center}
+.ovr .e{background:var(--card)}
+.ovr .f{border:2px solid var(--acc);color:var(--acc);font-weight:700;justify-content:center}
+.ovr .r{border-left:6px solid var(--acc)}
+.ovr .ar{color:var(--acc);font-weight:700;justify-content:center;padding:0}
+/* 表紙・最終 */
+.title{display:flex;flex-direction:column;justify-content:center;height:100%}
+.title .jr{color:var(--sub);font-size:24px;margin:0 0 18px}
+.title h1{font:700 58px/1.2 "Noto Serif JP",serif;margin:0 0 20px;text-wrap:balance}
+.title .en{font-size:26px;margin:0 0 30px;color:var(--sub)}
+.title .hint{color:var(--sub);font-size:20px;margin-top:22px}
+
+/* 図 */
+.dg{background:#fff;border:2px solid var(--rule);border-radius:10px;padding:8px}
+.dg svg{display:block;width:100%;height:auto;max-height:480px}
+.dg.wide svg{max-height:330px}
+.lb{font:500 22px "Noto Sans JP",sans-serif;fill:#1f2326}
+.lb.s{font-size:19px}
+.lb.g,.lb.a{fill:#3d7a3a;font-weight:700}
+.ar{stroke:#3d7a3a;stroke-width:4;fill:none;marker-end:url(#ah)}
+.ar.thin{stroke:#9aa1a8;stroke-width:3;marker-end:url(#ahg)}
+/* 表 */
+table.t{width:100%;border-collapse:collapse;font-size:25px;line-height:1.4}
+table.t th:first-child{white-space:nowrap}
+table.t th{background:var(--acc);color:#fff;font-weight:700;text-align:left;padding:10px 14px}
+table.t td{padding:12px 14px;border-bottom:2px solid var(--rule);vertical-align:top}
+table.t td:first-child{font-weight:700;color:var(--acc);white-space:nowrap}
+table.t tr:nth-child(even) td{background:var(--card)}
+/* 説明欄（.memo）はどのスライドでも同じ見た目にする */
+.memo ul{list-style:none;margin:0;padding:0}
+.memo li{position:relative;padding-left:26px;margin:0 0 11px;font-size:23px;line-height:1.45}
+.memo li::before{content:"";position:absolute;left:2px;top:.6em;width:11px;height:11px;border-radius:50%;background:var(--acc)}
+.memo b{color:var(--acc);font-weight:700}
+.memo .key{font-size:22px;margin-top:14px;padding:10px 16px}
+.memo h3{font:700 20px/1 "Noto Sans JP",sans-serif;color:var(--acc);margin:2px 0 12px}
+/* ---------- 詳しい説明のスライド ---------- */
+section.dense h2{font-size:33px}
+section.dense .top{margin-bottom:16px}
+section.dense .row{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px}
+section.dense .memo h3{font-size:20px;margin-bottom:12px}
+section.dense .memo li{position:relative;padding-left:26px;margin:0 0 11px;font-size:23px;line-height:1.45}
+section.dense .memo li::before{content:"";position:absolute;left:2px;top:.6em;width:11px;height:11px;border-radius:50%;background:var(--acc)}
+section.dense .memo ul{margin:0;padding:0;list-style:none}
+section.dense .memo b{color:var(--acc);font-weight:700}
+section.dense .key{font-size:22px;margin-top:14px;padding:10px 16px}
+section.dense .fig img{max-height:430px}
+section.dense .fig .cap{font-size:18px}
+section.dense .eq{font-size:36px;padding:20px 16px}
+section.dense dl.sym{font-size:21px;gap:7px 16px}
+section.dense .note{font-size:17px}
+section.dense ul.b.d li{font-size:26px;margin-bottom:14px}
+section.dense ul.b.c li{font-size:24px;margin-bottom:10px;padding-left:24px;line-height:1.45}
+section.dense ul.b.c li::before{width:10px;height:10px;top:.6em}
+section.dense .card{font-size:23px;padding:16px 20px}
+section.dense .card h3{font-size:22px}
+section.dense .proc div{font-size:23px;padding:12px 14px}
+.proc b.a{display:inline;font-size:inherit}
+section.dense .proc b{font-size:20px}
+section.dense .proc{margin-bottom:18px}
+section.stat .three{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.12fr) minmax(0,.9fr);gap:18px;align-items:stretch}
+section.stat .three .card{padding:14px 16px;display:flex;flex-direction:column}
+section.stat .three .card h3{font-size:22px;margin-bottom:10px}
+section.stat .three .card .dg{flex:1;display:flex;align-items:center;justify-content:center;padding:6px}
+section.stat .three .card .dg svg{max-height:310px}
+section.stat table.t.pc{font-size:20px}
+section.stat table.t.pc td.sl{background-image:linear-gradient(to bottom right,transparent calc(50% - 1.5px),#8b9096 calc(50% - 1.5px),#8b9096 calc(50% + 1.5px),transparent calc(50% + 1.5px)) !important}
+section.stat table.t.pc th{padding:6px 8px;white-space:nowrap}
+section.stat table.t.pc td{padding:6px 8px;white-space:nowrap}
+section.stat table.t.pc tr:nth-child(even) td{background:#fff}
+/* ---------- 非表示（補足）スライドと一覧 ---------- */
+.reveal .slides>section.hid::before{content:"補足";position:absolute;right:56px;top:26px;font:700 16px/1 "Noto Sans JP",sans-serif;color:#fff;background:#8b9096;padding:5px 10px;border-radius:4px}
+#pbar{position:fixed;left:0;right:0;bottom:0;height:6px;background:var(--rule);z-index:40}
+#pbar span{display:block;height:100%;width:0;background:var(--acc);transition:width .4s ease}
+#pnum{position:fixed;right:18px;bottom:14px;z-index:40;font-size:16px;color:var(--sub)}
+/* ---------- 発表者ツール（?presenter） ---------- */
+#pv{display:none}
+.presenter body{overflow:hidden;background:#1d2124;color:#eef0ee}
+.presenter .reveal,.presenter #pbar,.presenter #pnum{display:none!important}
+.presenter #pv{display:grid;grid-template-rows:auto minmax(0,1fr) auto;height:100vh;gap:10px;padding:10px 14px;box-sizing:border-box}
+#pv .bar{display:flex;align-items:center;gap:18px;font-size:16px;flex-wrap:wrap}
+#pv .bar b{font-size:17px}
+#pv .tm{font:700 30px/1 "Noto Sans JP",sans-serif;font-variant-numeric:tabular-nums;color:#9fd39a}
+#pv .tm.over{color:#ff8f7a}
+#pv .muted{color:#a9b0b5}
+#pv .main{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:14px;min-height:0}
+#pv .col{display:flex;flex-direction:column;gap:10px;min-height:0}
+#pv .lab{font-size:14px;color:#a9b0b5;display:flex;justify-content:space-between;gap:8px}
+#pv .lab .hb{background:#8b9096;color:#fff;border-radius:3px;padding:1px 6px;font-size:12px}
+#pv .now,#pv .nxt{position:relative;background:#fff;border-radius:6px;overflow:hidden}
+#pv .notes{flex:1;min-height:0;overflow:auto;background:#2a3034;border-radius:8px;padding:14px 16px;font-size:22px;line-height:1.7;color:#f4f6f4}
+#pv .ctl{display:flex;gap:10px;flex-wrap:wrap}
+#pv button{font:700 16px "Noto Sans JP",sans-serif;border:2px solid #5aa85a;background:#2a3034;color:#dff0dc;border-radius:8px;padding:10px 16px;cursor:pointer}
+#pv button:hover,#pv button:focus-visible{background:#3d7a3a;color:#fff;outline:none}
+#pv button.pri{background:#3d7a3a;color:#fff}
+#pv button#pBack{display:none;border-color:#e0a030;color:#ffd58a}
+#pv.jumped button#pBack{display:inline-block}
+.stage{position:relative;overflow:hidden;background:#fff}
+.stage .cv{position:absolute;left:0;top:0;width:1280px;height:720px;transform-origin:0 0;color:#1f2326}
+.stage .pvs{position:absolute!important;inset:0;display:block!important;visibility:visible!important;opacity:1!important;transform:none!important;width:1280px;height:720px;box-sizing:border-box}
+.stage .pvs.hid::before{content:"補足";position:absolute;right:56px;top:26px;font:700 16px/1 "Noto Sans JP",sans-serif;color:#fff;background:#8b9096;padding:5px 10px;border-radius:4px}
+#grid{position:fixed;inset:0;z-index:70;background:rgba(15,18,20,.96);display:none;flex-direction:column}
+#grid.open{display:flex}
+#grid header{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 18px;border-bottom:1px solid #3a4146}
+#grid header b{font-size:18px;margin-right:auto}
+#grid input[type=search]{font:16px "Noto Sans JP",sans-serif;padding:8px 12px;border-radius:8px;border:2px solid #3a4146;background:#22282b;color:#eef0ee;width:min(320px,50vw)}
+#grid label{font-size:15px;display:flex;gap:6px;align-items:center}
+#grid .gi{overflow:auto;padding:6px 18px 24px}
+#grid h4{color:#9fd39a;font-size:15px;margin:18px 0 8px}
+#grid .row2{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+#grid .th{cursor:pointer;border-radius:6px;padding:4px;border:3px solid transparent}
+#grid .th:hover,#grid .th:focus-visible{border-color:#5aa85a;outline:none}
+#grid .th.cur{border-color:#e0a030}
+#grid .th .cap{font-size:13px;color:#cfd5d8;margin-top:5px;display:flex;gap:6px;align-items:baseline}
+#grid .th .cap .no{color:#8d969b}
+#grid .th .cap .hb{background:#8b9096;color:#fff;border-radius:3px;padding:0 5px;font-size:11px;flex:none}
+#grid .th.dim{opacity:.55}
+/* ---------- 簡易スライド送り（reveal.js が無いとき） ---------- */
+.mini .reveal .slides{position:absolute;inset:auto;left:50%;top:50%;width:1280px;height:720px;transform-origin:50% 50%}
