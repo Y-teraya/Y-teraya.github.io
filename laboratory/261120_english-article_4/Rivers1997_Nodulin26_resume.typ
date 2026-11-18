@@ -56,13 +56,12 @@
 #align(center)[
   #text(size: 14pt, weight: "bold", fill: green)[Functional Analysis of Nodulin 26, an Aquaporin in Soybean Root Nodule Symbiosomes]
   #v(0.1em)
-  #text(size: 10pt)[― Rivers et al. (1997) ―]
 ]
 #v(0.4em)
 
 #tbl(
   columns: (2cm, 1fr),
-  [論文], [Rivers RL, Dean RM, Chandy G, Hall JE, Roberts DM, Zeidel ML (1997) #emph[J Biol Chem] 272: 16256–16261.],
+  [著者・掲載誌], [Rivers RL, Dean RM, Chandy G, Hall JE, Roberts DM, Zeidel ML (1997) #emph[J Biol Chem] 272: 16256–16261.],
   [目的], [シンビオソーム膜（SM）の主要タンパク質ノジュリン26（NOD 26）が何を通すかを，卵母細胞（異種発現）と天然の SM 小胞で調べる．],
   [要点], [
     + NOD 26 は水銀感受性の#strong[水チャネル]．
@@ -110,20 +109,22 @@
 
 = Discussion #sl[考察]
 
-== A. シンビオソーム膜での役割 #sl[考察 A-1〜A-4]
+== A. シンビオソーム膜での役割 #sl[考察 A-1〜A-2]
 
 - #strong[水輸送]：SM の水輸送は，高速・水銀感受性・低 #Ea ・一列という AQP の特徴をすべて示した．根粒は干ばつや塩分に敏感なので，NOD 26 は#strong[浸透圧調節]を担う可能性がある．
-- #strong[溶質も NOD 26 が通す根拠]：① AQP にはグリセロールを通す仲間がいる．② 脂質膜ならグリセロールと尿素は同程度に通る．③ 水銀はグリセロール・ホルムアミドだけを止める．
+- #strong[溶質も NOD 26 が通す根拠]：
+  + AQP にはグリセロールを通す仲間がいる．
+  + 脂質膜ならグリセロールと尿素は同程度に通る．
+  + 水銀はグリセロール・ホルムアミドだけを止める．
 - #strong[残る疑問]：代謝物（リンゴ酸など）の輸送に関わるか．Ser-262 のリン酸化は輸送にどう影響するか．
 
-== B. アクアポリンとしての NOD 26 #sl[考察 B-1〜B-6]
+== B. アクアポリンとしての NOD 26 #sl[考察 B-1〜B-2]
 
-- #strong[AQP0 との類似]：中程度の水伝導度とリン酸化によるゲート制御をもつ#strong[サブクラス]かもしれない．AQP0 は天然の膜で測れないため，NOD 26 を天然の膜で測った意義は大きい．
 - #strong[選択性]：最も大きいグリセロール（51.4 cm#super[3]/mol）が尿素（32.8）より速い → 大きさだけでは決まらない．
 - #strong[孔の長さ]：#Pf / #Pd 比は NOD 26 が18，AQP1 が13 → NOD 26 の一列の孔は長く，それが低い伝導度につながる可能性．
 - #strong[別経路の推論]：水は一列で通るのに，水分子2個分より大きい溶質が通る → 溶質は水と別の経路を通ると推論した．
 
-== 限界と今後の課題 #sl[考察 B-7]
+== 限界と今後の課題 #sl[考察 B-3]
 
 - 精製 NOD 26 をプロテオリポソームに#strong[再構成]して確かめる必要がある．
 - 天然の膜でのデータは，再構成系・異種発現系の結果を解釈する基準になる．
