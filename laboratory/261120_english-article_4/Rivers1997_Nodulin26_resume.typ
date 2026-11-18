@@ -63,7 +63,11 @@
   columns: (2cm, 1fr),
   [論文], [Rivers RL, Dean RM, Chandy G, Hall JE, Roberts DM, Zeidel ML (1997) #emph[J Biol Chem] 272: 16256–16261.],
   [目的], [シンビオソーム膜（SM）の主要タンパク質ノジュリン26（NOD 26）が何を通すかを，卵母細胞（異種発現）と天然の SM 小胞で調べる．],
-  [要点], [① NOD 26 は水銀感受性の#strong[水チャネル]．② 単位伝導度は #strong[AQP1 の約1/30]，水は孔を#strong[一列]で通る（#Pf / #Pd = 18.3）．③ グリセロール・ホルムアミドも通すが尿素は通さず，溶質は#strong[水とは別の経路]を通ると推論．],
+  [要点], [
+    + NOD 26 は水銀感受性の#strong[水チャネル]．
+    + 単位伝導度は #strong[AQP1 の約1/30]，水は孔を#strong[一列]で通る（#Pf / #Pd = 18.3）．
+    + グリセロール・ホルムアミドも通すが尿素は通さず，溶質は#strong[水とは別の経路]を通ると推論．
+  ],
 )
 
 = Introduction #sl[要旨]
