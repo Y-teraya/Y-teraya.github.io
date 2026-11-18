@@ -11,6 +11,7 @@
 #set text(font: ("New Computer Modern", "Noto Serif JP"), weight: 450)
 #show heading: set text(font: ("Inter 18pt", "Noto Sans JP"), weight: 450)
 #show strong: set text(font: ("Inter 18pt", "Noto Sans JP"), weight: 300)
+#show math.equation: set text(font: ("New Computer Modern Math", "Noto serif JP"))
 #let lh = 1.1em
 #set par(justify: true, leading: lh, spacing: lh + 0.15em)
 #set list(indent: 0.4em, body-indent: 0.5em, spacing: lh)
@@ -46,7 +47,7 @@
 // 主要な式（スライドの式3・式4）
 #let eq3 = $ (dif V(t)) / (dif t) = P_f dot "SAV" dot "MVW" dot lr(\{ C_"in" / V(t) - C_"out" \}) $
 #let eq4 = $ p_f = P_f / "SuD" $
-#let eqR = $ P_f / P_d cases(= 1 & #text[: 膜に溶けて通る], > 1 & #text[: 孔の中を一列で通る]) $
+#let eqR = $ P_f / P_d cases(= 1 & ": 膜に溶けて通る", > 1 & ": 孔の中を一列で通る") $
 
 #align(right, [2026.11.20 寺谷優輝])
 #block(inset: (left: -0.3em))[
@@ -100,10 +101,10 @@
   columns: (2.2cm, 1fr, 3.6cm),
   [#strong[図1] 卵母細胞], [NOD 26 で #Pf が有意に上昇（#emph[p] < 0.001）．#Hg で対照レベルへ低下し，βME で回復．], [水銀感受性の水チャネル],
   [#strong[図2] 小胞径], [山が一つ．直径 217・240 nm → 平均半径 228 nm．], [計算に使える単一集団],
-  [#strong[図3] #Pf], [#strong[0.05 ± 0.003 cm/s]（20 °C，n = 15）．#Hg で 0.0038 cm/s へ劇的に低下．], [透過性が高く，水銀感受性],
-  [#strong[図4] #Ea], [#strong[3.3 ± 0.4 kcal/mol]（アレニウスプロット，12〜39 °C）．], [低い → チャネルを通る],
-  [#strong[式4] #pf], [NOD 26 は SM 総タンパク質の約10%．#pf = #strong[3.2 × 10#super[−15] cm#super[3]/s]．], [AQP1 の約1/30（中程度）],
-  [#strong[図5] #Pd], [#Pd = 0.0024 cm/s（12 °C）．同温 #Pf = 0.044 → #Pf / #Pd = #strong[18.3]（AQP1 は13）．], [水は一列で通る],
+  [#strong[図3] #Pf], [#strong[$0.05 plus.minus 0.003 #h(0.25em) upright(c m\/s)$]（20 °C，$n = 15$）．#Hg で 0.0038 cm/s へ劇的に低下．], [透過性が高く，水銀感受性],
+  [#strong[図4] #Ea], [#strong[$3.3 ± 0.4 #h(0.25em) upright(k c a l\/m o l)$]（アレニウスプロット，12〜39 °C）．], [低い → チャネルを通る],
+  [#strong[式4] #pf], [NOD 26 は SM 総タンパク質の約10%．#pf = #strong[$3.2 × 10^(−15) #h(0.25em) upright(c m^3\/s)$]．], [AQP1 の約$1/30$（中程度）],
+  [#strong[図5] #Pd], [#Pd = 0.0024 cm/s（12 °C）．同温 #Pf = 0.044 → #Pf / #Pd = #strong[$18.3$]（AQP1 は13）．], [水は一列で通る],
   [#strong[図6・7] #Ps], [ホルムアミド > グリセロール ≫ アセトアミド > 尿素．前二者は #Hg で 85〜90% 低下，尿素は阻害されない．], [一部の溶質も通す],
 )
 
@@ -146,7 +147,7 @@
 #grid(
   columns: (1fr, 1fr),
   column-gutter: 0.8cm,
-  row-gutter: 0.8cm,
+  row-gutter: 1cm,
   fig("fig1.png", 8.5cm)[
     #strong[卵母細胞の水透過性．]NOD 26 cRNA の注入で $P_f$ が対照より上昇し，HgCl#sub[2] で低下，βME で回復する（平均 ± S.D.，n = 4〜5）．
   ],
