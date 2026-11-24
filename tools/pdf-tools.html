@@ -49,8 +49,27 @@
   #mergeStatus, #splitStatus, #cutStatus { font-size:13px; color:var(--sub); }
   #mergeStatus.err, #splitStatus.err, #cutStatus.err { color:var(--err); }
   #cutStatus.ok, #trimStatus.ok { color:var(--ok); }
-  #trimStatus { font-size:13px; color:var(--sub); }
-  #trimStatus.err { color:var(--err); }
+  #trimStatus, #clipStatus, #batchStatus { font-size:13px; color:var(--sub); }
+  #trimStatus.err, #clipStatus.err, #batchStatus.err { color:var(--err); }
+  #clipStatus.ok, #batchStatus.ok { color:var(--ok); }
+  .outrow { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+  .outrow:empty { display:none; }
+  .outrow .btn { margin:0; padding:6px 14px; font-size:13px; }
+  .clips { margin-top:22px; border-top:1px solid var(--line); padding-top:14px; }
+  .cliphead { display:flex; align-items:center; gap:8px; font-size:14px; }
+  .cliphead #clipCount { color:var(--sub); flex:1; }
+  .cliphead .ic.wide { width:auto; padding:0 10px; font-size:12px; }
+  #clipList { list-style:none; padding:0; margin:10px 0 0; display:grid; gap:6px; }
+  #clipList li { display:flex; align-items:center; gap:10px; background:var(--bg); border-radius:9px; padding:6px 10px; font-size:13.5px; }
+  #clipList li.on { outline:2px solid color-mix(in srgb, var(--accent) 45%, transparent); }
+  #clipList img, #clipList .ph { width:72px; height:54px; object-fit:contain; background:#fff; border:1px solid var(--line); border-radius:4px; flex:none; }
+  #clipList .info { flex:1; min-width:0; }
+  #clipList .info b { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; }
+  #clipList .info span { color:var(--sub); font-size:12.5px; }
+  #clipList input[type=checkbox] { width:18px; height:18px; }
+  #clipList .ic.wide { width:auto; padding:0 10px; white-space:nowrap; font-size:12px; }
+  details.batch { margin-top:22px; border-top:1px solid var(--line); padding-top:12px; color:var(--ink); font-size:14px; }
+  details.batch summary { cursor:pointer; color:var(--sub); }
   .trimgrid { display:grid; grid-template-columns:repeat(4, max-content); gap:10px 22px; font-size:14px; }
   @media (max-width:560px) { .trimgrid { grid-template-columns:repeat(2, max-content); } }
   .trimgrid input { width:5.5em; }
@@ -154,8 +173,6 @@
         <label>右 <input id="tRight" type="number" min="0" step="0.5" value="0"> mm</label>
       </div>
       <div class="opts" style="margin-top:12px">
-        <label>対象ページ <input id="tRange" type="text" placeholder="空欄で全ページ（例: 2-10）" style="width:15em"></label>
-        <label><input id="tMirror" type="checkbox"> 偶数ページは左右を入れ替える（本の内側・外側）</label>
         <label><input id="tRedact" type="checkbox" checked> 範囲外の情報を削除する（文字・図形・画像をデータから取り除く）</label>
         <button class="btn sub" id="tReset" type="button" style="margin:0;padding:5px 12px;font-size:13px">リセット</button>
       </div>
@@ -176,9 +193,40 @@
       </div>
       <canvas id="tcv"></canvas>
       <div class="actions">
-        <button class="btn" id="trimBtn" disabled>トリミングして作成</button>
+        <button class="btn" id="trimOne" disabled>このページを保存</button>
+        <button class="btn sub" id="clipAdd" disabled>クリップに追加</button>
         <span id="trimStatus"></span>
       </div>
+      <div id="trimOut" class="outrow"></div>
+
+      <div class="clips">
+        <div class="cliphead">
+          <b>クリップ</b><span id="clipCount"></span>
+          <button class="ic wide" id="clipAll">すべて選択</button>
+          <button class="ic wide" id="clipNone">選択解除</button>
+        </div>
+        <p class="note" id="clipEmpty">範囲を決めて「クリップに追加」を押すと，ここに覚えておきます．別のページや同じページの別の範囲も追加でき，選んでまとめて保存できます（ページを再読み込みすると消えます）．</p>
+        <ul id="clipList"></ul>
+        <div class="actions" id="clipActions">
+          <button class="btn" id="clipPdf" disabled>選んだクリップを 1 つの PDF に</button>
+          <button class="btn sub" id="clipZip" disabled>1 つずつ別の PDF に（ZIP）</button>
+          <span id="clipStatus"></span>
+        </div>
+        <div id="clipOut" class="outrow"></div>
+      </div>
+
+      <details class="batch">
+        <summary>同じ範囲を複数ページにまとめて適用</summary>
+        <div class="opts" style="margin-top:10px">
+          <label>対象ページ <input id="tRange" type="text" placeholder="空欄で全ページ（例: 2-10）" style="width:15em"></label>
+          <label><input id="tMirror" type="checkbox"> 偶数ページは左右を入れ替える（本の内側・外側）</label>
+        </div>
+        <div class="actions">
+          <button class="btn" id="trimBtn" disabled>対象ページをトリミングして作成</button>
+          <span id="batchStatus"></span>
+        </div>
+        <div id="batchOut" class="outrow"></div>
+      </details>
     </div>
   </section>
 
@@ -236,7 +284,7 @@
       <li>割り付けでは，リンク・しおり・コメントのポップアップは引き継ぎません．</li>
       <li>結合・分割では，ページをそのままコピーするので，リンクや注釈も残ります（しおりは引き継ぎません．フォームは表示されますが入力できなくなることがあります）．</li>
       <li>「1 ページを切り分ける」は，ページを指定の数に等分して，それぞれを 1 ページにします（A3 横 → A4 縦 2 ページ）．「A4 以下のページは切らない」をオンにすると，A4 と A3 が混ざった PDF でも A3 だけを切り分けます．</li>
-      <li>トリミングは，ページの表示範囲を変えるだけなので画質は変わりません．上下左右は画面に表示される向きで指定します．</li>
+      <li>トリミングは，ページの表示範囲を変えるだけなので画質は変わりません．上下左右は画面に表示される向きで指定します．「このページを保存」は表示中の 1 ページだけを，「クリップ」は選んだ範囲だけを（1 つの PDF または ZIP で）保存します．同じ範囲を複数ページに使うときは「同じ範囲を複数ページにまとめて適用」を開きます．</li>
       <li>「範囲外の情報を削除する」をオンにすると，範囲の外にある文字（検索用の透明な文字も含む）・図形・画像・注釈をデータから取り除き，範囲にかかる画像は見えている部分だけに切り抜きます．範囲の境界にかかる文字や図形は残ります．文書情報（作成者など）やメタデータも引き継ぎません．JPEG 2000・CCITT・JBIG2 形式の画像は切り抜けないため，範囲にかかっている場合はそのまま残ります（注意を表示します）．</li>
       <li>結合・分割・トリミングでは，複数の PDF を追加するとリストの順につなげたものとして扱います．</li>
       <li>プレビューのページ表示は確認用の簡易描画です．一部の画像形式（スキャンでよく使われる CCITT・JBIG2）は灰色で表示されます．作成される PDF には影響しません．</li>
@@ -3295,19 +3343,31 @@ function trimFor(i, opt, targets) {
 async function buildTrim(list, opt, onProgress) {
   const targets = opt.range && opt.range.trim() ? new Set(parseRanges(opt.range, list.length).flat()) : null;
   let bad = 0;
-  const items = list.map((x, i) => {
+  const items = []; // only the target pages are written
+  list.forEach((x, i) => {
     const t = trimFor(i, opt, targets);
-    if (!t) return x;
+    if (!t) return;
     const crop = trimBox(x.pg, t);
-    if (!crop) { bad++; return x; }
-    return { ...x, crop, redact: !!opt.redact };
+    if (!crop) { bad++; items.push(x); return; }
+    items.push({ ...x, crop, redact: !!opt.redact });
   });
   const warns = new Set();
   items.warns = warns; items.stats = { removed: 0 };
   const blob = await buildDoc(items, onProgress);
   const w = [...warns];
   if (bad) w.unshift(`${bad} ページは削る量がページより大きいため，そのままにしました`);
-  return { blob, pages: list.length, warns: w, removed: items.stats.removed };
+  return { blob, pages: items.length, warns: w, removed: items.stats.removed };
+}
+// entries: [{ src, pg, t:{top,bottom,left,right} }] — each becomes one page cropped to its own box
+async function buildCrops(entries, redact, onProgress) {
+  let bad = 0;
+  const items = entries.map(e => { const crop = trimBox(e.pg, e.t); if (!crop) { bad++; return { src: e.src, pg: e.pg }; } return { src: e.src, pg: e.pg, crop, redact: !!redact }; });
+  const warns = new Set();
+  items.warns = warns; items.stats = { removed: 0 };
+  const blob = await buildDoc(items, onProgress);
+  const w = [...warns];
+  if (bad) w.unshift(`${bad} 件は範囲が正しくないため，ページ全体のままにしました`);
+  return { blob, pages: items.length, warns: w, removed: items.stats.removed };
 }
 // "1-3, 5, 8-" → [[1,2,3],[5],[8..total]] ; throws with a readable message
 function parseRanges(text, total) {
@@ -3353,7 +3413,7 @@ async function makeZip(files) { // store-only ZIP, UTF-8 names
   e.setUint32(12, cdSize, true); e.setUint32(16, off, true);
   return new Blob([...parts, ...central, new Uint8Array(e.buffer)], { type: 'application/zip' });
 }
-globalThis.PdfNup = { renderPageTo, Gfx, shadingStyle, PdfDoc, buildNup, buildDoc, buildCut, buildTrim, parseRanges, makeZip, planSheets, md5, Lexer };
+globalThis.PdfNup = { buildCrops, renderPageTo, Gfx, shadingStyle, PdfDoc, buildNup, buildDoc, buildCut, buildTrim, parseRanges, makeZip, planSheets, md5, Lexer };
 
 /* =====================================================================
    UI
@@ -3579,7 +3639,8 @@ if (typeof document !== 'undefined') (() => {
     extraUrls.splice(0).forEach(u => URL.revokeObjectURL(u));
     $('splitOut').innerHTML = '';
     if (!busy) { st2('mergeStatus', ''); st2('splitStatus', ''); st2('cutStatus', ''); st2('trimStatus', ''); }
-    document.querySelectorAll('#m-trim .actions a').forEach(a => a.remove());
+    $('trimOut').innerHTML = ''; $('batchOut').innerHTML = '';
+    if (!busy) st2('batchStatus', '');
     document.querySelectorAll('#kindCut .actions a').forEach(a => a.remove());
   }
   function splitGroups(total) {
@@ -3647,12 +3708,15 @@ if (typeof document !== 'undefined') (() => {
   function drawTrim() {
     const pages = allPages(), o = trimOpts(), cv = $('tcv');
     let targets = null, err = null;
-    try { if (o.range.trim() && pages.length) targets = new Set(parseRanges(o.range, pages.length).flat()); } catch (e) { err = e.message; }
+    try { if (o.range.trim() && pages.length) parseRanges(o.range, pages.length); } catch (e) { err = e.message; }
     tIdx = Math.max(0, Math.min(tIdx, pages.length - 1));
     if (view.page !== tIdx) { view.z = 1; view.cx = view.cy = null; view.page = tIdx; }
     $('tPg').textContent = pages.length ? `${tIdx + 1} / ${pages.length}` : '–';
     $('tPrev').disabled = tIdx <= 0; $('tNext').disabled = tIdx >= pages.length - 1;
-    $('trimBtn').disabled = !pages.length || busy || !!err || !(o.top || o.bottom || o.left || o.right);
+    const hasTrim = !!(o.top || o.bottom || o.left || o.right);
+    $('trimBtn').disabled = !pages.length || busy || !!err || !hasTrim;
+    $('trimOne').disabled = $('clipAdd').disabled = !pages.length || busy || !hasTrim;
+    if (err) st2('batchStatus', err, 'err'); else if ($('batchStatus').className === 'err') st2('batchStatus', '');
     $('zLabel').textContent = Math.round(view.z * 100) + '%';
     $('zOut').disabled = view.z <= 1; $('zFit').disabled = view.z <= 1; $('zIn').disabled = view.z >= 16;
     const maxW = Math.min(cv.parentElement.clientWidth - 32, 620), maxH = 620, dpr = window.devicePixelRatio || 1;
@@ -3692,7 +3756,6 @@ if (typeof document !== 'undefined') (() => {
       }
     }
     c.strokeStyle = '#999'; c.lineWidth = 1 / s; c.strokeRect(0, 0, d.w, d.h);
-    if (err) { $('tSum').textContent = err; return; }
     const t = trimFor(tIdx, o, targets) || { top: 0, bottom: 0, left: 0, right: 0 };
     const isTarget = !!trimFor(tIdx, o, targets);
     const ok = t.left + t.right < d.w - 1 && t.top + t.bottom < d.h - 1;
@@ -3823,17 +3886,125 @@ if (typeof document !== 'undefined') (() => {
     $('tHand').onclick = () => $('tHand').classList.toggle('on');
   }
   $('tReset').onclick = () => { for (const id of ['tTop', 'tBottom', 'tLeft', 'tRight']) $(id).value = '0'; saveTrim(); clearExtra(); drawTrim(); };
+  const trimResultText = (r, t0) => {
+    const mb = r.blob.size / 1048576;
+    return `${r.pages} ページ・${mb < 10 ? mb.toFixed(1) : mb.toFixed(0)} MB・${((performance.now() - t0) / 1000).toFixed(1)} 秒` + (trimOpts().redact ? `・範囲外の要素 ${r.removed} 個を削除` : '') + (r.warns.length ? `（注意: ${r.warns.join('，')}）` : '');
+  };
+  const curTrim = () => { const pages = allPages(); if (!pages.length) return null; return { e: pages[tIdx], t: trimFor(tIdx, trimOpts(), null) }; };
+  // ---- this page only ----
+  $('trimOne').onclick = async () => {
+    const c = curTrim(); if (!c) return;
+    clearExtra(); busy = true; drawTrim();
+    const t0 = performance.now();
+    try {
+      const r = await buildCrops([{ src: c.e.src, pg: c.e.pg, t: c.t }], trimOpts().redact);
+      st2('trimStatus', trimResultText(r, t0), 'ok');
+      const base = c.e.src.name.replace(/\.pdf$/i, '');
+      $('trimOut').append(linkBtn(r.blob, `${base}_p${c.e.no}_トリミング.pdf`, '保存'), linkBtn(r.blob, null, '開く', 'btn sub'));
+    } catch (e) { console.error(e); st2('trimStatus', 'エラー: ' + (e.message || e), 'err'); }
+    finally { busy = false; drawTrim(); }
+  };
+  // ---- same box on many pages (previous behaviour) ----
   $('trimBtn').onclick = async () => {
     clearExtra(); busy = true; drawTrim();
     const t0 = performance.now();
     try {
-      const r = await buildTrim(allPages(), trimOpts(), (i, n) => st2('trimStatus', `作成中… ${i} / ${n} ページ`));
-      const mb = r.blob.size / 1048576;
-      st2('trimStatus', `${r.pages} ページ・${mb < 10 ? mb.toFixed(1) : mb.toFixed(0)} MB・${((performance.now() - t0) / 1000).toFixed(1)} 秒` + (trimOpts().redact ? `・範囲外の要素 ${r.removed} 個を削除` : '') + (r.warns.length ? `（注意: ${r.warns.join('，')}）` : ''), 'ok');
-      $('trimBtn').after(linkBtn(r.blob, `${baseName()}_トリミング.pdf`, '保存'), linkBtn(r.blob, null, '開く', 'btn sub'));
-    } catch (e) { console.error(e); st2('trimStatus', 'エラー: ' + (e.message || e), 'err'); }
+      const r = await buildTrim(allPages(), trimOpts(), (i, n) => st2('batchStatus', `作成中… ${i} / ${n} ページ`));
+      st2('batchStatus', trimResultText(r, t0), 'ok');
+      $('batchOut').append(linkBtn(r.blob, `${baseName()}_トリミング.pdf`, '保存'), linkBtn(r.blob, null, '開く', 'btn sub'));
+    } catch (e) { console.error(e); st2('batchStatus', 'エラー: ' + (e.message || e), 'err'); }
     finally { busy = false; drawTrim(); }
   };
+  // ---- clips: remembered ranges, saved together ----
+  const clips = []; let clipSeq = 0;
+  const clipUrls = [];
+  const clearClipOut = () => { clipUrls.splice(0).forEach(u => URL.revokeObjectURL(u)); $('clipOut').innerHTML = ''; if (!busy) st2('clipStatus', ''); };
+  const clipLink = (blob, file, label, cls = 'btn') => { const a = linkBtn(blob, file, label, cls); clipUrls.push(extraUrls.pop()); return a; };
+  function clipThumb(c) {
+    const d = c.pg.dims, bmp = Thumbs.get(c.src.doc, c.pg, 560, () => { if (!c.thumb) renderClips(); });
+    if (!bmp) return null;
+    const r = [c.t.left, c.t.top, d.w - c.t.right, d.h - c.t.bottom], w = r[2] - r[0], h = r[3] - r[1];
+    const k = Math.min(144 / w, 108 / h), cv = document.createElement('canvas');
+    cv.width = Math.max(1, Math.round(w * k)); cv.height = Math.max(1, Math.round(h * k));
+    const sx = bmp.width / d.w, sy = bmp.height / d.h;
+    cv.getContext('2d').drawImage(bmp, r[0] * sx, r[1] * sy, w * sx, h * sy, 0, 0, cv.width, cv.height);
+    return cv.toDataURL('image/png');
+  }
+  function renderClips() {
+    const ul = $('clipList'); ul.innerHTML = '';
+    const sel = clips.filter(c => c.sel).length;
+    $('clipCount').textContent = clips.length ? `（${clips.length} 件中 ${sel} 件を選択）` : '';
+    $('clipEmpty').hidden = clips.length > 0;
+    $('clipAll').hidden = $('clipNone').hidden = clips.length === 0;
+    $('clipActions').hidden = clips.length === 0;
+    $('clipPdf').disabled = $('clipZip').disabled = !sel || busy;
+    clips.forEach((c, i) => {
+      if (!c.thumb) c.thumb = clipThumb(c);
+      const d = c.pg.dims, w = d.w - c.t.left - c.t.right, h = d.h - c.t.top - c.t.bottom;
+      const li = document.createElement('li'); if (c.sel) li.className = 'on';
+      li.innerHTML = '<input type="checkbox"><span class="ph"></span><div class="info"><b></b><span></span></div><button class="ic wide" data-a="show" title="このクリップのページと範囲を表示">表示</button><button class="ic" data-a="up" title="上へ">▲</button><button class="ic" data-a="down" title="下へ">▼</button><button class="ic" data-a="del" title="削除">✕</button>';
+      li.querySelector('input').checked = c.sel;
+      if (c.thumb) { const im = new Image(); im.src = c.thumb; im.alt = ''; li.querySelector('.ph').replaceWith(im); }
+      li.querySelector('b').textContent = `${i + 1}. ${c.name} の ${c.no} ページ`;
+      li.querySelector('.info span').textContent = `${mmStr(w)} × ${mmStr(h)} mm`;
+      li.querySelector('[data-a=up]').disabled = i === 0;
+      li.querySelector('[data-a=down]').disabled = i === clips.length - 1;
+      li.addEventListener('click', e => {
+        const a = e.target.dataset?.a;
+        if (e.target.type === 'checkbox') { c.sel = e.target.checked; clearClipOut(); renderClips(); return; }
+        if (a === 'del') { clips.splice(i, 1); clearClipOut(); renderClips(); }
+        else if (a === 'up' || a === 'down') { const j = a === 'up' ? i - 1 : i + 1; [clips[i], clips[j]] = [clips[j], clips[i]]; clearClipOut(); renderClips(); }
+        else if (a === 'show') {
+          const idx = allPages().findIndex(x => x.pg === c.pg);
+          if (idx < 0) { st2('clipStatus', 'このクリップの PDF はリストから外されています（保存はできます）', 'err'); return; }
+          tIdx = idx;
+          let l = c.t.left, r = c.t.right;
+          if ($('tMirror').checked && (idx + 1) % 2 === 0) [l, r] = [r, l];
+          const f = v => String(Math.max(0, Math.round(v / MM * 10) / 10));
+          $('tTop').value = f(c.t.top); $('tBottom').value = f(c.t.bottom); $('tLeft').value = f(l); $('tRight').value = f(r);
+          saveTrim(); clearExtra(); drawTrim();
+          $('tcv').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+      });
+      ul.append(li);
+    });
+  }
+  $('clipAdd').onclick = () => {
+    const c = curTrim(); if (!c || !trimBox(c.e.pg, c.t)) { st2('trimStatus', '範囲が正しくありません', 'err'); return; }
+    clips.push({ id: ++clipSeq, src: c.e.src, pg: c.e.pg, no: c.e.no, name: c.e.src.name.replace(/\.pdf$/i, ''), t: { ...c.t }, sel: true, thumb: null });
+    clearClipOut(); renderClips();
+    st2('trimStatus', `クリップに追加しました（${clips.length} 件）`, 'ok');
+  };
+  $('clipAll').onclick = () => { clips.forEach(c => c.sel = true); clearClipOut(); renderClips(); };
+  $('clipNone').onclick = () => { clips.forEach(c => c.sel = false); clearClipOut(); renderClips(); };
+  const runClips = async zip => {
+    const list = clips.filter(c => c.sel); if (!list.length) return;
+    clearClipOut(); busy = true; renderClips(); drawTrim();
+    const t0 = performance.now(), redact = trimOpts().redact;
+    try {
+      if (!zip) {
+        const r = await buildCrops(list.map(c => ({ src: c.src, pg: c.pg, t: c.t })), redact, (i, n) => st2('clipStatus', `作成中… ${i} / ${n}`));
+        st2('clipStatus', trimResultText(r, t0), 'ok');
+        $('clipOut').append(clipLink(r.blob, `${list[0].name}_クリップ${list.length > 1 ? '_' + list.length + '件' : ''}.pdf`, '保存'), clipLink(r.blob, null, '開く', 'btn sub'));
+      } else {
+        const outs = []; let removed = 0; const warns = new Set();
+        for (let i = 0; i < list.length; i++) {
+          st2('clipStatus', `作成中… ${i + 1} / ${list.length}`);
+          const c = list[i], r = await buildCrops([{ src: c.src, pg: c.pg, t: c.t }], redact);
+          removed += r.removed; r.warns.forEach(w => warns.add(w));
+          outs.push({ name: `${c.name}_p${c.no}_クリップ${String(clips.indexOf(c) + 1).padStart(2, '0')}.pdf`, blob: r.blob });
+        }
+        const zipBlob = await makeZip(outs);
+        st2('clipStatus', `${outs.length} ファイル・${((performance.now() - t0) / 1000).toFixed(1)} 秒` + (redact ? `・範囲外の要素 ${removed} 個を削除` : '') + (warns.size ? `（注意: ${[...warns].join('，')}）` : ''), 'ok');
+        $('clipOut').append(clipLink(zipBlob, `${list[0].name}_クリップ.zip`, '保存（ZIP）'));
+      }
+    } catch (e) { console.error(e); st2('clipStatus', 'エラー: ' + (e.message || e), 'err'); }
+    finally { busy = false; renderClips(); drawTrim(); }
+  };
+  $('clipPdf').onclick = () => runClips(false);
+  $('clipZip').onclick = () => runClips(true);
+  $('tRedact').addEventListener('change', clearClipOut);
+  renderClips();
   const cutOpts = () => ({ cut: $('cut').value, rtl: $('rtl').value === '1', cutSmall: $('cutSmall').checked, keepFirst: $('keepFirst').checked });
   const cutIds = ['cut', 'rtl', 'cutSmall', 'keepFirst'];
   for (const id of cutIds) {
