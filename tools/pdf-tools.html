@@ -49,7 +49,18 @@
   #mergeStatus, #splitStatus, #cutStatus { font-size:13px; color:var(--sub); }
   #mergeStatus.err, #splitStatus.err, #cutStatus.err { color:var(--err); }
   #cutStatus.ok, #trimStatus.ok { color:var(--ok); }
-  #trimStatus, #clipStatus, #batchStatus { font-size:13px; color:var(--sub); }
+  #trimStatus, #clipStatus, #batchStatus, #pickStatus { font-size:13px; color:var(--sub); }
+  #pickStatus.err { color:var(--err); } #pickStatus.ok { color:var(--ok); }
+  #kindPick .ic.wide { width:auto; padding:0 10px; font-size:12.5px; }
+  #pickRange.bad { border-color:var(--err); }
+  #pickGrid { display:grid; grid-template-columns:repeat(auto-fill, minmax(118px, 1fr)); gap:10px; margin:10px 0 4px; max-height:560px; overflow:auto; padding:4px; }
+  .pcell { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:4px; background:var(--bg); border:2px solid transparent; border-radius:10px; padding:8px 4px 6px; cursor:pointer; font:inherit; color:var(--ink); min-height:160px; }
+  .pcell canvas { box-shadow:0 1px 3px rgba(0,0,0,.2); background:#fff; }
+  .pcell .pno { font-size:12px; color:var(--sub); max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pcell .pchk { position:absolute; top:6px; right:6px; width:22px; height:22px; border-radius:50%; background:var(--card); border:1.5px solid var(--line); color:transparent; font-size:13px; line-height:20px; text-align:center; font-weight:700; }
+  .pcell.on { border-color:var(--accent); background:color-mix(in srgb, var(--accent) 10%, var(--bg)); }
+  .pcell.on .pchk { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .pcell.on .pno { color:var(--accent); font-weight:600; }
   #trimStatus.err, #clipStatus.err, #batchStatus.err { color:var(--err); }
   #clipStatus.ok, #batchStatus.ok { color:var(--ok); }
   .outrow { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
@@ -233,10 +244,29 @@
   <section id="m-split" hidden>
     <div class="pv">
       <div class="opts" style="margin-bottom:12px">
-        <label><input type="radio" name="splitKind" value="file" checked> ページごとにファイルを分ける</label>
+        <label><input type="radio" name="splitKind" value="pick" checked> ページを抜き出す</label>
+        <label><input type="radio" name="splitKind" value="file"> ページごとにファイルを分ける</label>
         <label><input type="radio" name="splitKind" value="cut"> 1 ページを切り分ける（A3→A4，見開き→片ページ など）</label>
       </div>
-      <div id="kindFile">
+      <div id="kindPick">
+        <div class="opts">
+          <label>ページ <input id="pickRange" type="text" placeholder="例: 1-3, 5, 8-" style="width:16em"></label>
+          <button class="ic wide" id="pickAll" type="button">すべて</button>
+          <button class="ic wide" id="pickNone" type="button">解除</button>
+          <button class="ic wide" id="pickInv" type="button">反転</button>
+        </div>
+        <p class="note" style="color:var(--sub);font-size:13px;margin:8px 0 0">ページをクリックして選びます（Shift＋クリックで範囲選択）．番号の入力とも連動します．</p>
+        <p id="pickSum" class="note" style="margin-top:8px"></p>
+        <div id="pickGrid"></div>
+        <div class="actions">
+          <button class="btn" id="pickBtn" disabled>選んだページを保存</button>
+          <button class="btn sub" id="pickDel" disabled>選んだページを除いて保存</button>
+          <button class="btn sub" id="pickZip" disabled>1 ページずつ保存（ZIP）</button>
+          <span id="pickStatus"></span>
+        </div>
+        <div id="pickOut" class="outrow"></div>
+      </div>
+      <div id="kindFile" hidden>
       <div class="opts">
         <label>分け方
           <select id="splitMode"><option value="each">1 ページずつ</option><option value="every">指定ページ数ごと</option><option value="ranges">範囲を指定</option></select>
@@ -3678,7 +3708,8 @@ if (typeof document !== 'undefined') (() => {
     $('splitBtn').disabled = !ok || busy;
     // cut
     const kind = document.querySelector('input[name=splitKind]:checked').value;
-    $('kindFile').hidden = kind !== 'file'; $('kindCut').hidden = kind !== 'cut';
+    $('kindFile').hidden = kind !== 'file'; $('kindCut').hidden = kind !== 'cut'; $('kindPick').hidden = kind !== 'pick';
+    if (kind === 'pick' && mode === 'split') renderPickGrid();
     if (!pages.length) $('cutSum').textContent = 'PDF を追加してください．';
     else {
       const co = cutOpts(); let n = 0, cutN = 0;
@@ -4005,6 +4036,107 @@ if (typeof document !== 'undefined') (() => {
   $('clipZip').onclick = () => runClips(true);
   $('tRedact').addEventListener('change', clearClipOut);
   renderClips();
+  /* ---------- extract pages (pick from thumbnails) ---------- */
+  const picked = new Set(); // page objects
+  let lastPick = -1, pickUrls = [];
+  const toRanges = nums => { const out = []; for (let i = 0; i < nums.length;) { let j = i; while (j + 1 < nums.length && nums[j + 1] === nums[j] + 1) j++; out.push(j > i ? `${nums[i]}-${nums[j]}` : `${nums[i]}`); i = j + 1; } return out.join(', '); };
+  const pickedNos = () => allPages().map((x, i) => picked.has(x.pg) ? i + 1 : 0).filter(Boolean);
+  const clearPickOut = () => { pickUrls.splice(0).forEach(u => URL.revokeObjectURL(u)); $('pickOut').innerHTML = ''; if (!busy) st2('pickStatus', ''); };
+  const pickLink = (blob, file, label, cls = 'btn') => { const a = linkBtn(blob, file, label, cls); pickUrls.push(extraUrls.pop()); return a; };
+  let pickObs = null, pickGridKey = '';
+  function renderPickGrid() {
+    const pages = allPages(), grid = $('pickGrid');
+    const key = pages.map(x => x.src.name + ':' + x.no).join('|') + '|' + pages.length;
+    // drop selections of pages no longer loaded
+    const live = new Set(pages.map(x => x.pg)); for (const p of [...picked]) if (!live.has(p)) picked.delete(p);
+    if (key !== pickGridKey) {
+      pickGridKey = key;
+      grid.innerHTML = '';
+      if (pickObs) pickObs.disconnect();
+      pickObs = 'IntersectionObserver' in window ? new IntersectionObserver(es => { for (const e of es) if (e.isIntersecting) { pickObs.unobserve(e.target); e.target._draw(); } }, { rootMargin: '200px' }) : null;
+      const multi = new Set(pages.map(x => x.src)).size > 1;
+      pages.forEach((x, i) => {
+        const cell = document.createElement('button');
+        cell.type = 'button'; cell.className = 'pcell'; cell.dataset.i = i;
+        const d = x.pg.dims, W = 104, k = Math.min(W / d.w, 132 / d.h);
+        const cv = document.createElement('canvas'), dpr = window.devicePixelRatio || 1;
+        cv.style.width = Math.round(d.w * k) + 'px'; cv.style.height = Math.round(d.h * k) + 'px';
+        cv.width = Math.round(d.w * k * dpr); cv.height = Math.round(d.h * k * dpr);
+        const draw = () => {
+          const bmp = Thumbs.get(x.src.doc, x.pg, cv.width, () => draw());
+          const c = cv.getContext('2d'); c.fillStyle = '#fff'; c.fillRect(0, 0, cv.width, cv.height);
+          if (bmp) c.drawImage(bmp, 0, 0, cv.width, cv.height);
+        };
+        cell._draw = draw;
+        const lab = document.createElement('span'); lab.className = 'pno'; lab.textContent = multi ? `${i + 1}（${x.src.name.replace(/\.pdf$/i, '')} p${x.no}）` : String(i + 1);
+        const mark = document.createElement('span'); mark.className = 'pchk'; mark.textContent = '✓';
+        cell.append(cv, mark, lab);
+        grid.append(cell);
+        if (pickObs) pickObs.observe(cell); else draw();
+      });
+    }
+    grid.querySelectorAll('.pcell').forEach(c => c.classList.toggle('on', picked.has(pages[+c.dataset.i]?.pg)));
+    const nos = pickedNos();
+    $('pickSum').textContent = pages.length ? `${pages.length} ページ中 ${nos.length} ページを選択` : 'PDF を追加してください．';
+    if (document.activeElement !== $('pickRange')) $('pickRange').value = toRanges(nos);
+    $('pickBtn').disabled = $('pickZip').disabled = !nos.length || busy;
+    $('pickDel').disabled = !nos.length || nos.length === pages.length || busy;
+    $('pickAll').disabled = $('pickNone').disabled = $('pickInv').disabled = !pages.length;
+  }
+  $('pickGrid').addEventListener('click', e => {
+    const cell = e.target.closest('.pcell'); if (!cell) return;
+    const pages = allPages(), i = +cell.dataset.i;
+    if (e.shiftKey && lastPick >= 0) { const on = !picked.has(pages[i].pg); const [a, b] = [Math.min(lastPick, i), Math.max(lastPick, i)]; for (let k = a; k <= b; k++) on ? picked.add(pages[k].pg) : picked.delete(pages[k].pg); }
+    else picked.has(pages[i].pg) ? picked.delete(pages[i].pg) : picked.add(pages[i].pg);
+    lastPick = i; clearPickOut(); renderPickGrid();
+  });
+  $('pickRange').addEventListener('input', () => {
+    const pages = allPages(), v = $('pickRange').value;
+    clearPickOut();
+    let err = null;
+    try {
+      const nos = v.trim() ? parseRanges(v, pages.length).flat() : [];
+      picked.clear(); for (const n of nos) picked.add(pages[n - 1].pg);
+    } catch (e) { err = e.message; }
+    $('pickRange').classList.toggle('bad', !!err);
+    renderPickGrid();
+    if (err) { st2('pickStatus', err, 'err'); $('pickBtn').disabled = $('pickZip').disabled = $('pickDel').disabled = true; }
+  });
+  $('pickRange').addEventListener('blur', () => renderPickGrid());
+  $('pickAll').onclick = () => { allPages().forEach(x => picked.add(x.pg)); clearPickOut(); renderPickGrid(); };
+  $('pickNone').onclick = () => { picked.clear(); clearPickOut(); renderPickGrid(); };
+  $('pickInv').onclick = () => { allPages().forEach(x => picked.has(x.pg) ? picked.delete(x.pg) : picked.add(x.pg)); clearPickOut(); renderPickGrid(); };
+  const runPick = async how => {
+    const pages = allPages(), nos = pickedNos();
+    const list = how === 'del' ? pages.filter(x => !picked.has(x.pg)) : pages.filter(x => picked.has(x.pg));
+    if (!list.length) return;
+    clearPickOut(); busy = true; renderPickGrid();
+    const t0 = performance.now(), base = baseName();
+    const label = toRanges(nos).replace(/\s/g, '');
+    const tag = label.length <= 24 ? label : `${nos.length}ページ`;
+    try {
+      if (how === 'zip') {
+        const outs = [], w = String(pages.length).length;
+        for (let i = 0; i < list.length; i++) {
+          st2('pickStatus', `作成中… ${i + 1} / ${list.length}`);
+          outs.push({ name: `${base}_p${String(pages.indexOf(list[i]) + 1).padStart(w, '0')}.pdf`, blob: await buildDoc([list[i]]) });
+        }
+        const zip = await makeZip(outs);
+        st2('pickStatus', `${outs.length} ファイル・${((performance.now() - t0) / 1000).toFixed(1)} 秒`, 'ok');
+        $('pickOut').append(pickLink(zip, `${base}_p${tag}.zip`, '保存（ZIP）'));
+      } else {
+        const blob = await buildDoc(list, (i, n) => st2('pickStatus', `作成中… ${i} / ${n} ページ`));
+        const mb = blob.size / 1048576;
+        st2('pickStatus', `${list.length} ページ・${mb < 10 ? mb.toFixed(1) : mb.toFixed(0)} MB・${((performance.now() - t0) / 1000).toFixed(1)} 秒`, 'ok');
+        const file = how === 'del' ? `${base}_p${tag}を削除.pdf` : `${base}_p${tag}.pdf`;
+        $('pickOut').append(pickLink(blob, file, '保存'), pickLink(blob, null, '開く', 'btn sub'));
+      }
+    } catch (e) { console.error(e); st2('pickStatus', 'エラー: ' + (e.message || e), 'err'); }
+    finally { busy = false; renderPickGrid(); }
+  };
+  $('pickBtn').onclick = () => runPick('one');
+  $('pickDel').onclick = () => runPick('del');
+  $('pickZip').onclick = () => runPick('zip');
   const cutOpts = () => ({ cut: $('cut').value, rtl: $('rtl').value === '1', cutSmall: $('cutSmall').checked, keepFirst: $('keepFirst').checked });
   const cutIds = ['cut', 'rtl', 'cutSmall', 'keepFirst'];
   for (const id of cutIds) {
@@ -4014,7 +4146,7 @@ if (typeof document !== 'undefined') (() => {
       clearExtra(); drawOther();
     });
   }
-  if (store.splitKind === 'cut') document.querySelector('input[name=splitKind][value=cut]').checked = true;
+  if (['cut', 'file', 'pick'].includes(store.splitKind)) document.querySelector(`input[name=splitKind][value=${store.splitKind}]`).checked = true;
   document.querySelectorAll('input[name=splitKind]').forEach(r => r.addEventListener('change', () => {
     try { const o = JSON.parse(localStorage.getItem('pdfnup') || '{}'); o.splitKind = r.value; localStorage.setItem('pdfnup', JSON.stringify(o)); } catch {}
     drawOther();
