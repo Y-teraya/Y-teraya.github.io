@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;500;700&display=swap">
 <style>
-/* Layout: 左に取り込み欄（広い画面では追従）、右に文献カードの一覧。狭い画面では縦積み */
+/* Layout: 左に取り込み欄（広い画面では追従），右に文献カードの一覧．狭い画面では縦積み */
 :root{
   --bg:#f3f5f8; --panel:#ffffff; --ink:#1b2430; --muted:#5d6b7d; --line:#d6dde6;
   --accent:#2350a8; --accent-ink:#ffffff; --code:#eef2f8; --warn:#9a5b00; --warn-bg:#fdf3e2;
@@ -94,7 +94,7 @@ code{font-family:var(--mono)}
 <div class="wrap">
   <header>
     <h1><span>.ris</span> / <span>.nbib</span> / <span>.bib</span> 文献整理</h1>
-    <p>RIS・NBIB（PubMed）は BibTeX に変換し、BibTeX はそのまま取り込みます（形式は自動判別）。取り込んだ文献は1件ずつコピー・編集・削除できます。データはこのブラウザ内にのみ保存されます。この HTML ファイルを手元のブラウザで開くと、.bib ファイルとして直接保存できます。</p>
+    <p>RIS・NBIB（PubMed）は BibTeX に変換し，BibTeX はそのまま取り込みます（形式は自動判別）．取り込んだ文献は1件ずつコピー・編集・削除できます．データはこのブラウザ内にのみ保存されます．この HTML ファイルを手元のブラウザで開くと，.bib ファイルとして直接保存できます．</p>
   </header>
 
   <div class="main">
@@ -104,7 +104,7 @@ code{font-family:var(--mono)}
           <h2>取り込み</h2>
           <label class="filebtn">ファイルを開く<input id="file" type="file" multiple></label>
         </div>
-        <textarea id="src" spellcheck="false" aria-label="RIS / NBIB / BibTeX を貼り付け" placeholder="RIS / NBIB / BibTeX を貼り付け、またはファイル（.ris / .nbib / .bib、複数可）をドロップ"></textarea>
+        <textarea id="src" spellcheck="false" aria-label="RIS / NBIB / BibTeX を貼り付け" placeholder="RIS / NBIB / BibTeX を貼り付け，またはファイル（.ris / .nbib / .bib，複数可）をドロップ"></textarea>
         <div class="row between">
           <span class="msg" id="inMsg"></span>
           <div class="row">
@@ -129,7 +129,7 @@ code{font-family:var(--mono)}
           <label for="incUrl">URL
             <select id="incUrl"><option value="yes">含める</option><option value="nodoi">DOIがあれば省略</option><option value="no">含めない</option></select>
           </label>
-          <p style="margin:0;font-size:.74rem;color:var(--muted)">設定を変えると一覧の全文献に反映されます。</p>
+          <p style="margin:0;font-size:.74rem;color:var(--muted)">設定を変えると一覧の全文献に反映されます．</p>
         </div>
         <details>
           <summary>RIS タグの対応表</summary>
@@ -325,7 +325,7 @@ function detect(text){
   return '';
 }
 
-/* view: {abs, url} で出力するフィールドを絞る。省略時は全フィールド（編集用） */
+/* view: {abs, url} で出力するフィールドを絞る．省略時は全フィールド（編集用） */
 function toBib(e, view){
   let fs = e.fields;
   if (view){
@@ -424,7 +424,42 @@ function extractNBIB(text){
 /* ---------- 状態と保存 ---------- */
 const STORE = 'ris2bib.library.v1';
 let entries = [], nextId = 1, editing = new Set(), sampleShown = false;
-function save(){ try { localStorage.setItem(STORE, JSON.stringify({ entries, nextId, sampleShown })); } catch(e){} }
+
+/* ---------- 整形：フィールド順・引用キー ---------- */
+const FIELD_ORDER = ['author','editor','title','journal','booktitle','series','edition','volume','number','pages',
+  'year','month','publisher','school','institution','organization','howpublished','address',
+  'isbn','issn','doi','url','pmid','pmcid','keywords','language','abstract','note'];
+function sortFields(e){
+  const rank = k => { const i = FIELD_ORDER.indexOf(k); return i < 0 ? FIELD_ORDER.length : i; };
+  e.fields = e.fields.map((f, i) => [f, i]).sort((a, b) => rank(a[0][0]) - rank(b[0][0]) || a[1] - b[1]).map(x => x[0]);
+}
+function surnameOf(e){
+  for (const a of plain(get(e, 'author') || get(e, 'editor')).split(/\s+and\s+/)){
+    const s = asciiFold(a.includes(',') ? a.split(',')[0] : a.trim().split(/\s+/).pop() || '');
+    if (s) return s[0].toUpperCase() + s.slice(1).toLowerCase();
+  }
+  // 英字にできない著者名（日本語など）は，取り込み時のキーの英字部分を使う
+  const m = (e.origKey || '').match(/^[A-Za-z]+/);
+  return m ? m[0][0].toUpperCase() + m[0].slice(1).toLowerCase() : 'Ref';
+}
+function rekeyAll(){
+  const groups = new Map();
+  for (const e of entries){
+    if (e.origKey == null) e.origKey = e.key || '';
+    const y = (get(e, 'year').match(/\d{4}/) || ['nd'])[0];
+    const base = surnameOf(e) + y;
+    if (!groups.has(base)) groups.set(base, []);
+    groups.get(base).push(e);
+  }
+  for (const [base, g] of groups){
+    if (g.length === 1){ g[0].key = base; continue; }
+    g.sort((a, b) => plain(get(a, 'title')).toLowerCase().localeCompare(plain(get(b, 'title')).toLowerCase(), 'en') || a.id - b.id);
+    g.forEach((e, i) => { e.key = base + toSuffix(i); });
+  }
+}
+function toSuffix(i){ let s = ''; i++; while (i > 0){ i--; s = String.fromCharCode(97 + i % 26) + s; i = Math.floor(i / 26); } return s; }  // a..z, aa..
+function normalizeAll(){ entries.forEach(e => sortFields(e)); rekeyAll(); }
+function save(){ normalizeAll(); try { localStorage.setItem(STORE, JSON.stringify({ entries, nextId, sampleShown })); } catch(e){} }
 function load(){
   try { const d = JSON.parse(localStorage.getItem(STORE) || 'null'); if (d){ entries = d.entries || []; nextId = d.nextId || 1; sampleShown = !!d.sampleShown; return true; } } catch(e){}
   return false;
@@ -462,7 +497,7 @@ function applyTitleMode(e, mode){
 
 function addFromText(text){
   const kind = detect(text);
-  if (!kind) return { added: 0, err: 'RIS（行頭が「TY  - 」）、NBIB（行頭が「PMID- 」）、BibTeX（@article{… など）が見つかりません' };
+  if (!kind) return { added: 0, err: 'RIS（行頭が「TY  - 」），NBIB（行頭が「PMID- 」），BibTeX（@article{… など）が見つかりません' };
   let list = [], err = '';
   if (kind === 'nbib'){
     const [nb, rest] = extractNBIB(text);
@@ -534,10 +569,10 @@ function render(){
 
   list.innerHTML = '';
   if (!entries.length){
-    list.append(el('div', 'empty', '文献はまだありません。左の欄に RIS か BibTeX を貼り付けて「一覧に追加」を押してください。'));
+    list.append(el('div', 'empty', '文献はまだありません．左の欄に RIS か BibTeX を貼り付けて「一覧に追加」を押してください．'));
     return;
   }
-  if (!v.length){ list.append(el('div', 'empty', '絞り込み条件に合う文献がありません。')); return; }
+  if (!v.length){ list.append(el('div', 'empty', '絞り込み条件に合う文献がありません．')); return; }
 
   for (const e of v){
     const card = el('article', 'card' + (dups.has(e.id) ? ' dup' : ''));
@@ -571,7 +606,7 @@ function render(){
           try {
             const p = parseBib(ta.value);
             if (p.length !== 1) throw new Error('エントリを1件だけ書いてください');
-            Object.assign(e, { type: p[0].type, fields: p[0].fields, key: uniqueKey(p[0].key || 'ref', e.id) });
+            Object.assign(e, { type: p[0].type, fields: p[0].fields, origKey: p[0].key || e.origKey });
             editing.delete(e.id); save(); render(); toast('保存しました');
           } catch(x){ er.textContent = x.message; er.hidden = false; }
         }),
@@ -608,7 +643,7 @@ function copyText(text, msg){
   const fallback = () => {
     const ta = el('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
     document.body.append(ta); ta.select();
-    try { document.execCommand('copy') ? ok() : toast('コピーできませんでした。手動で選択してください'); } catch(e){ toast('コピーできませんでした'); }
+    try { document.execCommand('copy') ? ok() : toast('コピーできませんでした．手動で選択してください'); } catch(e){ toast('コピーできませんでした'); }
     ta.remove();
   };
   if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, fallback); else fallback();
@@ -671,7 +706,7 @@ $('saveBib').onclick = async () => {
   } catch(e){
     if (e && e.code === 'declined') return;
     if (e && e.code === 'rate_limited') { toast('少し待ってからもう一度押してください'); return; }
-    toast('この画面では保存できません。「全てコピー」をお使いください');
+    toast('この画面では保存できません．「全てコピー」をお使いください');
     if (!e || ['unavailable','not_granted','capability_disabled','capability_removed'].includes(e.code)) $('saveBib').hidden = true;
   }
 };
@@ -723,6 +758,7 @@ dz.addEventListener('dragleave', () => dz.classList.remove('over'));
 dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over'); readFiles(e.dataTransfer.files); });
 
 load();
+save();
 render();
 </script>
 
