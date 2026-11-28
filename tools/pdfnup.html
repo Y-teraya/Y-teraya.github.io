@@ -12,6 +12,7 @@
   main { max-width:820px; margin:0 auto; padding:32px 20px 60px; }
   h1 { font-size:26px; margin:0 0 4px; letter-spacing:.02em; }
   h2 { font-size:14px; color:var(--sub); font-weight:600; margin:22px 2px 8px; letter-spacing:.04em; }
+  .ver { margin:-2px 0 6px; font-size:12px; color:var(--sub); }
   .lead { color:var(--sub); margin:0 0 22px; }
   #drop { border:2px dashed var(--line); border-radius:14px; background:var(--card); padding:28px 20px; text-align:center; transition:.15s; cursor:pointer; }
   #drop.over { border-color:var(--accent); background:color-mix(in srgb, var(--accent) 8%, var(--card)); }
@@ -51,7 +52,17 @@
   #cutStatus.ok, #trimStatus.ok { color:var(--ok); }
   #trimStatus, #clipStatus, #batchStatus, #pickStatus { font-size:13px; color:var(--sub); }
   #pickStatus.err { color:var(--err); } #pickStatus.ok { color:var(--ok); }
-  #kindPick .ic.wide { width:auto; padding:0 10px; font-size:12.5px; }
+  #kindPick .ic.wide, #m-merge .ic.wide { width:auto; padding:0 10px; font-size:12.5px; }
+  #mergeGrid { display:grid; grid-template-columns:repeat(auto-fill, minmax(118px, 1fr)); gap:10px; margin:10px 0 4px; max-height:600px; overflow:auto; padding:4px; }
+  #mergeGrid:empty { display:none; }
+  .mcell { cursor:default; min-height:178px; }
+  .mcell .mtools { display:flex; gap:4px; }
+  .mcell .mtools .ic { width:28px; height:26px; font-size:14px; padding:0; background:var(--card); }
+  .mcell.off canvas { opacity:.25; }
+  .mcell.off .pno { text-decoration:line-through; }
+  .mcell.off [data-a=x] { background:var(--err); color:#fff; border-color:var(--err); }
+  .mcell.fitted canvas { outline:1px solid #bbb; }
+  .mcell .pno[data-rot]:not([data-rot=""])::after { content:" ↻" attr(data-rot); color:var(--accent); }
   #pickRange.bad { border-color:var(--err); }
   #pickGrid { display:grid; grid-template-columns:repeat(auto-fill, minmax(118px, 1fr)); gap:10px; margin:10px 0 4px; max-height:560px; overflow:auto; padding:4px; }
   .pcell { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:4px; background:var(--bg); border:2px solid transparent; border-radius:10px; padding:8px 4px 6px; cursor:pointer; font:inherit; color:var(--ink); min-height:160px; }
@@ -90,8 +101,11 @@
   .ztools .ic.wide { width:auto; padding:0 10px; }
   .ztools .ic.on { background:var(--accent); color:#fff; border-color:var(--accent); }
   .ztools .zhint { color:var(--sub); font-size:12px; margin-left:6px; }
+  .jswarn { background:#fff4e5; color:#7a4100; border:1px solid #f0c27a; border-radius:12px; padding:12px 16px; margin:0 0 18px; font-size:14px; line-height:1.7; }
   .tabs { display:flex; gap:4px; background:var(--line); padding:4px; border-radius:11px; margin:0 0 18px; width:max-content; max-width:100%; }
   .tabs button { border:0; background:transparent; color:var(--ink); font:inherit; font-weight:600; padding:7px 20px; border-radius:8px; cursor:pointer; }
+  .tabs button { white-space:nowrap; }
+  @media (max-width:560px) { .tabs { width:100%; } .tabs button { flex:1; padding:7px 6px; font-size:14px; } main { padding:24px 14px 50px; } }
   .tabs button.on { background:var(--card); box-shadow:0 1px 3px rgba(0,0,0,.12); color:var(--accent); }
   .note { margin:0 0 6px; font-size:14px; }
   input[type=text], input[type=number] { font:inherit; padding:4px 8px; border-radius:7px; border:1px solid var(--line); background:var(--card); color:var(--ink); }
@@ -108,7 +122,15 @@
 </head>
 <body>
 <main>
+  <div id="jsWarn" class="jswarn">
+    <b>この画面ではツールが動いていません（JavaScript が無効です）．</b><br>
+    ファイルを直接プレビューするアプリ（Android の「HTML ビューア」やファイルアプリのプレビューなど）では，ボタンや設定が動きません．<br>
+    <b>Android：</b>ファイルアプリで pdfnup.html を長押し →「アプリで開く」（または ⋮ →「別のアプリで開く」）→ <b>Chrome</b> を選んでください．<br>
+    <b>iPhone / iPad：</b>「ファイル」アプリのプレビューでは動きません．パソコンでの利用をおすすめします．
+  </div>
+  <div id="pnHold" hidden></div>
   <h1>PDF 割り付け・結合・分割・トリミング</h1>
+  <p class="ver">バージョン 2026-11-27 18:00</p>
   <p class="lead">ブラウザ内だけで処理し，ファイルは外部に送信されません．ページは画像化しないので，文字や図形は劣化しません．</p>
 
   <div class="tabs" id="tabs"><button data-m="nup" class="on">割り付け</button><button data-m="merge">結合</button><button data-m="split">分割</button><button data-m="trim">トリミング</button></div>
@@ -141,7 +163,6 @@
     <label>スライド番号
       <select id="num"><option value="none" selected>なし</option><option value="all">通し番号</option><option value="file">ファイルごと</option></select>
     </label>
-    <label><input id="sheetNum" type="checkbox"> 用紙に番号（1 / 10）</label>
     <label>区切り線
       <select id="divider"><option value="none">なし</option><option value="frame" selected>枠線</option><option value="solid">実線</option><option value="dash">破線</option></select>
     </label>
@@ -149,6 +170,8 @@
     <label><input id="rotate" type="checkbox"> 向きの合わないページを回転</label>
     <label><input id="annots" type="checkbox" checked> 注釈・フォーム入力を含める</label>
   </div>
+
+  <div class="pnSlot" data-mode="nup"></div>
 
   <div class="pv">
     <div class="pvhead">
@@ -168,6 +191,40 @@
   <section id="m-merge" hidden>
     <div class="pv">
       <p id="mergeSum" class="note"></p>
+      <div class="opts" style="margin-top:6px">
+        <label>用紙サイズ
+          <select id="mPaper"><option value="keep" selected>そのまま</option><option value="A4">A4</option><option value="A3">A3</option><option value="B5">B5（JIS）</option><option value="B4">B4（JIS）</option><option value="A5">A5</option><option value="Letter">レター</option></select>
+        </label>
+        <label id="mOrientWrap">向き
+          <select id="mOrient"><option value="auto" selected>ページに合わせる</option><option value="P">縦</option><option value="L">横</option></select>
+        </label>
+        <label id="mNoUpWrap"><input id="mNoUp" type="checkbox"> 小さいページは拡大しない</label>
+      </div>
+      <div class="pnSlot" data-mode="merge">
+      <div id="pnPanel">
+      <div class="opts" style="margin-top:8px">
+        <label>ページ番号
+          <select id="mPN"><option value="none" selected>付けない</option><option value="bc">下・中央</option><option value="br">下・右</option><option value="out">下・外側（奇数は右，偶数は左）</option><option value="tr">上・右</option></select>
+        </label>
+        <label class="pnopt">書式
+          <select id="mPNFmt"><option value="n">1</option><option value="nN">1 / 10</option><option value="dash">- 1 -</option><option value="custom">文字列を指定</option></select>
+        </label>
+        <label class="pnopt pntext">文字列 <input id="mPNText" type="text" placeholder="例: 社外秘　資料A-{n}　{n} / {N}" style="width:16em"></label>
+        <label class="pnopt">開始番号 <input id="mPNStart" type="number" min="0" value="1" style="width:4.5em"></label>
+        <label class="pnopt"><input id="mPNSkip" type="checkbox"> 1 ページ目（表紙）には付けない</label>
+        <label class="pnopt pnorig"><input id="mPNOrig" type="checkbox"> 元の PDF のページ番号を使う</label>
+      </div>
+      <p class="note pnopt pntext" style="color:var(--sub);font-size:13px;margin:6px 0 0">文字列の中の {n} はページ番号，{N} は最後の番号に置き換わります（{n} がなければ全ページに同じ文字列）．</p>
+      <p class="note pnopt pnnup" style="color:var(--sub);font-size:13px;margin:6px 0 0">割り付けでは用紙 1 枚ごとに付けます（番号の分だけ余白を空けます）．</p>
+      </div>
+      </div>
+      <div class="opts" style="margin-top:8px">
+        <button class="ic wide" id="mRotL" type="button">⟲ すべて左に回転</button>
+        <button class="ic wide" id="mRotR" type="button">⟳ すべて右に回転</button>
+        <button class="ic wide" id="mReset" type="button">回転・除外を元に戻す</button>
+      </div>
+      <p class="note" style="color:var(--sub);font-size:13px;margin:8px 0 0">各ページの ⟲ ⟳ で回転，✕ でそのページを含めない（もう一度押すと戻る）．ファイルの順番は上のリストの ▲▼ で変えられます．</p>
+      <div id="mergeGrid"></div>
       <div class="actions">
         <button class="btn" id="mergeBtn" disabled>結合して作成</button>
         <span id="mergeStatus"></span>
@@ -243,6 +300,7 @@
 
   <section id="m-split" hidden>
     <div class="pv">
+      <div class="pnSlot" data-mode="split" style="margin-bottom:12px"></div>
       <div class="opts" style="margin-bottom:12px">
         <label><input type="radio" name="splitKind" value="pick" checked> ページを抜き出す</label>
         <label><input type="radio" name="splitKind" value="file"> ページごとにファイルを分ける</label>
@@ -316,6 +374,8 @@
       <li>「1 ページを切り分ける」は，ページを指定の数に等分して，それぞれを 1 ページにします（A3 横 → A4 縦 2 ページ）．「A4 以下のページは切らない」をオンにすると，A4 と A3 が混ざった PDF でも A3 だけを切り分けます．</li>
       <li>トリミングは，ページの表示範囲を変えるだけなので画質は変わりません．上下左右は画面に表示される向きで指定します．「このページを保存」は表示中の 1 ページだけを，「クリップ」は選んだ範囲だけを（1 つの PDF または ZIP で）保存します．同じ範囲を複数ページに使うときは「同じ範囲を複数ページにまとめて適用」を開きます．</li>
       <li>「範囲外の情報を削除する」をオンにすると，範囲の外にある文字（検索用の透明な文字も含む）・図形・画像・注釈をデータから取り除き，範囲にかかる画像は見えている部分だけに切り抜きます．範囲の境界にかかる文字や図形は残ります．文書情報（作成者など）やメタデータも引き継ぎません．JPEG 2000・CCITT・JBIG2 形式の画像は切り抜けないため，範囲にかかっている場合はそのまま残ります（注意を表示します）．</li>
+      <li>結合で用紙サイズを選ぶと，サイズの違うページを縦横比を保ったまま用紙いっぱいに拡大・縮小して中央に置きます（ベクターのまま）．すでに同じサイズのページはそのままコピーします．サイズを合わせたページでは，リンクは引き継がれません（注釈やフォームの見た目は残ります）．</li>
+      <li>ページ番号（文字列）は結合・分割・割り付けで使えます（設定は共通）．割り付けでは用紙 1 枚ごとに付け，分割では「元の PDF のページ番号を使う」も選べます．各ページの見た目の向きに合わせて下（または上）に付けます．プレビューでは赤字で表示します（実際は濃い灰色）．書式「文字列を指定」では日本語も使えます．この文字はフォントを埋め込まず，PDF を開くソフトの日本語ゴシック体で表示されます．</li>
       <li>結合・分割・トリミングでは，複数の PDF を追加するとリストの順につなげたものとして扱います．</li>
       <li>プレビューのページ表示は確認用の簡易描画です．一部の画像形式（スキャンでよく使われる CCITT・JBIG2）は灰色で表示されます．作成される PDF には影響しません．</li>
     </ul>
@@ -1184,7 +1244,7 @@ class Copier {
 /* =====================================================================
    Layout
    ===================================================================== */
-const PAPERS = { A4: [210, 297], A3: [297, 420], B5: [182, 257] };
+const PAPERS = { A4: [210, 297], A3: [297, 420], B5: [182, 257], A5: [148, 210], B4: [257, 364], Letter: [215.9, 279.4] };
 // columns × rows for landscape (L) and portrait (P) sheets; d = default orientation
 const GRIDS = {
   1: { L: [1, 1], P: [1, 1], d: 'P' }, 2: { L: [2, 1], P: [1, 2], d: 'P' }, 3: { L: [3, 1], P: [1, 3], d: 'P', notes: true },
@@ -1206,37 +1266,38 @@ function sheetGeom(n, orient, opt, aspect) {
   const fs = (n >= 9 ? 6.5 : n >= 4 ? 7.5 : 9) * k;          // slide-number size
   const sfs = 9 * k;                                          // sheet-number size
   const lab = opt.num && opt.num !== 'none' ? fs * 1.6 : 0;   // space under each page for its number
-  const bottom = m + (opt.sheetNum ? sfs * 1.8 : 0);
-  const UW = W - 2 * m, UH = H - m - bottom;
+  const pnOn = !!(opt.pn && opt.pn.pos && opt.pn.pos !== 'none');
+  const top = m + (pnOn && opt.pn.pos === 'tr' ? sfs * 1.8 : 0), bottom = m + (pnOn && opt.pn.pos !== 'tr' ? sfs * 1.8 : 0);
+  const UW = W - 2 * m, UH = H - top - bottom;
   const [cols, rows] = G[orient];
   const cells = [];
   let notes = null;
   const gN = Math.max(g, 5 * k * MM);
   if (G.notes && orient === 'P') {
     const ch = (UH - 2 * g) / 3, cw = Math.min((ch - lab) * aspect, UW * 0.6);
-    for (let r = 0; r < 3; r++) cells.push({ x: m, y: m + r * (ch + g), w: cw, h: ch });
+    for (let r = 0; r < 3; r++) cells.push({ x: m, y: top + r * (ch + g), w: cw, h: ch });
     const x0 = m + cw + gN, x1 = W - m;
     notes = it => ({ x0, x1, y0: it.y, y1: it.y + it.h });
   } else if (G.notes) {
     const cw = (UW - 2 * g) / 3, ch = Math.min(cw / aspect + lab, UH * 0.5);
-    for (let c = 0; c < 3; c++) cells.push({ x: m + c * (cw + g), y: m, w: cw, h: ch });
-    notes = (it, c) => ({ x0: c.x, x1: c.x + c.w, y0: c.y + c.h + gN * 0.5, y1: m + UH });
+    for (let c = 0; c < 3; c++) cells.push({ x: m + c * (cw + g), y: top, w: cw, h: ch });
+    notes = (it, c) => ({ x0: c.x, x1: c.x + c.w, y0: c.y + c.h + gN * 0.5, y1: top + UH });
   } else {
     const cw = (UW - (cols - 1) * g) / cols, ch = (UH - (rows - 1) * g) / rows;
     for (let i = 0; i < cols * rows; i++) {
       const col = opt.order === 'N' ? Math.floor(i / rows) : i % cols;
       const row = opt.order === 'N' ? i % rows : Math.floor(i / cols);
-      cells.push({ x: m + col * (cw + g), y: m + row * (ch + g), w: cw, h: ch });
+      cells.push({ x: m + col * (cw + g), y: top + row * (ch + g), w: cw, h: ch });
     }
   }
   // dividers: lines through the middle of the gaps between cells (top-left coords)
   const dividers = [];
-  if (G.notes && orient === 'P') { const ch = (UH - 2 * g) / 3; for (let r = 1; r < 3; r++) { const y = m + r * (ch + g) - g / 2; dividers.push([m, y, W - m, y]); } }
-  else if (G.notes) { const cw = (UW - 2 * g) / 3; for (let c = 1; c < 3; c++) { const x = m + c * (cw + g) - g / 2; dividers.push([x, m, x, m + UH]); } }
+  if (G.notes && orient === 'P') { const ch = (UH - 2 * g) / 3; for (let r = 1; r < 3; r++) { const y = top + r * (ch + g) - g / 2; dividers.push([m, y, W - m, y]); } }
+  else if (G.notes) { const cw = (UW - 2 * g) / 3; for (let c = 1; c < 3; c++) { const x = m + c * (cw + g) - g / 2; dividers.push([x, top, x, top + UH]); } }
   else {
     const cw = (UW - (cols - 1) * g) / cols, ch = (UH - (rows - 1) * g) / rows;
-    for (let c = 1; c < cols; c++) { const x = m + c * (cw + g) - g / 2; dividers.push([x, m, x, m + UH]); }
-    for (let r = 1; r < rows; r++) { const y = m + r * (ch + g) - g / 2; dividers.push([m, y, W - m, y]); }
+    for (let c = 1; c < cols; c++) { const x = m + c * (cw + g) - g / 2; dividers.push([x, top, x, top + UH]); }
+    for (let r = 1; r < rows; r++) { const y = top + r * (ch + g) - g / 2; dividers.push([m, y, W - m, y]); }
   }
   return { W, H, m, k, fs, sfs, lab, cells, notes, dividers, orient, lineGap: 8 * k * MM, items: [] };
 }
@@ -1291,7 +1352,14 @@ function noteLines(r, gap) {
 }
 // text placement shared by preview and PDF output (baseline, top-origin y)
 function slideLabelPos(sh, it, str) { return { x: it.x + it.w - textW(str, sh.fs), y: it.y + it.h + sh.fs * 1.15 }; }
-function sheetLabelPos(sh, str) { return { x: (sh.W - textW(str, sh.sfs)) / 2, y: sh.H - sh.m - sh.sfs * 0.3 }; }
+// number / text on an N-up sheet, inside the strip reserved by sheetGeom (y from the bottom)
+function nupPNPlace(i, dw, dh, str, o, g) {
+  const sh = g.sh, fs = sh.sfs, w = pnW(str, fs, o);
+  const right = o.pos === 'br' || o.pos === 'tr' || (o.pos === 'out' && i % 2 === 0);
+  const x = o.pos === 'bc' ? (dw - w) / 2 : right ? dw - sh.m - w : sh.m;
+  const y = o.pos === 'tr' ? dh - sh.m - fs * 1.2 : sh.m + fs * 0.3;
+  return { x, y, fs };
+}
 const mul = (A, B) => [A[0] * B[0] + A[1] * B[2], A[0] * B[1] + A[1] * B[3], A[2] * B[0] + A[3] * B[2], A[2] * B[1] + A[3] * B[3], A[4] * B[0] + A[5] * B[2] + B[4], A[4] * B[1] + A[5] * B[3] + B[5]];
 function placeMatrix(box, rot, s, X, Y) {
   const [x0, y0, x1, y1] = box;
@@ -1434,7 +1502,6 @@ async function buildNup(srcs, opt, onProgress) {
       const str = String(opt.num === 'file' ? all[it.idx].no : it.idx + 1);
       texts.push([slideLabelPos(sh, it, str), str, sh.fs]);
     }
-    if (opt.sheetNum) { const str = `${si + 1} / ${sheets.length}`; texts.push([sheetLabelPos(sh, str), str, sh.sfs]); }
     if (texts.length) {
       cs += 'q 0.3 g BT\n';
       for (const [p, str, fs] of texts) cs += `/F1 ${fmtNum(fs)} Tf 1 0 0 1 ${fmtNum(p.x)} ${fmtNum(H - p.y)} Tm (${str}) Tj\n`;
@@ -1447,6 +1514,7 @@ async function buildNup(srcs, opt, onProgress) {
       ['Type', name('Page')], ['Parent', pagesRef], ['MediaBox', [0, 0, sh.W, H]], ['Resources', res], ['Contents', cRef],
     ])));
   });
+  if (opt.pn && opt.pn.pos !== 'none') addPageNumbers(out, kids, sheets.map(sh => ({ box: [0, 0, sh.W, sh.H], rot: 0, sh })), opt.pn, nupPNPlace);
   out.set(pagesRef, new Map([['Type', name('Pages')], ['Kids', kids], ['Count', kids.length]]));
   const root = out.add(new Map([['Type', name('Catalog')], ['Pages', pagesRef]]));
   const info = out.add(new Map([['Producer', new S(enc('PDF N-up (offline)'))]]));
@@ -3266,6 +3334,7 @@ async function redactPage(cp, pg, crop, warns) {
    Merge / split (pages are copied as real pages, links and annotations kept)
    ===================================================================== */
 async function buildDoc(list, onProgress) {
+  const geo = []; // per output page: { box, rot } of what is shown
   const out = new Out(), pagesRef = out.alloc(), copiers = new Map();
   const newRefs = list.map(() => out.alloc());
   for (const s of new Set(list.map(x => x.src))) {
@@ -3278,6 +3347,18 @@ async function buildDoc(list, onProgress) {
   for (let i = 0; i < list.length; i++) {
     onProgress && onProgress(i, list.length);
     const { src, pg } = list[i], cp = copiers.get(src);
+    if (list[i].fit) { // place the page on a sheet of the given size, scaled to fit and centred
+      const { W, H, noUp } = list[i].fit, rot = (pg.rot + (list[i].addRot || 0)) % 360;
+      const dw = rot % 180 ? pg.box[3] - pg.box[1] : pg.box[2] - pg.box[0], dh = rot % 180 ? pg.box[2] - pg.box[0] : pg.box[3] - pg.box[1];
+      let s = Math.min(W / dw, H / dh); if (noUp) s = Math.min(1, s);
+      const form = await makeForm(cp, pg, { annots: true }, list.warns || new Set());
+      const Mx = placeMatrix(pg.box, rot, s, (W - dw * s) / 2, (H - dh * s) / 2);
+      const cRef = out.add(new St(new Map(), enc(`q ${Mx.map(fmtNum).join(' ')} cm /P0 Do Q\n`)));
+      out.set(newRefs[i], new Map([['Type', name('Page')], ['Parent', pagesRef], ['MediaBox', [0, 0, W, H]], ['Resources', new Map([['XObject', new Map([['P0', form]])]])], ['Contents', cRef]]));
+      geo[i] = { box: [0, 0, W, H], rot: 0 };
+      if (i % 8 === 7) await tick();
+      continue;
+    }
     if (list[i].redact && list[i].crop) {
       const r = await redactPage(cp, pg, list[i].crop, list.warns || new Set());
       const d = r.dict;
@@ -3285,6 +3366,7 @@ async function buildDoc(list, onProgress) {
       d.set('MediaBox', list[i].crop.slice());
       if (pg.rot) d.set('Rotate', pg.rot);
       out.set(newRefs[i], d);
+      geo[i] = { box: list[i].crop, rot: pg.rot };
       if (list.stats) list.stats.removed += r.removed;
       if (i % 4 === 3) await tick();
       continue;
@@ -3300,10 +3382,13 @@ async function buildDoc(list, onProgress) {
     d.set('Resources', pg.res != null ? await cp.val(pg.res) : new Map());
     if (list[i].crop) d.set('MediaBox', list[i].crop.slice());
     else { d.set('MediaBox', pg.mb.slice()); if (pg.cb) d.set('CropBox', pg.cb.slice()); }
-    if (pg.rot) d.set('Rotate', pg.rot);
+    const rot = (pg.rot + (list[i].addRot || 0)) % 360;
+    if (rot) d.set('Rotate', rot);
     out.set(newRefs[i], d);
+    geo[i] = { box: list[i].crop || pg.box, rot };
     if (i % 8 === 7) await tick();
   }
+  if (list.pageNumbers) { geo.forEach((g, i) => { if (g) g.fixed = list[i].pnFixed; }); addPageNumbers(out, newRefs, geo, list.pageNumbers); }
   out.set(pagesRef, new Map([['Type', name('Pages')], ['Kids', newRefs], ['Count', newRefs.length]]));
   const root = out.add(new Map([['Type', name('Catalog')], ['Pages', pagesRef]]));
   const info = out.add(new Map([['Producer', new S(enc('PDF tools (offline)'))]]));
@@ -3326,7 +3411,7 @@ function cutPieces(d, opt) { // d: display size → [{x0,y0,w,h}] in display coo
   return out;
 }
 async function buildCut(list, opt, onProgress) {
-  const out = new Out(), pagesRef = out.alloc(), copiers = new Map(), kids = [], warns = new Set();
+  const out = new Out(), pagesRef = out.alloc(), copiers = new Map(), kids = [], warns = new Set(), geo = [];
   for (let i = 0; i < list.length; i++) {
     onProgress && onProgress(i, list.length);
     const { src, pg } = list[i];
@@ -3341,9 +3426,11 @@ async function buildCut(list, opt, onProgress) {
         ['Type', name('Page')], ['Parent', pagesRef], ['MediaBox', [0, 0, p.w, p.h]],
         ['Resources', new Map([['XObject', new Map([['P0', form]])]])], ['Contents', cRef],
       ])));
+      geo.push({ box: [0, 0, p.w, p.h], rot: 0, fixed: list[i].pnFixed });
     }
     if (i % 8 === 7) await tick();
   }
+  if (opt.pn && opt.pn.pos !== 'none') addPageNumbers(out, kids, geo, opt.pn);
   out.set(pagesRef, new Map([['Type', name('Pages')], ['Kids', kids], ['Count', kids.length]]));
   const root = out.add(new Map([['Type', name('Catalog')], ['Pages', pagesRef]]));
   const info = out.add(new Map([['Producer', new S(enc('PDF tools (offline)'))]]));
@@ -3399,6 +3486,66 @@ async function buildCrops(entries, redact, onProgress) {
   if (bad) w.unshift(`${bad} 件は範囲が正しくないため，ページ全体のままにしました`);
   return { blob, pages: items.length, warns: w, removed: items.stats.removed };
 }
+// paper size for a page when fitting: orient 'auto' follows the page (after rotation)
+function fitPaper(pg, addRot, opt) {
+  if (!opt || !opt.paper || opt.paper === 'keep') return null;
+  let [pw, ph] = PAPERS[opt.paper].map(v => v * MM);
+  const rot = (pg.rot + (addRot || 0)) % 360;
+  const dw = rot % 180 ? pg.box[3] - pg.box[1] : pg.box[2] - pg.box[0], dh = rot % 180 ? pg.box[2] - pg.box[0] : pg.box[3] - pg.box[1];
+  const land = opt.orient === 'L' || (opt.orient !== 'P' && dw > dh);
+  if (land) [pw, ph] = [ph, pw];
+  if (Math.abs(dw - pw) < 1.5 && Math.abs(dh - ph) < 1.5) return null; // already the right size: copied as is
+  return { W: pw, H: ph, noUp: !!opt.noUp };
+}
+// page numbers: opt { pos: 'bc'|'br'|'tr'|'out', fmt: 'n'|'nN'|'dash', start, skipFirst }
+function pageNumberText(i, count, opt, fixed) { // fixed: { no, last } — keep the original page numbers
+  if (!opt || opt.pos === 'none') return null;
+  const st = opt.start == null ? 1 : opt.start;
+  let n, last;
+  if (fixed) { if (opt.skipFirst && fixed.no === 1) return null; n = st + fixed.no - 1; last = st + fixed.last - 1; }
+  else { if (opt.skipFirst && i === 0) return null; n = st + i - (opt.skipFirst ? 1 : 0); last = st + count - 1 - (opt.skipFirst ? 1 : 0); }
+  if (opt.fmt === 'custom') { const t = (opt.text || '').replace(/\{n\}/g, n).replace(/\{N\}/g, last); return t.trim() ? t : null; }
+  return opt.fmt === 'nN' ? `${n} / ${last}` : opt.fmt === 'dash' ? `- ${n} -` : String(n);
+}
+// width of free text set in the Japanese font: half-width for ASCII / half-width kana, full-width otherwise
+const cjkW = (str, fs) => [...str].reduce((a, ch) => { const c = ch.codePointAt(0); return a + (c < 0x7f || (c >= 0xff61 && c <= 0xff9f) ? 0.5 : 1); }, 0) * fs;
+const pnW = (str, fs, opt) => opt.fmt === 'custom' ? cjkW(str, fs) : textW(str, fs);
+// where the number goes, in display coordinates (y up from the bottom of the page as seen)
+function pageNumberPlace(i, dw, dh, str, opt) {
+  const k = Math.min(dw, dh) / 595.28, fs = Math.max(7, Math.min(16, 10 * k)), mg = Math.max(14, 28 * k), w = pnW(str, fs, opt);
+  const right = opt.pos === 'br' || opt.pos === 'tr' || (opt.pos === 'out' && i % 2 === 0);
+  const x = opt.pos === 'bc' ? (dw - w) / 2 : right ? dw - mg - w : mg;
+  const y = opt.pos === 'tr' ? dh - mg - fs * 0.7 : mg;
+  return { x, y, fs };
+}
+const invAff = m => { const det = m[0] * m[3] - m[1] * m[2]; return [m[3] / det, -m[1] / det, -m[2] / det, m[0] / det, (m[2] * m[5] - m[3] * m[4]) / det, (m[1] * m[4] - m[0] * m[5]) / det]; };
+function addPageNumbers(out, refs, geo, opt, placeFn = pageNumberPlace) {
+  const custom = opt.fmt === 'custom';
+  let font;
+  if (custom) { // Japanese text: standard (non-embedded) Japanese font, shown with the viewer's own gothic font
+    const desc = out.add(new Map([['Type', name('FontDescriptor')], ['FontName', name('HeiseiKakuGo-W5')], ['Flags', 4], ['FontBBox', [-92, -250, 1010, 922]], ['ItalicAngle', 0], ['Ascent', 880], ['Descent', -120], ['CapHeight', 737], ['StemV', 114]]));
+    const cid = out.add(new Map([['Type', name('Font')], ['Subtype', name('CIDFontType0')], ['BaseFont', name('HeiseiKakuGo-W5')],
+      ['CIDSystemInfo', new Map([['Registry', new S(enc('Adobe'))], ['Ordering', new S(enc('Japan1'))], ['Supplement', 2]])], ['FontDescriptor', desc], ['DW', 1000], ['W', [231, 389, 500]]]));
+    font = out.add(new Map([['Type', name('Font')], ['Subtype', name('Type0')], ['BaseFont', name('HeiseiKakuGo-W5-UniJIS-UCS2-HW-H')], ['Encoding', name('UniJIS-UCS2-HW-H')], ['DescendantFonts', [cid]]]));
+  } else font = out.add(new Map([['Type', name('Font')], ['Subtype', name('Type1')], ['BaseFont', name('Helvetica')], ['Encoding', name('WinAnsiEncoding')]]));
+  const show = str => { if (!custom) return `(${str.replace(/[()\\]/g, m => '\\' + m)}) Tj`; let h = ''; for (const ch of str) { const c = ch.codePointAt(0); h += (c > 0xffff ? 0x3013 : c).toString(16).padStart(4, '0'); } return `<${h}> Tj`; };
+  const open = out.add(new St(new Map(), enc('q\n')));
+  const own = v => v instanceof R ? new Map(out.objs[v.n] instanceof Map ? out.objs[v.n] : []) : v instanceof Map ? new Map(v) : new Map();
+  refs.forEach((ref, i) => {
+    const g = geo[i], str = pageNumberText(i, refs.length, opt, g && g.fixed);
+    const d = out.objs[ref.n];
+    if (!str || !(d instanceof Map) || !g) return;
+    const B = placeMatrix(g.box, g.rot, 1, 0, 0); // page space → display space
+    const dw = g.rot % 180 ? g.box[3] - g.box[1] : g.box[2] - g.box[0], dh = g.rot % 180 ? g.box[2] - g.box[0] : g.box[3] - g.box[1];
+    const p = placeFn(i, dw, dh, str, opt, g);
+    const res = own(d.get('Resources')), fonts = own(res.get('Font'));
+    fonts.set('NupPN', font); res.set('Font', fonts); d.set('Resources', res);
+    const tail = out.add(new St(new Map(), enc(`\nQ\nq ${invAff(B).map(fmtNum).join(' ')} cm BT /NupPN ${fmtNum(p.fs)} Tf 0.25 g ${fmtNum(p.x)} ${fmtNum(p.y)} Td ${show(str)} ET Q\n`)));
+    let c = d.get('Contents');
+    if (c instanceof R && Array.isArray(out.objs[c.n])) c = out.objs[c.n]; // /Contents may point to an array of streams
+    d.set('Contents', c instanceof R ? [open, c, tail] : Array.isArray(c) ? [open, ...c, tail] : [open, tail]);
+  });
+}
 // "1-3, 5, 8-" → [[1,2,3],[5],[8..total]] ; throws with a readable message
 function parseRanges(text, total) {
   const groups = [];
@@ -3453,7 +3600,8 @@ if (typeof document !== 'undefined') (() => {
   const srcs = [];
   let sheetIdx = 0, outUrl = null, busy = false;
   const store = (() => { try { return JSON.parse(localStorage.getItem('pdfnup') || '{}'); } catch { return {}; } })();
-  const optIds = ['paper', 'orient', 'margin', 'order', 'num', 'sheetNum', 'divider', 'fileBreak', 'rotate', 'annots'];
+  const optIds = ['paper', 'orient', 'margin', 'order', 'num', 'divider', 'fileBreak', 'rotate', 'annots'];
+  if (store.sheetNum && store.mPN === undefined) { store.mPN = 'bc'; store.mPNFmt = 'nN'; } // old 「用紙に番号」 setting
   // settings saved by older versions (separate 枠線 option, 点線)
   if (store.divider === 'dot') store.divider = 'dash';
   if ('frame' in store) { if ((!store.divider || store.divider === 'none') && store.frame && store.frame !== 'none') store.divider = 'frame'; delete store.frame; }
@@ -3468,7 +3616,7 @@ if (typeof document !== 'undefined') (() => {
     for (const n of Object.keys(GRIDS)) {
       const sel = n === cur, or = sel ? resolveOrient(o, n) : GRIDS[n].d;
       const entries = Array.from({ length: +n }, (_, i) => ({ d: { w: 297, h: 210 }, idx: i, file: 0 }));
-      const sh = planSheets(entries, { ...o, n, orient: or, num: 'none', sheetNum: false, margin: 'normal', rotate: false })[0];
+      const sh = planSheets(entries, { ...o, n, orient: or, num: 'none', pn: null, margin: 'normal', rotate: false })[0];
       const sc = 46 / Math.max(sh.W, sh.H);
       let svg = `<svg viewBox="0 0 ${sh.W * sc + 2} ${sh.H * sc + 2}" width="${sh.W * sc + 2}"><rect x="1" y="1" width="${sh.W * sc}" height="${sh.H * sc}" fill="var(--card)" stroke="var(--sub)" stroke-width="1"/>`;
       for (const it of sh.items) {
@@ -3487,7 +3635,7 @@ if (typeof document !== 'undefined') (() => {
   for (const id of optIds) if (store[id] !== undefined) { const el = $(id); if (el.type === 'checkbox') el.checked = store[id]; else el.value = store[id]; }
   if (!['L', 'P', 'auto'].includes(store.orient)) $('orient').value = GRIDS[store.n || 4].d;
   function opts(noN) {
-    const o = { n: noN ? '4' : lay.querySelector('input:checked').value };
+    const o = { n: noN ? '4' : lay.querySelector('input:checked').value, pn: pnOpt() };
     for (const id of optIds) { const el = $(id); o[id] = el.type === 'checkbox' ? el.checked : el.value; }
     return o;
   }
@@ -3551,6 +3699,23 @@ if (typeof document !== 'undefined') (() => {
 
   // preview
   const cv = $('cv');
+  function pnOpt() { return { pos: $('mPN').value, fmt: $('mPNFmt').value, text: $('mPNText').value, start: Math.max(0, parseInt($('mPNStart').value, 10) || 0), skipFirst: $('mPNSkip').checked, orig: $('mPNOrig').checked }; }
+  // page numbers for a list of output pages (split): original numbers when asked
+  function withPN(list, origNos, total) {
+    const o = pnOpt(); if (o.pos === 'none') return list;
+    list.pageNumbers = o;
+    if (o.orig) list.forEach((x, i) => { x.pnFixed = { no: origNos[i], last: total }; });
+    return list;
+  }
+  function placePNPanel() { // one shared settings panel, shown in the tab that is open
+    const slot = document.querySelector(`.pnSlot[data-mode="${mode}"]`) || $('pnHold');
+    if ($('pnPanel').parentElement !== slot) slot.append($('pnPanel')); // moving it would drop the keyboard focus
+    const o = pnOpt();
+    document.querySelectorAll('#pnPanel .pnopt').forEach(e => e.hidden = o.pos === 'none'
+      || (e.classList.contains('pntext') && o.fmt !== 'custom')
+      || (e.classList.contains('pnorig') && mode !== 'split')
+      || (e.classList.contains('pnnup') && mode !== 'nup'));
+  }
   let drawPending = false;
   function scheduleDraw() { if (drawPending) return; drawPending = true; requestAnimationFrame(() => { drawPending = false; if (mode === 'nup') draw(); }); }
   function draw() {
@@ -3608,9 +3773,9 @@ if (typeof document !== 'undefined') (() => {
       c.font = `${sh.fs}px Helvetica, Arial, sans-serif`;
       for (const it of sh.items) { const str = String(o.num === 'file' ? entries[it.idx].no : it.idx + 1); const p = slideLabelPos(sh, it, str); c.fillText(str, p.x, p.y); }
     }
-    if (o.sheetNum) {
-      const str = `${empty ? 1 : sheetIdx + 1} / ${Math.max(1, sheets.length)}`, p = sheetLabelPos(sh, str);
-      c.font = `${sh.sfs}px Helvetica, Arial, sans-serif`; c.fillText(str, p.x, p.y);
+    if (o.pn.pos !== 'none') {
+      const i = empty ? 0 : sheetIdx, str = pageNumberText(i, Math.max(1, sheets.length), o.pn);
+      if (str) { const p = nupPNPlace(i, sh.W, sh.H, str, o.pn, { sh }); c.font = `${sh.sfs}px ${o.pn.fmt === 'custom' ? SANS : 'Helvetica, Arial, sans-serif'}`; c.fillText(str, p.x, sh.H - p.y); }
     }
   }
   $('prev').onclick = () => { sheetIdx--; draw(); };
@@ -3652,6 +3817,7 @@ if (typeof document !== 'undefined') (() => {
     mode = m;
     for (const b of tabs.children) b.classList.toggle('on', b.dataset.m === m);
     for (const k of ['nup', 'merge', 'split', 'trim']) $('m-' + k).hidden = k !== m;
+    placePNPanel();
     try { store.mode = m; const o = JSON.parse(localStorage.getItem('pdfnup') || '{}'); o.mode = m; localStorage.setItem('pdfnup', JSON.stringify(o)); } catch {}
     draw();
   }
@@ -3687,8 +3853,7 @@ if (typeof document !== 'undefined') (() => {
     drawTrim();
     const pages = allPages(), files = ready();
     // merge
-    $('mergeSum').textContent = files.length >= 2 ? `${files.length} ファイル・計 ${pages.length} ページを，上のリストの順に 1 つの PDF にします．` : files.length === 1 ? 'もう 1 つ以上 PDF を追加してください（▲▼で順番を変えられます）．' : 'PDF を 2 つ以上追加してください．';
-    $('mergeBtn').disabled = files.length < 2 || busy;
+    if (mode === 'merge') renderMergeGrid();
     // split
     const sm = $('splitMode').value;
     $('splitNWrap').hidden = sm !== 'every';
@@ -4119,13 +4284,14 @@ if (typeof document !== 'undefined') (() => {
         const outs = [], w = String(pages.length).length;
         for (let i = 0; i < list.length; i++) {
           st2('pickStatus', `作成中… ${i + 1} / ${list.length}`);
-          outs.push({ name: `${base}_p${String(pages.indexOf(list[i]) + 1).padStart(w, '0')}.pdf`, blob: await buildDoc([list[i]]) });
+          const no = pages.indexOf(list[i]) + 1;
+          outs.push({ name: `${base}_p${String(no).padStart(w, '0')}.pdf`, blob: await buildDoc(withPN([{ ...list[i] }], [no], pages.length)) });
         }
         const zip = await makeZip(outs);
         st2('pickStatus', `${outs.length} ファイル・${((performance.now() - t0) / 1000).toFixed(1)} 秒`, 'ok');
         $('pickOut').append(pickLink(zip, `${base}_p${tag}.zip`, '保存（ZIP）'));
       } else {
-        const blob = await buildDoc(list, (i, n) => st2('pickStatus', `作成中… ${i} / ${n} ページ`));
+        const blob = await buildDoc(withPN(list.map(x => ({ ...x })), list.map(x => pages.indexOf(x) + 1), pages.length), (i, n) => st2('pickStatus', `作成中… ${i} / ${n} ページ`));
         const mb = blob.size / 1048576;
         st2('pickStatus', `${list.length} ページ・${mb < 10 ? mb.toFixed(1) : mb.toFixed(0)} MB・${((performance.now() - t0) / 1000).toFixed(1)} 秒`, 'ok');
         const file = how === 'del' ? `${base}_p${tag}を削除.pdf` : `${base}_p${tag}.pdf`;
@@ -4155,7 +4321,8 @@ if (typeof document !== 'undefined') (() => {
     clearExtra(); busy = true; drawOther();
     const t0 = performance.now();
     try {
-      const r = await buildCut(allPages(), cutOpts(), (i, n) => st2('cutStatus', `作成中… ${i} / ${n} ページ`));
+      const pagesC = allPages(), listC = withPN(pagesC.map(x => ({ ...x })), pagesC.map((x, i) => i + 1), pagesC.length);
+      const r = await buildCut(listC, { ...cutOpts(), pn: listC.pageNumbers }, (i, n) => st2('cutStatus', `作成中… ${i} / ${n} ページ`));
       const mb = r.blob.size / 1048576;
       st2('cutStatus', `${r.pages} ページ・${mb < 10 ? mb.toFixed(1) : mb.toFixed(0)} MB・${((performance.now() - t0) / 1000).toFixed(1)} 秒` + (r.warns.length ? `（注意: ${r.warns.join('，')}）` : ''), 'ok');
       $('cutBtn').after(linkBtn(r.blob, `${baseName()}_切り分け.pdf`, '保存'), linkBtn(r.blob, null, '開く', 'btn sub'));
@@ -4166,15 +4333,121 @@ if (typeof document !== 'undefined') (() => {
   for (const id of ['splitMode', 'splitN']) if (store[id] !== undefined) $(id).value = store[id];
   $('splitMode').addEventListener('change', () => { try { const o = JSON.parse(localStorage.getItem('pdfnup') || '{}'); o.splitMode = $('splitMode').value; o.splitN = $('splitN').value; localStorage.setItem('pdfnup', JSON.stringify(o)); } catch {} });
 
+  /* ---------- merge preview: rotate / leave out pages ---------- */
+  const mRot = new Map(), mOff = new Set(); // page → extra rotation (deg, clockwise); pages left out
+  let mGridKey = '', mObs = null;
+  const mFitOpt = () => ({ paper: $('mPaper').value, orient: $('mOrient').value, noUp: $('mNoUp').checked });
+  const mPNOpt = pnOpt;
+  let mOutIdx = new Map(), mOutCount = 0; // page → position in the output (for numbering in the preview)
+  function drawPN(c, x, dw, dh, K) { // draws the page number on a preview (K: px per pt; c's origin at the displayed page's top-left)
+    const o = mPNOpt(), i = mOutIdx.get(x.pg); if (o.pos === 'none' || i == null) return;
+    const str = pageNumberText(i, mOutCount, o); if (!str) return;
+    const p = pageNumberPlace(i, dw, dh, str, o);
+    // anchor like the PDF (left / centre / right edge of the number), text a little larger so it stays legible
+    const w = pnW(str, p.fs, o), anchor = o.pos === 'bc' ? 'center' : (p.x + w / 2 > dw / 2 ? 'right' : 'left');
+    const ax = anchor === 'center' ? p.x + w / 2 : anchor === 'right' ? p.x + w : p.x;
+    c.save(); c.fillStyle = '#c0392b'; c.font = `${Math.max(8, p.fs * K * 1.2)}px ${o.fmt === 'custom' ? SANS : 'Helvetica, Arial, sans-serif'}`; c.textBaseline = 'alphabetic'; c.textAlign = anchor;
+    c.fillText(str, ax * K, (dh - p.y) * K); c.restore();
+  }
+  const mergeList = () => { const l = allPages().filter(x => !mOff.has(x.pg)).map(x => { const addRot = mRot.get(x.pg) || 0; return { ...x, addRot, fit: fitPaper(x.pg, addRot, mFitOpt()) }; }); if (mPNOpt().pos !== 'none') l.pageNumbers = mPNOpt(); return l; };
+  const mIds = ['mPaper', 'mOrient', 'mNoUp', 'mPN', 'mPNFmt', 'mPNText', 'mPNStart', 'mPNSkip', 'mPNOrig'];
+  for (const id of mIds) {
+    if (store[id] !== undefined) { const el = $(id); if (el.type === 'checkbox') el.checked = store[id]; else el.value = store[id]; }
+    $(id).addEventListener(id === 'mPNStart' || id === 'mPNText' ? 'input' : 'change', () => {
+      try { const o = JSON.parse(localStorage.getItem('pdfnup') || '{}'); for (const k of mIds) { const el = $(k); o[k] = el.type === 'checkbox' ? el.checked : el.value; } localStorage.setItem('pdfnup', JSON.stringify(o)); } catch {}
+      $('mergeGrid').querySelectorAll('.mcell').forEach(c => c._draw()); clearExtra(); placePNPanel();
+      if (mode === 'nup') { invalidate(); draw(); } else renderMergeGrid();
+    });
+  }
+  function drawMergeCell(cell, x) {
+    const cv = cell.querySelector('canvas'), extra = mRot.get(x.pg) || 0, d = x.pg.dims, sw = extra % 180 !== 0;
+    const pw = sw ? d.h : d.w, ph = sw ? d.w : d.h;
+    const fit = fitPaper(x.pg, extra, mFitOpt());
+    if (fit) { // show the sheet with the page fitted on it
+      const k = Math.min(104 / fit.W, 132 / fit.H), dpr = window.devicePixelRatio || 1;
+      cv.style.width = Math.round(fit.W * k) + 'px'; cv.style.height = Math.round(fit.H * k) + 'px';
+      cv.width = Math.round(fit.W * k * dpr); cv.height = Math.round(fit.H * k * dpr);
+      let s = Math.min(fit.W / pw, fit.H / ph); if (fit.noUp) s = Math.min(1, s);
+      const c = cv.getContext('2d'); c.fillStyle = '#fff'; c.fillRect(0, 0, cv.width, cv.height);
+      const K = k * dpr, bw = pw * s * K, bh = ph * s * K;
+      const bmp = Thumbs.get(x.src.doc, x.pg, Math.round(d.w * s * K), () => drawMergeCell(cell, x));
+      c.save(); c.translate(cv.width / 2, cv.height / 2);
+      c.strokeStyle = '#d0d0d0'; c.lineWidth = 1; c.setLineDash([3, 2]); c.strokeRect(-bw / 2, -bh / 2, bw, bh); c.setLineDash([]);
+      if (bmp) { c.rotate(extra * Math.PI / 180); const iw = d.w * s * K, ih = d.h * s * K; c.drawImage(bmp, -iw / 2, -ih / 2, iw, ih); }
+      c.restore();
+      drawPN(c, x, fit.W, fit.H, K);
+      cell.classList.add('fitted');
+      return;
+    }
+    cell.classList.remove('fitted');
+    const W = pw, H = ph, k = Math.min(104 / W, 132 / H), dpr = window.devicePixelRatio || 1;
+    cv.style.width = Math.round(W * k) + 'px'; cv.style.height = Math.round(H * k) + 'px';
+    cv.width = Math.round(W * k * dpr); cv.height = Math.round(H * k * dpr);
+    const bmp = Thumbs.get(x.src.doc, x.pg, Math.round(d.w * k * dpr), () => drawMergeCell(cell, x));
+    const c = cv.getContext('2d');
+    c.fillStyle = '#fff'; c.fillRect(0, 0, cv.width, cv.height);
+    if (!bmp) return;
+    c.save();
+    c.translate(cv.width / 2, cv.height / 2); c.rotate(extra * Math.PI / 180);
+    const iw = d.w * k * dpr, ih = d.h * k * dpr;
+    c.drawImage(bmp, -iw / 2, -ih / 2, iw, ih);
+    c.restore();
+    drawPN(c, x, W, H, k * dpr);
+  }
+  function renderMergeGrid() {
+    const pages = allPages(), grid = $('mergeGrid');
+    const live = new Set(pages.map(x => x.pg));
+    for (const p of [...mOff]) if (!live.has(p)) mOff.delete(p);
+    for (const p of [...mRot.keys()]) if (!live.has(p)) mRot.delete(p);
+    const key = pages.map(x => x.src.name + ':' + x.no).join('|');
+    if (key !== mGridKey) {
+      mGridKey = key; grid.innerHTML = '';
+      if (mObs) mObs.disconnect();
+      mObs = 'IntersectionObserver' in window ? new IntersectionObserver(es => { for (const e of es) if (e.isIntersecting) { mObs.unobserve(e.target); e.target._draw(); } }, { rootMargin: '200px' }) : null;
+      const multi = new Set(pages.map(x => x.src)).size > 1;
+      pages.forEach((x, i) => {
+        const cell = document.createElement('div');
+        cell.className = 'pcell mcell'; cell.dataset.i = i;
+        cell.innerHTML = '<canvas></canvas><div class="mtools"><button type="button" class="ic" data-a="l" title="左に 90° 回転">⟲</button><button type="button" class="ic" data-a="r" title="右に 90° 回転">⟳</button><button type="button" class="ic" data-a="x" title="このページを含めない／戻す">✕</button></div><span class="pno"></span>';
+        cell.querySelector('.pno').textContent = multi ? `${i + 1}（${x.src.name.replace(/\.pdf$/i, '')} p${x.no}）` : String(i + 1);
+        cell._draw = () => drawMergeCell(cell, x);
+        grid.append(cell);
+        if (mObs) mObs.observe(cell); else cell._draw();
+      });
+    }
+    grid.querySelectorAll('.mcell').forEach(c => { const x = pages[+c.dataset.i]; if (!x) return; c.classList.toggle('off', mOff.has(x.pg)); const r = mRot.get(x.pg) || 0; c.querySelector('.pno').dataset.rot = r ? `${r}°` : ''; });
+    const files = ready(), n = pages.length - [...mOff].length, nr = [...mRot.values()].filter(Boolean).length;
+    { const m = new Map(); let k = 0; for (const x of pages) if (!mOff.has(x.pg)) m.set(x.pg, k++); const changed = m.size !== mOutIdx.size || [...m].some(([p, v]) => mOutIdx.get(p) !== v); mOutIdx = m; mOutCount = k; if (changed && mPNOpt().pos !== 'none') grid.querySelectorAll('.mcell').forEach(c => c._draw && c._draw()); }
+    placePNPanel();
+    const fo = mFitOpt(), nf = fo.paper === 'keep' ? 0 : pages.filter(x => !mOff.has(x.pg) && fitPaper(x.pg, mRot.get(x.pg) || 0, fo)).length;
+    $('mOrientWrap').hidden = $('mNoUpWrap').hidden = fo.paper === 'keep';
+    $('mergeSum').textContent = !files.length ? 'PDF を追加してください．'
+      : `${files.length} ファイル・${n} ページを，この順に 1 つの PDF にします` + (mOff.size ? `（${mOff.size} ページを除く）` : '') + (nr ? `・${nr} ページを回転` : '') + (nf ? `・サイズの違う ${nf} ページを ${$('mPaper').selectedOptions[0].textContent} に合わせる` : fo.paper !== 'keep' ? `・すべて ${$('mPaper').selectedOptions[0].textContent} のサイズです` : '') + '．';
+    $('mergeBtn').textContent = files.length >= 2 ? '結合して作成' : '作成';
+    $('mergeBtn').disabled = !n || busy;
+    $('mRotL').disabled = $('mRotR').disabled = !pages.length; $('mReset').disabled = !mRot.size && !mOff.size;
+  }
+  $('mergeGrid').addEventListener('click', e => {
+    const b = e.target.closest('button[data-a]'); if (!b) return;
+    const cell = b.closest('.mcell'), x = allPages()[+cell.dataset.i]; if (!x) return;
+    const a = b.dataset.a;
+    if (a === 'x') { mOff.has(x.pg) ? mOff.delete(x.pg) : mOff.add(x.pg); }
+    else { const r = ((mRot.get(x.pg) || 0) + (a === 'r' ? 90 : 270)) % 360; if (r) mRot.set(x.pg, r); else mRot.delete(x.pg); cell._draw(); }
+    clearExtra(); renderMergeGrid();
+  });
+  const rotAll = deg => { const ps = allPages(); for (const x of ps) { const r = ((mRot.get(x.pg) || 0) + deg) % 360; if (r) mRot.set(x.pg, r); else mRot.delete(x.pg); } $('mergeGrid').querySelectorAll('.mcell').forEach(c => c._draw()); clearExtra(); renderMergeGrid(); };
+  $('mRotL').onclick = () => rotAll(270);
+  $('mRotR').onclick = () => rotAll(90);
+  $('mReset').onclick = () => { mRot.clear(); mOff.clear(); $('mergeGrid').querySelectorAll('.mcell').forEach(c => c._draw()); clearExtra(); renderMergeGrid(); };
   $('mergeBtn').onclick = async () => {
     clearExtra(); busy = true; drawOther();
     const t0 = performance.now();
     try {
-      const list = allPages();
-      const blob = await buildDoc(list, (i, n) => st2('mergeStatus', `結合中… ${i} / ${n} ページ`));
+      const list = mergeList();
+      const blob = await buildDoc(list, (i, n) => st2('mergeStatus', `作成中… ${i} / ${n} ページ`));
       const mb = blob.size / 1048576;
       st2('mergeStatus', `${list.length} ページ・${mb < 10 ? mb.toFixed(1) : mb.toFixed(0)} MB・${((performance.now() - t0) / 1000).toFixed(1)} 秒`, 'ok');
-      $('mergeBtn').after(linkBtn(blob, `${baseName()}_結合.pdf`, '保存'), linkBtn(blob, null, '開く', 'btn sub'));
+      $('mergeBtn').after(linkBtn(blob, `${baseName()}_${ready().length >= 2 ? '結合' : '編集'}.pdf`, '保存'), linkBtn(blob, null, '開く', 'btn sub'));
     } catch (e) { console.error(e); st2('mergeStatus', 'エラー: ' + (e.message || e), 'err'); }
     finally { busy = false; drawOther(); }
   };
@@ -4187,7 +4460,7 @@ if (typeof document !== 'undefined') (() => {
       for (let i = 0; i < groups.length; i++) {
         st2('splitStatus', `分割中… ${i + 1} / ${groups.length} ファイル`);
         const g = groups[i];
-        const blob = await buildDoc(g.map(p => pages[p - 1]));
+        const blob = await buildDoc(withPN(g.map(p => ({ ...pages[p - 1] })), g, pages.length));
         const pad = v => String(v).padStart(w, '0');
         outs.push({ name: `${base}_${g.length === 1 ? 'p' + pad(g[0]) : `p${pad(g[0])}-${pad(g[g.length - 1])}`}.pdf`, blob });
       }
@@ -4215,6 +4488,7 @@ if (typeof document !== 'undefined') (() => {
   const inv0 = invalidate;
   invalidate = function () { inv0(); clearExtra(); };
   setMode(mode);
+  $('jsWarn').remove(); // the script started: hide the "JavaScript is off" notice
 
 })();
 </script>
