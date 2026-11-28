@@ -122,13 +122,6 @@
 </head>
 <body>
 <main>
-  <div id="jsWarn" class="jswarn">
-    <b>この画面ではツールが動いていません（JavaScript が無効です）．</b><br>
-    ファイルを直接プレビューするアプリ（Android の「HTML ビューア」やファイルアプリのプレビューなど）では，ボタンや設定が動きません．<br>
-    <b>Android：</b>ファイルアプリで pdfnup.html を長押し →「アプリで開く」（または ⋮ →「別のアプリで開く」）→ <b>Chrome</b> を選んでください．<br>
-    <b>iPhone / iPad：</b>「ファイル」アプリのプレビューでは動きません．パソコンでの利用をおすすめします．
-  </div>
-  <div id="pnHold" hidden></div>
   <h1>PDF 割り付け・結合・分割・トリミング</h1>
   <p class="ver">バージョン 2026-11-27 18:00</p>
   <p class="lead">ブラウザ内だけで処理し，ファイルは外部に送信されません．ページは画像化しないので，文字や図形は劣化しません．</p>
@@ -3486,66 +3479,6 @@ async function buildCrops(entries, redact, onProgress) {
   if (bad) w.unshift(`${bad} 件は範囲が正しくないため，ページ全体のままにしました`);
   return { blob, pages: items.length, warns: w, removed: items.stats.removed };
 }
-// paper size for a page when fitting: orient 'auto' follows the page (after rotation)
-function fitPaper(pg, addRot, opt) {
-  if (!opt || !opt.paper || opt.paper === 'keep') return null;
-  let [pw, ph] = PAPERS[opt.paper].map(v => v * MM);
-  const rot = (pg.rot + (addRot || 0)) % 360;
-  const dw = rot % 180 ? pg.box[3] - pg.box[1] : pg.box[2] - pg.box[0], dh = rot % 180 ? pg.box[2] - pg.box[0] : pg.box[3] - pg.box[1];
-  const land = opt.orient === 'L' || (opt.orient !== 'P' && dw > dh);
-  if (land) [pw, ph] = [ph, pw];
-  if (Math.abs(dw - pw) < 1.5 && Math.abs(dh - ph) < 1.5) return null; // already the right size: copied as is
-  return { W: pw, H: ph, noUp: !!opt.noUp };
-}
-// page numbers: opt { pos: 'bc'|'br'|'tr'|'out', fmt: 'n'|'nN'|'dash', start, skipFirst }
-function pageNumberText(i, count, opt, fixed) { // fixed: { no, last } — keep the original page numbers
-  if (!opt || opt.pos === 'none') return null;
-  const st = opt.start == null ? 1 : opt.start;
-  let n, last;
-  if (fixed) { if (opt.skipFirst && fixed.no === 1) return null; n = st + fixed.no - 1; last = st + fixed.last - 1; }
-  else { if (opt.skipFirst && i === 0) return null; n = st + i - (opt.skipFirst ? 1 : 0); last = st + count - 1 - (opt.skipFirst ? 1 : 0); }
-  if (opt.fmt === 'custom') { const t = (opt.text || '').replace(/\{n\}/g, n).replace(/\{N\}/g, last); return t.trim() ? t : null; }
-  return opt.fmt === 'nN' ? `${n} / ${last}` : opt.fmt === 'dash' ? `- ${n} -` : String(n);
-}
-// width of free text set in the Japanese font: half-width for ASCII / half-width kana, full-width otherwise
-const cjkW = (str, fs) => [...str].reduce((a, ch) => { const c = ch.codePointAt(0); return a + (c < 0x7f || (c >= 0xff61 && c <= 0xff9f) ? 0.5 : 1); }, 0) * fs;
-const pnW = (str, fs, opt) => opt.fmt === 'custom' ? cjkW(str, fs) : textW(str, fs);
-// where the number goes, in display coordinates (y up from the bottom of the page as seen)
-function pageNumberPlace(i, dw, dh, str, opt) {
-  const k = Math.min(dw, dh) / 595.28, fs = Math.max(7, Math.min(16, 10 * k)), mg = Math.max(14, 28 * k), w = pnW(str, fs, opt);
-  const right = opt.pos === 'br' || opt.pos === 'tr' || (opt.pos === 'out' && i % 2 === 0);
-  const x = opt.pos === 'bc' ? (dw - w) / 2 : right ? dw - mg - w : mg;
-  const y = opt.pos === 'tr' ? dh - mg - fs * 0.7 : mg;
-  return { x, y, fs };
-}
-const invAff = m => { const det = m[0] * m[3] - m[1] * m[2]; return [m[3] / det, -m[1] / det, -m[2] / det, m[0] / det, (m[2] * m[5] - m[3] * m[4]) / det, (m[1] * m[4] - m[0] * m[5]) / det]; };
-function addPageNumbers(out, refs, geo, opt, placeFn = pageNumberPlace) {
-  const custom = opt.fmt === 'custom';
-  let font;
-  if (custom) { // Japanese text: standard (non-embedded) Japanese font, shown with the viewer's own gothic font
-    const desc = out.add(new Map([['Type', name('FontDescriptor')], ['FontName', name('HeiseiKakuGo-W5')], ['Flags', 4], ['FontBBox', [-92, -250, 1010, 922]], ['ItalicAngle', 0], ['Ascent', 880], ['Descent', -120], ['CapHeight', 737], ['StemV', 114]]));
-    const cid = out.add(new Map([['Type', name('Font')], ['Subtype', name('CIDFontType0')], ['BaseFont', name('HeiseiKakuGo-W5')],
-      ['CIDSystemInfo', new Map([['Registry', new S(enc('Adobe'))], ['Ordering', new S(enc('Japan1'))], ['Supplement', 2]])], ['FontDescriptor', desc], ['DW', 1000], ['W', [231, 389, 500]]]));
-    font = out.add(new Map([['Type', name('Font')], ['Subtype', name('Type0')], ['BaseFont', name('HeiseiKakuGo-W5-UniJIS-UCS2-HW-H')], ['Encoding', name('UniJIS-UCS2-HW-H')], ['DescendantFonts', [cid]]]));
-  } else font = out.add(new Map([['Type', name('Font')], ['Subtype', name('Type1')], ['BaseFont', name('Helvetica')], ['Encoding', name('WinAnsiEncoding')]]));
-  const show = str => { if (!custom) return `(${str.replace(/[()\\]/g, m => '\\' + m)}) Tj`; let h = ''; for (const ch of str) { const c = ch.codePointAt(0); h += (c > 0xffff ? 0x3013 : c).toString(16).padStart(4, '0'); } return `<${h}> Tj`; };
-  const open = out.add(new St(new Map(), enc('q\n')));
-  const own = v => v instanceof R ? new Map(out.objs[v.n] instanceof Map ? out.objs[v.n] : []) : v instanceof Map ? new Map(v) : new Map();
-  refs.forEach((ref, i) => {
-    const g = geo[i], str = pageNumberText(i, refs.length, opt, g && g.fixed);
-    const d = out.objs[ref.n];
-    if (!str || !(d instanceof Map) || !g) return;
-    const B = placeMatrix(g.box, g.rot, 1, 0, 0); // page space → display space
-    const dw = g.rot % 180 ? g.box[3] - g.box[1] : g.box[2] - g.box[0], dh = g.rot % 180 ? g.box[2] - g.box[0] : g.box[3] - g.box[1];
-    const p = placeFn(i, dw, dh, str, opt, g);
-    const res = own(d.get('Resources')), fonts = own(res.get('Font'));
-    fonts.set('NupPN', font); res.set('Font', fonts); d.set('Resources', res);
-    const tail = out.add(new St(new Map(), enc(`\nQ\nq ${invAff(B).map(fmtNum).join(' ')} cm BT /NupPN ${fmtNum(p.fs)} Tf 0.25 g ${fmtNum(p.x)} ${fmtNum(p.y)} Td ${show(str)} ET Q\n`)));
-    let c = d.get('Contents');
-    if (c instanceof R && Array.isArray(out.objs[c.n])) c = out.objs[c.n]; // /Contents may point to an array of streams
-    d.set('Contents', c instanceof R ? [open, c, tail] : Array.isArray(c) ? [open, ...c, tail] : [open, tail]);
-  });
-}
 // "1-3, 5, 8-" → [[1,2,3],[5],[8..total]] ; throws with a readable message
 function parseRanges(text, total) {
   const groups = [];
@@ -3699,23 +3632,6 @@ if (typeof document !== 'undefined') (() => {
 
   // preview
   const cv = $('cv');
-  function pnOpt() { return { pos: $('mPN').value, fmt: $('mPNFmt').value, text: $('mPNText').value, start: Math.max(0, parseInt($('mPNStart').value, 10) || 0), skipFirst: $('mPNSkip').checked, orig: $('mPNOrig').checked }; }
-  // page numbers for a list of output pages (split): original numbers when asked
-  function withPN(list, origNos, total) {
-    const o = pnOpt(); if (o.pos === 'none') return list;
-    list.pageNumbers = o;
-    if (o.orig) list.forEach((x, i) => { x.pnFixed = { no: origNos[i], last: total }; });
-    return list;
-  }
-  function placePNPanel() { // one shared settings panel, shown in the tab that is open
-    const slot = document.querySelector(`.pnSlot[data-mode="${mode}"]`) || $('pnHold');
-    if ($('pnPanel').parentElement !== slot) slot.append($('pnPanel')); // moving it would drop the keyboard focus
-    const o = pnOpt();
-    document.querySelectorAll('#pnPanel .pnopt').forEach(e => e.hidden = o.pos === 'none'
-      || (e.classList.contains('pntext') && o.fmt !== 'custom')
-      || (e.classList.contains('pnorig') && mode !== 'split')
-      || (e.classList.contains('pnnup') && mode !== 'nup'));
-  }
   let drawPending = false;
   function scheduleDraw() { if (drawPending) return; drawPending = true; requestAnimationFrame(() => { drawPending = false; if (mode === 'nup') draw(); }); }
   function draw() {
